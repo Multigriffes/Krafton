@@ -196,20 +196,27 @@ class Volume:
 
 def main():
     pygame.init()
-    display = [1920,1080]
+    display = [1920//2,1080//2]
     pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
+
+
     gluPerspective(45,display[0]/display[1], 0.01 , 500)
     glViewport(0,0,display[0],display[1])
     glTranslatef(0,0,-20)
 
+
+    #glFrontFace(GL_CW)
+    #glCullFace(GL_FRONT)
     #glEnable(GL_CULL_FACE)
     glEnable(GL_DEPTH_TEST)
+
+
     clock=pygame.time.Clock()
     lastFps = 0
     run = True
 
     while run:
-        clock.tick(60)
+        clock.tick(-1)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -270,8 +277,13 @@ def main():
         print(clock.get_fps())
 
 
-
+FichierObjet=OBJfile('models/bugatti.obj')
+FichierObjet.parse()
+FichierObjet.releaseFile()
 Objet=Volume('Faces')
-Objet.SetVertices(Objet.vertices)
+Objet.SetVertices(FichierObjet.vertices)
+Objet.SetTriangles(FichierObjet.triangles)
+Objet.SetQuads(FichierObjet.quads)
+
 
 main()
