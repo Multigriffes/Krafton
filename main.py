@@ -97,16 +97,6 @@ class Volume:
                     for vertex in edge:
                         glVertex3fv((self.vertices[vertex][0]+coordinates[0],self.vertices[vertex][1]+coordinates[1],self.vertices[vertex][2]+coordinates[2]))
                 glEnd()
-
-            case 'Triangles':
-                glBegin(GL_TRIANGLES)
-                NumeroCouleur = 0
-                for face in self.faces:
-                    for vertex in face:
-                        NumeroCouleur = (NumeroCouleur % 3) + 1
-                        glColor3fv(MyColors[NumeroCouleur])
-                        glVertex3fv((self.vertices[vertex][0]+coordinates[0],self.vertices[vertex][1]+coordinates[1],self.vertices[vertex][2]+coordinates[2]))
-                glEnd()
             case 'Base':
                 glBegin(GL_LINES)
                 NumeroCouleur = 0
@@ -128,33 +118,6 @@ class Volume:
                 for vertex in self.vertices:
                     glVertex3fv((vertex[0]+coordinates[0],vertex[1]+coordinates[1],vertex[2]+coordinates[2]))
                 glEnd()
-
-            case 'Quads':
-                if glIsList(1)==GL_FALSE:
-                    glNewList(1,GL_COMPILE)
-                    glBegin(GL_QUADS)
-                    for i in range(len(self.faces[0])):
-                        glColor3fv((random.randint(0,255)/255,random.randint(0,255)/255,random.randint(0,255)/255))
-                        for j in range(len(self.faces[0][i])):
-                            glVertex3fv(self.vertices[self.faces[0][i][j]-1])
-                            #glNormal3fv(self.normals[self.faces[2][i][j]-1])
-                    glEnd()
-                    glEndList()
-                else:
-                    glCallList(1)
-            case 'Polygons':
-                if glIsList(1) == GL_FALSE:
-                    glNewList(1, GL_COMPILE)
-                    glBegin(GL_POLYGON)
-                    for i in range(len(self.faces[0])):
-                        #glColor3fv((random.randint(0, 255) / 255, random.randint(0, 255) / 255, random.randint(0, 255) / 255))
-                        for j in range(len(self.faces[0][i])):
-                            glVertex3fv(self.vertices[self.faces[0][i][j]-1])
-                            #glNormal3fv(self.normals[self.faces[2][i][j]-1])
-                    glEnd()
-                    glEndList()
-                else:
-                    glCallList(1)
             case 'Faces':
                 if glIsList(1) == GL_FALSE:
                     glNewList(1, GL_COMPILE)
