@@ -1,3 +1,4 @@
-/models
+models/
 /.venv
 /.idea
+test.py
