@@ -4,7 +4,7 @@ import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from math import cos,sin,radians
-from objparser import OBJfile
+from objparser import OBJ_FILE
 
 
 MyVerticesCube = (
@@ -240,7 +240,7 @@ def main():
         print(clock.get_fps())
 
 
-FichierObjet=OBJfile('models/bugatti.obj')
+FichierObjet=OBJ_FILE('models/bugatti.obj')
 FichierObjet.parse()
 FichierObjet.releaseFile()
 Objet=Volume('Faces')

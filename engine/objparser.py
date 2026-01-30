@@ -1,4 +1,4 @@
-class OBJfile:
+class OBJ_FILE:
     def __init__(self, file_path):
         self.file_path = file_path
         self.file = open(self.file_path, "r")
