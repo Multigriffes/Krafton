@@ -4,7 +4,7 @@ import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from math import cos,sin,radians
-from objparserV2 import OBJfile
+from objparser import OBJfile
 
 
 MyVerticesCube = (

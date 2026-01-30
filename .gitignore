@@ -1,4 +1,4 @@
-models/
+/engine/models/
 /.venv
 /.idea
 test.py
