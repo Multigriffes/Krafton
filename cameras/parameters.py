@@ -30,6 +30,7 @@ minArea = 1
 
 # Groupes de leds
 max_distance_pixel = 50
+min_samples = 3
 
 # Analyse image
 kernel = np.ones((3,3), np.uint8)
