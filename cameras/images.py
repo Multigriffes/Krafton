@@ -1,15 +1,35 @@
 import cv2
 import numpy as np
 import time
+from sklearn import metrics
+from sklearn.cluster import DBSCAN
+from parameters import *
+
+def groupe_leds(points_list: list):
+    clustering = DBSCAN(eps=max_distance_pixel, min_samples=min_samples).fit(points_list)
+    print('a', clustering)
+
+    groups = {}
+    for i, label in enumerate(clustering.labels_):
+        if label == -1:
+            continue
+
+        groups.setdefault(label, []).append(points_list[i])
+
+    return list(groups.values())
+
+liste_points = [[120, 60], [83, 6], [59, 132], [47, 65], [129, 157], [6, 25], [587, 256], [489, 261]]
+print(groupe_leds(liste_points))
+
 
 def blob_detection_params():
     params = cv2.SimpleBlobDetector_Params()
-    params.minThreshold = 10
-    params.maxThreshold = 200
-    params.filterByColor = True
-    params.blobColor = 255
-    params.filterByArea = True
-    params.minArea = 1
+    params.minThreshold = minThreshold
+    params.maxThreshold = maxThreshold
+    params.filterByColor = filterByColor
+    params.blobColor = blobColor
+    params.filterByArea = filterByArea
+    params.minArea = minArea
 
     detector = cv2.SimpleBlobDetector_create(params)
     return detector
@@ -21,7 +41,6 @@ capture = cv2.VideoCapture(0)
 x=0
 timer = 0
 detector = blob_detection_params()
-kernel = np.ones((3,3), np.uint8)
 list_point = []
 
 while capture.isOpened():
@@ -51,7 +70,7 @@ while capture.isOpened():
         
 
         # Quitter la video
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) == ord(quitter):
             break
     
 
