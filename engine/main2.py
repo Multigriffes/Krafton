@@ -10,7 +10,7 @@ def main():
     pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
 
     #______________Objects to be compiled_______
-    #    for object in object_to_be_compiled:
+    #    for object in objects_to_be_compiled:
     #        object.compile()
     #___________________________________________
 
@@ -62,27 +62,27 @@ def main():
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         #______________Objects to be drew___________
-        for object in object_to_be_drew:
+        for object in objects_to_be_drew:
             object.draw()
         #____________________________________________
         pygame.display.flip()
         print(clock.get_fps())
 
-object_to_be_compiled=[]
-object_to_be_drew=[]
+objects_to_be_compiled=[]
+objects_to_be_drew=[]
 
 
-#my_object_file = OBJ_FILE('models/test.obj')
-#my_object_file.parse()
-#my_object_file.releaseFile()
+my_object_file = OBJ_FILE('models/16834_hand_v1_NEW.obj')
+my_object_file.parse()
+my_object_file.releaseFile()
 
-#my_object=FACES()
-#my_object.set_vertices(my_object_file.vertices)
-#my_object.set_triangles(my_object_file.triangles)
-#my_object.set_quads(my_object_file.quads)
+my_object=FACES()
+my_object.set_vertices(my_object_file.vertices)
+my_object.set_triangles(my_object_file.triangles)
+my_object.set_quads(my_object_file.quads)
 
-#object_to_be_compiled.append(my_object)
-#object_to_be_drew.append(my_object)
+objects_to_be_compiled.append(my_object)
+objects_to_be_drew.append(my_object)
 
 rotating_angle_X=LINES_LOOP()
 rotating_angle_Y=LINES_LOOP()
@@ -92,13 +92,13 @@ rotating_angle_X.set_vertices([(cos(radians(i)),0.0,sin(radians(i))) for i in ra
 rotating_angle_Y.set_vertices([(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)])
 rotating_angle_Z.set_vertices([(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)])
 
-object_to_be_compiled.append(rotating_angle_X)
-object_to_be_compiled.append(rotating_angle_Y)
-object_to_be_compiled.append(rotating_angle_Z)
+objects_to_be_compiled.append(rotating_angle_X)
+objects_to_be_compiled.append(rotating_angle_Y)
+objects_to_be_compiled.append(rotating_angle_Z)
 
-object_to_be_drew.append(rotating_angle_X)
-object_to_be_drew.append(rotating_angle_Y)
-object_to_be_drew.append(rotating_angle_Z)
+objects_to_be_drew.append(rotating_angle_X)
+objects_to_be_drew.append(rotating_angle_Y)
+objects_to_be_drew.append(rotating_angle_Z)
 
 
 main()
