@@ -34,6 +34,15 @@ def blob_detection_params():
     detector = cv2.SimpleBlobDetector_create(params)
     return detector
 
+def image_transform(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    _, image = cv2.threshold(image, 250, 255, cv2.THRESH_BINARY)
+    image = cv2.flip(image, 1)
+
+    return image
+
+
 # Faire fonction traitement image pour capture 1 et 2.
 capture = cv2.VideoCapture(0)
 '''capture_1 = cv2.VideoCapture(1)'''
@@ -47,14 +56,10 @@ while capture.isOpened():
     start_time = time.perf_counter()
     x+=1
     ret, frame = capture.read()
-    # conversion en couleur binaire (noir OU blanc)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # Floutage de l'immage
-    frame = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)
-    _, frame = cv2.threshold(frame, 250, 255, cv2.THRESH_BINARY)
-    frame = cv2.flip(frame, 1)
+    
+    frame = image_transform(frame)
+
     # Detection led
-    #detector = blob_detection_params()
     keypoints = detector.detect(frame)
     if keypoints != ():
         list_point.append((keypoints[0].pt[0], keypoints[0].pt[1]))
