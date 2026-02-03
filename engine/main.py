@@ -8,8 +8,20 @@ from math import cos,sin,radians
 
 def main():
     pygame.init()
-    display = [1920//2,1080//2]
+    # todo: changer le systeme de fenetre par celui de opengl GLUT
+    display = [1920,1080]
     pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
+
+
+    #light_ambient = [1.0, 1.0, 1.0, 1.0]
+    #light_diffuse = [1.0, 1.0, 1.0, 1.0]
+    #light_specular = [1.0, 1.0, 1.0, 1.0]
+    #light_position = [100.0, 2.0, 1.0, 1.0]
+    #glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
+    #glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
+    #glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
+    #glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+
 
     #______________Objects to be compiled_______
     #    for object in objects_to_be_compiled:
@@ -24,6 +36,9 @@ def main():
     #glCullFace(GL_FRONT)
     #glEnable(GL_CULL_FACE)
     glEnable(GL_DEPTH_TEST)
+
+    #glEnable(GL_LIGHTING)
+    #glEnable(GL_LIGHT0)
 
     clock=pygame.time.Clock()
     lastFps = 0
@@ -76,17 +91,17 @@ objects_to_be_compiled=[]
 objects_to_be_drew=[]
 
 
-my_object_file = OBJ_FILE('models/16834_hand_v1_NEW.obj')
+my_object_file = OBJ_FILE('models/test.obj')
 my_object_file.parse()
 my_object_file.releaseFile()
 
-my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles)
+my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals)
 
 objects_to_be_drew.append(my_object)
 
-rotating_angle_X=LINES_LOOP(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)])
-rotating_angle_Y=LINES_LOOP(vertices=[(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)])
-rotating_angle_Z=LINES_LOOP(vertices=[(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)])
+rotating_angle_X=LINES_LOOP(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[0,1,0])
+rotating_angle_Y=LINES_LOOP(vertices=[(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)],color=[1,0,0])
+rotating_angle_Z=LINES_LOOP(vertices=[(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)],color=[0,0,1])
 
 #objects_to_be_drew.append(rotating_angle_X)
 #objects_to_be_drew.append(rotating_angle_Y)
