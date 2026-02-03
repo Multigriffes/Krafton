@@ -1,7 +1,10 @@
 class OBJ_FILE:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self.file = open(self.file_path, "r")
+    def __init__(self, filePath):
+        self.cache=None
+        self.filePath = filePath
+        self.file = None
+        self.fileName = self.filePath.split('/')[-1].rstrip('.obj')
+        self.cacheFile = None
         self.vertices = []
         self.normals = []
         self.textures = []
@@ -14,7 +17,29 @@ class OBJ_FILE:
         self.trianglesVertices = []
         self.triangles = [self.trianglesVertices,self.trianglesTextures,self.trianglesNormals]
 
-    def parse(self):
+    def parse(self,forceParse=False):
+        print('Parse')
+        if forceParse:
+            self.parseFile()
+        else:
+            from models.models_cache import cache
+            self.cache=cache
+            if not (f'{self.fileName}_Vertices' in self.cache.keys()):
+                self.parseFile()
+            else:
+                self.parseCache()
+
+    def parseCache(self):
+        print('ParseCache')
+        self.vertices = self.cache[f'{self.fileName}_Vertices']
+        self.normals = self.cache[f'{self.fileName}_Normals']
+        self.textures = self.cache[f'{self.fileName}_Textures']
+        self.triangles = self.cache[f'{self.fileName}_Triangles']
+        self.quads = self.cache[f'{self.fileName}_Quads']
+
+    def parseFile(self):
+        print('ParseFile')
+        self.file = open(self.filePath, "r")
         for line in self.file.readlines():
             line = line.split()
             if not line == []:
@@ -57,6 +82,17 @@ class OBJ_FILE:
                                 self.quadsVertices.append(faceVertices)
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)
-
-    def releaseFile(self):
         self.file.close()
+        self.writeToCache()
+
+    def writeToCache(self):
+        print('WriteToCache')
+        self.cache[f'{self.fileName}_Vertices'] = self.vertices
+        self.cache[f'{self.fileName}_Normals'] = self.normals
+        self.cache[f'{self.fileName}_Textures'] = self.textures
+        self.cache[f'{self.fileName}_Triangles'] = self.triangles
+        self.cache[f'{self.fileName}_Quads'] = self.quads
+
+        self.cacheFile = open('models/models_cache.py', 'w')
+        self.cacheFile.write(f'cache = {self.cache}')
+        self.cacheFile.close()

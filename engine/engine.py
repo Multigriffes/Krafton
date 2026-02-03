@@ -1,10 +1,10 @@
 from OpenGL.GL import *
 from random import randint
 
-no_mat = [0.0, 0.0, 0.0, 1.0]
-mat_ambient = [0.0, 0.0, 0.3, 1.0]
-mat_diffuse = [1.0, 0.0, 0.0, 1.0]
-no_shininess = [0.0]
+#no_mat = [0.0, 0.0, 0.0, 1.0]
+#mat_ambient = [0.0, 0.0, 0.3, 1.0]
+#mat_diffuse = [1.0, 0.0, 0.0, 1.0]
+#no_shininess = [0.0]
 
 class VERTICES:
     def __init__(self,vertices=[],normals=[]):

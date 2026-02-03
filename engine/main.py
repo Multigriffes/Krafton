@@ -1,8 +1,8 @@
-from objparser import *
 from engine import *
 import pygame
 from OpenGL.GLU import *
 from math import cos,sin,radians
+from objparser import *
 
 #_______________________________________________________Main Loop_______________________________________________________
 
@@ -83,7 +83,7 @@ def main():
             object.draw()
         #____________________________________________
         pygame.display.flip()
-        print(clock.get_fps())
+        #print(clock.get_fps())
 
 #_______________________________________________________________________________________________________________________
 
@@ -91,16 +91,16 @@ objects_to_be_compiled=[]
 objects_to_be_drew=[]
 
 
-my_object_file = OBJ_FILE('models/test.obj')
-my_object_file.parse()
-my_object_file.releaseFile()
+my_object_file = OBJ_FILE('models/theiere.obj')
+my_object_file.parse(forceParse=True)# Cache system not faster yet
+
 
 my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals)
 
 objects_to_be_drew.append(my_object)
 
-rotating_angle_X=LINES_LOOP(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[0,1,0])
-rotating_angle_Y=LINES_LOOP(vertices=[(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)],color=[1,0,0])
+rotating_angle_X=LINES_LOOP(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[1,0,0])
+rotating_angle_Y=LINES_LOOP(vertices=[(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)],color=[0,1,0])
 rotating_angle_Z=LINES_LOOP(vertices=[(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)],color=[0,0,1])
 
 #objects_to_be_drew.append(rotating_angle_X)
