@@ -91,7 +91,7 @@ objects_to_be_compiled=[]
 objects_to_be_drew=[]
 
 
-my_object_file = OBJ_FILE('models/theiere.obj')
+my_object_file = OBJ_FILE('models/Mini_Thunder_Dragon.obj')
 my_object_file.parse(forceParse=True)# Cache system not faster yet
 
 
