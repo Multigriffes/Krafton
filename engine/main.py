@@ -24,7 +24,7 @@ def main():
 
 
     #______________Objects to be compiled_______
-    #    for object in objects_to_be_compiled:
+    #    for object in all_objects:
     #        object.compile()
     #___________________________________________
 
@@ -51,11 +51,10 @@ def main():
                 run = False
                 pygame.quit()
                 quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key==pygame.K_ESCAPE:
-                    run = False
-                    pygame.quit()
-                    quit()
+        if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            run = False
+            pygame.quit()
+            quit()
         if pygame.key.get_pressed()[pygame.K_UP]:
             glTranslatef(0,0,0.05)
         if pygame.key.get_pressed()[pygame.K_DOWN]:
@@ -79,7 +78,7 @@ def main():
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         #______________Objects to be drew___________
-        for object in objects_to_be_drew:
+        for object in all_objects:
             object.draw()
         #____________________________________________
         pygame.display.flip()
@@ -87,17 +86,25 @@ def main():
 
 #_______________________________________________________________________________________________________________________
 
-objects_to_be_compiled=[]
-objects_to_be_drew=[]
+all_objects=[]
 
 
-my_object_file = OBJ_FILE('models/Mini_Thunder_Dragon.obj')
+my_object_file = OBJ_FILE('models/test.obj')
 my_object_file.parse(forceParse=True)# Cache system not faster yet
 
 
-my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals)
+my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
 
-objects_to_be_drew.append(my_object)
+all_objects.append(my_object)
+
+
+my_object_file2 = OBJ_FILE('models/backpack.obj')
+my_object_file2.parse(forceParse=True)
+
+my_object2=FACES(vertices=my_object_file2.vertices,quads=my_object_file2.quads,triangles=my_object_file2.triangles,normals=my_object_file2.normals,coordinates=[0,0,0])
+
+all_objects.append(my_object2)
+
 
 rotating_angle_X=LINES_LOOP(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[1,0,0])
 rotating_angle_Y=LINES_LOOP(vertices=[(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)],color=[0,1,0])

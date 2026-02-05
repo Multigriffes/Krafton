@@ -37,12 +37,13 @@ class VERTICES:
             print('Not compiled')
 
 class FACES:
-    def __init__(self,vertices=[],normals=[],triangles=[],quads=[]):
+    def __init__(self,vertices=[],normals=[],triangles=[],quads=[],coordinates=[0,0,0]):
         self.vertices=vertices
         self.normals=normals
         self.triangles=triangles
         self.quads=quads
         self.gl_list_id=None
+        self.coordinates=coordinates
 
     def set_vertices(self,vertices):
         self.vertices = vertices

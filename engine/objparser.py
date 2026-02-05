@@ -83,7 +83,7 @@ class OBJ_FILE:
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)
         self.file.close()
-        self.writeToCache()
+        #self.writeToCache()
 
     def writeToCache(self):
         print('WriteToCache')
