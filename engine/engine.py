@@ -37,25 +37,24 @@ class VERTICES:
             print('Not compiled')
 
 class FACES:
-    def __init__(self,vertices=[],normals=[],triangles=[],quads=[],coordinates=[0,0,0]):
+    def __init__(self,vertices=[],normals=[],triangles=[],quads=[],coordinates=[0,0,0],rotation=[0,0,0]):
         self.vertices=vertices
         self.normals=normals
         self.triangles=triangles
         self.quads=quads
         self.gl_list_id=None
         self.coordinates=coordinates
+        self.rotation=rotation
 
-    def set_vertices(self,vertices):
-        self.vertices = vertices
+    def add_coordinates(self,coordinates=[0,0,0]):
+        self.coordinates[0] += coordinates[0]
+        self.coordinates[1] += coordinates[1]
+        self.coordinates[2] += coordinates[2]
 
-    def set_normals(self,normals):
-        self.normals = normals
-
-    def set_triangles(self,triangles):
-        self.triangles = triangles
-
-    def set_quads(self,quads):
-        self.quads = quads
+    def add_rotation(self,rotation=[0,0,0]):
+        self.rotation[0] += rotation[0]
+        self.rotation[1] += rotation[1]
+        self.rotation[2] += rotation[2]
 
     def compile(self):
         if self.gl_list_id is None:
@@ -95,7 +94,10 @@ class FACES:
 
     def draw(self):
         if self.gl_list_id is not None:
+            glPushMatrix()
+            glTranslatef(self.coordinates[0],self.coordinates[1],self.coordinates[2])
             glCallList(self.gl_list_id)
+            glPopMatrix()
         else:
             print("Not compiled so let's compile")
             self.compile()
@@ -132,3 +134,18 @@ class LINES_LOOP:
         else:
             print("Not compiled so let's compile")
             self.compile()
+
+class CAMERA:
+    def __init__(self,coordinates=[0,0,0],rotation=[0,0,0]):
+        self.coordinates=coordinates
+        self.rotation=rotation
+
+    def add_coordinates(self,coordinates=[0,0,0]):
+        self.coordinates[0] += coordinates[0]
+        self.coordinates[1] += coordinates[1]
+        self.coordinates[2] += coordinates[2]
+
+    def add_rotation(self,rotation=[0,0,0]):
+        self.rotation[0] += rotation[0]
+        self.rotation[1] += rotation[1]
+        self.rotation[2] += rotation[2]

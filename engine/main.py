@@ -24,13 +24,12 @@ def main():
 
 
     #______________Objects to be compiled_______
-    #    for object in all_objects:
-    #        object.compile()
+    for object in all_objects:
+        object.compile()
     #___________________________________________
 
-    gluPerspective(45,display[0]/display[1], 0.01 , 500)
+    gluPerspective(45,display[0]/display[1], 1, 500)
     glViewport(0,0,display[0],display[1])
-    glTranslatef(0,0,-20)
 
     #glFrontFace(GL_CW)
     #glCullFace(GL_FRONT)
@@ -42,41 +41,13 @@ def main():
 
     clock=pygame.time.Clock()
     lastFps = 0
+    selected = camera
     run = True
 
     while run:
         clock.tick(144)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-                quit()
-        if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-            run = False
-            pygame.quit()
-            quit()
-        if pygame.key.get_pressed()[pygame.K_UP]:
-            glTranslatef(0,0,0.05)
-        if pygame.key.get_pressed()[pygame.K_DOWN]:
-            glTranslatef(0,0,-0.05)
-        if pygame.key.get_pressed()[pygame.K_LEFT]:
-            glTranslatef(0.05,0,0)
-        if pygame.key.get_pressed()[pygame.K_RIGHT]:
-            glTranslatef(-0.05,0,0)
-        if pygame.key.get_pressed()[pygame.K_i]:
-            glTranslatef(0,0.05,0)
-        if pygame.key.get_pressed()[pygame.K_u]:
-            glTranslatef(0,-0.05,0)
-        if pygame.key.get_pressed()[pygame.K_z]:
-            glRotatef(1,-1,0,0)
-        if pygame.key.get_pressed()[pygame.K_s]:
-            glRotatef(1,1,0,0)
-        if pygame.key.get_pressed()[pygame.K_q]:
-            glRotatef(1,0,-1,0)
-        if pygame.key.get_pressed()[pygame.K_d]:
-            glRotatef(1,0,1,0)
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
         #______________Objects to be drew___________
         for object in all_objects:
             object.draw()
@@ -84,12 +55,98 @@ def main():
         pygame.display.flip()
         #print(clock.get_fps())
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    selected = camera
+                if event.key == pygame.K_2:
+                    selected = my_object
+                if event.key == pygame.K_3:
+                    selected = my_object2
+        if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            run = False
+            pygame.quit()
+            quit()
+        if pygame.key.get_pressed()[pygame.K_UP]:
+            if selected == camera:
+                camera.add_coordinates([0,0,0.05])
+                glTranslatef(0,0,0.05)
+            else:
+                selected.add_coordinates([0,0,-0.05])
+        if pygame.key.get_pressed()[pygame.K_DOWN]:
+            if selected == camera:
+                camera.add_coordinates([0,0,-0.05])
+                glTranslatef(0,0,-0.05)
+            else:
+                selected.add_coordinates([0,0,0.05])
+        if pygame.key.get_pressed()[pygame.K_LEFT]:
+            if selected == camera:
+                camera.add_coordinates([0.05,0,0])
+                glTranslatef(0.05,0,0)
+            else:
+                selected.add_coordinates([-0.05,0,0])
+        if pygame.key.get_pressed()[pygame.K_RIGHT]:
+            if selected == camera:
+                camera.add_coordinates([-0.05,0,0])
+                glTranslatef(-0.05,0,0)
+            else:
+                selected.add_coordinates([0.05,0,0])
+        if pygame.key.get_pressed()[pygame.K_i]:
+            if selected == camera:
+                camera.add_coordinates([0,0.05,0])
+                glTranslatef(0,0.05,0)
+            else:
+                selected.add_coordinates([0,-0.05,0])
+        if pygame.key.get_pressed()[pygame.K_u]:
+            if selected == camera:
+                camera.add_coordinates([0,-0.05,0])
+                glTranslatef(0,-0.05,0)
+            else:
+                selected.add_coordinates([0,0.05,0])
+        if pygame.key.get_pressed()[pygame.K_z]:
+            if selected == camera:
+                glRotatef(-1,1,0,0)
+            else:
+                selected.add_rotation([1,0,0])
+        if pygame.key.get_pressed()[pygame.K_s]:
+            if selected == camera:
+                glRotatef(1,1,0,0)
+            else:
+                selected.add_rotation([-1,0,0])
+        if pygame.key.get_pressed()[pygame.K_q]:
+            if selected == camera:
+                glRotatef(-1,0,1,0)
+            else:
+                selected.add_rotation([0,1,0])
+        if pygame.key.get_pressed()[pygame.K_d]:
+            if selected == camera:
+                glRotatef(1,0,1,0)
+            else:
+                selected.add_rotation([0,-1,0])
+        if pygame.key.get_pressed()[pygame.K_a]:
+            if selected == camera:
+                glRotatef(1,0,0,1)
+            else:
+                selected.add_rotation([0,0,-1])
+        if pygame.key.get_pressed()[pygame.K_e]:
+            if selected == camera:
+                glRotatef(-1,0,0,1)
+            else:
+                selected.add_rotation([0,0,1])
+
+
 #_______________________________________________________________________________________________________________________
 
 all_objects=[]
 
+camera = CAMERA()
 
-my_object_file = OBJ_FILE('models/test.obj')
+
+my_object_file = OBJ_FILE('models/theiere.obj')
 my_object_file.parse(forceParse=True)# Cache system not faster yet
 
 
