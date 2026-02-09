@@ -4,6 +4,17 @@ from OpenGL.GLU import *
 from math import cos,sin,radians
 from objparser import *
 
+
+
+axe_X=AXES(vertices=[[0,0,0],[1,0,0]],color=[1,0,0])
+axe_Y=AXES(vertices=[[0,0,0],[0,1,0]],color=[0,1,0])
+axe_Z=AXES(vertices=[[0,0,0],[0,0,1]],color=[0,0,1])
+
+rotation_axe_X=ROTATION_AXES(vertices=[(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)],color=[1,0,0])
+rotation_axe_Y=ROTATION_AXES(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[0,1,0])
+rotation_axe_Z=ROTATION_AXES(vertices=[(cos(radians(i)),sin(radians(i)),0.0) for i in range(0,360,1)],color=[0,0,1])
+
+
 #_______________________________________________________Main Loop_______________________________________________________
 
 def main():
@@ -146,30 +157,35 @@ all_objects=[]
 camera = CAMERA()
 
 
-my_object_file = OBJ_FILE('models/theiere.obj')
-my_object_file.parse(forceParse=True)# Cache system not faster yet
+
+#my_object_file = OBJ_FILE('models/cube.obj')
+#my_object_file.parse(forceParse=True)# Cache system not faster yet
+
+#my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+
+#all_objects.append(my_object)
+
+#sol = [[FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[i,0,-j]) for i in range(-1000,1000)] for j in range(-1000,1000)]
+#for i in range(len(sol)):
+#    for j in range(len(sol[i])):
+#        all_objects.append(sol[i][j])
 
 
-my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+#my_object_file2 = OBJ_FILE('models/backpack.obj')
+#my_object_file2.parse(forceParse=True)
 
-all_objects.append(my_object)
+#my_object2=FACES(vertices=my_object_file2.vertices,quads=my_object_file2.quads,triangles=my_object_file2.triangles,normals=my_object_file2.normals,coordinates=[0,0,0])
 
+#all_objects.append(my_object2)
 
-my_object_file2 = OBJ_FILE('models/backpack.obj')
-my_object_file2.parse(forceParse=True)
-
-my_object2=FACES(vertices=my_object_file2.vertices,quads=my_object_file2.quads,triangles=my_object_file2.triangles,normals=my_object_file2.normals,coordinates=[0,0,0])
-
-all_objects.append(my_object2)
-
-
-rotating_angle_X=LINES_LOOP(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[1,0,0])
-rotating_angle_Y=LINES_LOOP(vertices=[(sin(radians(i)),cos(radians(i)),0.0) for i in range(0,360,1)],color=[0,1,0])
-rotating_angle_Z=LINES_LOOP(vertices=[(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)],color=[0,0,1])
-
-#objects_to_be_drew.append(rotating_angle_X)
-#objects_to_be_drew.append(rotating_angle_Y)
-#objects_to_be_drew.append(rotating_angle_Z)
+debug_axes=True
+if debug_axes:
+    all_objects.append(rotation_axe_X)
+    all_objects.append(rotation_axe_Y)
+    all_objects.append(rotation_axe_Z)
+    all_objects.append(axe_X)
+    all_objects.append(axe_Y)
+    all_objects.append(axe_Z)
 
 
 main()
