@@ -93,6 +93,6 @@ class OBJ_FILE:
         self.cache[f'{self.fileName}_Triangles'] = self.triangles
         self.cache[f'{self.fileName}_Quads'] = self.quads
 
-        self.cacheFile = open('models/models_cache.py', 'w')
+        self.cacheFile = open('engine/models/models_cache.py', 'w')
         self.cacheFile.write(f'cache = {self.cache}')
         self.cacheFile.close()

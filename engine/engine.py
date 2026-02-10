@@ -6,12 +6,45 @@ from random import randint
 #mat_diffuse = [1.0, 0.0, 0.0, 1.0]
 #no_shininess = [0.0]
 
-class VERTICES:
-    def __init__(self,vertices=[],normals=[]):
-        self.vertices=vertices
-        self.normals=normals
-        self.gl_list_id=None
 
+
+class OBJECT_BASE:
+    def __init__(self,vertices=None,normals=None,triangles=None,quads=None,coordinates=None,rotation=None,color=None):
+        self.vertices=vertices if vertices is not None else []
+        self.normals=normals if normals is not None else []
+        self.triangles=triangles if triangles is not None else []
+        self.quads=quads if quads is not None else []
+        self.gl_list_id=None
+        self.coordinates=coordinates if coordinates is not None else [0,0,0]
+        self.rotation=rotation if rotation is not None else [0,0,0]
+        self.color=color if color is not None else [1,1,1]
+
+    def draw(self):
+        if self.gl_list_id is not None:
+            glMatrixMode(GL_MODELVIEW)
+            glPushMatrix()
+            glTranslatef(self.coordinates[0],self.coordinates[1],self.coordinates[2])
+            glRotatef(self.rotation[0],1,0,0)
+            glRotatef(self.rotation[1],0,1,0)
+            glRotatef(self.rotation[2],0,0,1)
+            glCallList(self.gl_list_id)
+            glPopMatrix()
+        else:
+            print('Not compiled')
+
+    def add_coordinates(self,coordinates=None):
+        if coordinates is not None:
+            self.coordinates[0] += coordinates[0]
+            self.coordinates[1] += coordinates[1]
+            self.coordinates[2] += coordinates[2]
+
+    def add_rotation(self,rotation=None):
+        if rotation is not None:
+            self.rotation[0] += rotation[0]
+            self.rotation[1] += rotation[1]
+            self.rotation[2] += rotation[2]
+
+class VERTICES(OBJECT_BASE):
     def compile(self):
         if glIsList(self.gl_list_id) == GL_FALSE:
             self.gl_list_id = glGenLists(1, GL_COMPILE)
@@ -24,32 +57,7 @@ class VERTICES:
         else:
             print('Already compiled')
 
-    def draw(self):
-        if self.gl_list_id is not None:
-            glCallList(self.gl_list_id)
-        else:
-            print('Not compiled')
-
-class FACES:
-    def __init__(self,vertices=[],normals=[],triangles=[],quads=[],coordinates=[0,0,0],rotation=[0,0,0]):
-        self.vertices=vertices
-        self.normals=normals
-        self.triangles=triangles
-        self.quads=quads
-        self.gl_list_id=None
-        self.coordinates=coordinates
-        self.rotation=rotation
-
-    def add_coordinates(self,coordinates=[0,0,0]):
-        self.coordinates[0] += coordinates[0]
-        self.coordinates[1] += coordinates[1]
-        self.coordinates[2] += coordinates[2]
-
-    def add_rotation(self,rotation=[0,0,0]):
-        self.rotation[0] += rotation[0]
-        self.rotation[1] += rotation[1]
-        self.rotation[2] += rotation[2]
-
+class FACES(OBJECT_BASE):
     def compile(self):
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
@@ -86,23 +94,7 @@ class FACES:
         else:
             print('Already compiled')
 
-    def draw(self):
-        if self.gl_list_id is not None:
-            glPushMatrix()
-            glTranslatef(self.coordinates[0],self.coordinates[1],self.coordinates[2])
-            glCallList(self.gl_list_id)
-            glPopMatrix()
-        else:
-            print("Not compiled so let's compile")
-            self.compile()
-
 class LINES_LOOP:
-    def __init__(self,vertices=[],normals=[],color=[1,1,1]):
-        self.vertices=vertices
-        self.normals=normals
-        self.color=color
-        self.gl_list_id=None
-
     def compile(self):
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
@@ -116,46 +108,10 @@ class LINES_LOOP:
         else:
             print('Already compiled')
 
-    def draw(self):
-        if self.gl_list_id is not None:
-            glCallList(self.gl_list_id)
-        else:
-            print("Not compiled so let's compile")
-            self.compile()
+class CAMERA(OBJECT_BASE):
+    pass
 
-class CAMERA:
-    def __init__(self,coordinates=[0,0,0],rotation=[0,0,0]):
-        self.coordinates=coordinates
-        self.rotation=rotation
-
-    def add_coordinates(self,coordinates=[0,0,0]):
-        self.coordinates[0] += coordinates[0]
-        self.coordinates[1] += coordinates[1]
-        self.coordinates[2] += coordinates[2]
-
-    def add_rotation(self,rotation=[0,0,0]):
-        self.rotation[0] += rotation[0]
-        self.rotation[1] += rotation[1]
-        self.rotation[2] += rotation[2]
-
-class AXES:
-    def __init__(self,vertices=[],coordinates=[0,0,0],rotation=[0,0,0],color=[0,0,0]):
-        self.coordinates=coordinates
-        self.rotation=rotation
-        self.vertices=vertices
-        self.gl_list_id=None
-        self.color=color
-
-    def add_coordinates(self,coordinates=[0,0,0]):
-        self.coordinates[0] += coordinates[0]
-        self.coordinates[1] += coordinates[1]
-        self.coordinates[2] += coordinates[2]
-
-    def add_rotation(self,rotation=[0,0,0]):
-        self.rotation[0] += rotation[0]
-        self.rotation[1] += rotation[1]
-        self.rotation[2] += rotation[2]
-
+class AXES(OBJECT_BASE):
     def compile(self):
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
@@ -169,31 +125,7 @@ class AXES:
         else:
             print('Already compiled')
 
-    def draw(self):
-        if self.gl_list_id is not None:
-            glCallList(self.gl_list_id)
-        else:
-            print("Not compiled so let's compile")
-            self.compile()
-
-class ROTATION_AXES:
-    def __init__(self,vertices=[],coordinates=[0,0,0],rotation=[0,0,0],color=[0,0,0]):
-        self.coordinates=coordinates
-        self.rotation=rotation
-        self.vertices=vertices
-        self.gl_list_id=None
-        self.color=color
-
-    def add_coordinates(self,coordinates=[0,0,0]):
-        self.coordinates[0] += coordinates[0]
-        self.coordinates[1] += coordinates[1]
-        self.coordinates[2] += coordinates[2]
-
-    def add_rotation(self,rotation=[0,0,0]):
-        self.rotation[0] += rotation[0]
-        self.rotation[1] += rotation[1]
-        self.rotation[2] += rotation[2]
-
+class ROTATION_AXES(OBJECT_BASE):
     def compile(self):
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
@@ -206,10 +138,3 @@ class ROTATION_AXES:
             glEndList()
         else:
             print('Already compiled')
-
-    def draw(self):
-        if self.gl_list_id is not None:
-            glCallList(self.gl_list_id)
-        else:
-            print("Not compiled so let's compile")
-            self.compile()
