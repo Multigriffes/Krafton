@@ -9,13 +9,13 @@ from dot_obj_parser import *
 
 
 def main():
-    axe_X=AXES(vertices=[[0,0,0],[1,0,0]],color=[1,0,0])
-    axe_Y=AXES(vertices=[[0,0,0],[0,1,0]],color=[0,1,0])
-    axe_Z=AXES(vertices=[[0,0,0],[0,0,1]],color=[0,0,1])
+    axe_x=AXES(vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
+    axe_y=AXES(vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
+    axe_z=AXES(vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
 
-    rotation_axe_X=ROTATION_AXES(vertices=[(0.0,cos(radians(i)),sin(radians(i))) for i in range(0,360,1)],color=[1,0,0])
-    rotation_axe_Y=ROTATION_AXES(vertices=[(cos(radians(i)),0.0,sin(radians(i))) for i in range(0,360,1)],color=[0,1,0])
-    rotation_axe_Z=ROTATION_AXES(vertices=[(cos(radians(i)),sin(radians(i)),0.0) for i in range(0,360,1)],color=[0,0,1])
+    rotation_axe_x=ROTATION_AXES(vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
+    rotation_axe_y=ROTATION_AXES(vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
+    rotation_axe_z=ROTATION_AXES(vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
 
     all_objects=[]
     camera=CAMERA()
@@ -23,8 +23,7 @@ def main():
     my_object_file = OBJ_FILE('engine/models/theiere.obj')
     my_object_file.parse(forceParse=True)# Cache system not faster yet
 
-    my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
-    my_object.to_be_drew=False
+    my_object=FACES(to_be_drew=False,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
 
     all_objects.append(my_object)
 
@@ -43,12 +42,12 @@ def main():
 
     debug_axes=True
     if debug_axes:
-        all_objects.append(rotation_axe_X)
-        all_objects.append(rotation_axe_Y)
-        all_objects.append(rotation_axe_Z)
-        all_objects.append(axe_X)
-        all_objects.append(axe_Y)
-        all_objects.append(axe_Z)
+        all_objects.append(rotation_axe_x)
+        all_objects.append(rotation_axe_y)
+        all_objects.append(rotation_axe_z)
+        all_objects.append(axe_x)
+        all_objects.append(axe_y)
+        all_objects.append(axe_z)
 
 
     pygame.init()
@@ -89,21 +88,17 @@ def main():
     lastFps = 0
     selected = camera
     run = True
-    somethingChanged = True
+    something_changed = True
 
 #_______________________________________________________Main Loop_______________________________________________________
     while run:
         clock.tick(144)
-        if somethingChanged:
+        if something_changed:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             glMatrixMode(GL_MODELVIEW)
             glLoadIdentity()
 
-            glTranslatef(
-                -camera.coordinates[0],
-                -camera.coordinates[1],
-                -camera.coordinates[2]
-                )
+            glTranslatef(-camera.coordinates[0],-camera.coordinates[1],-camera.coordinates[2])
             glRotatef(-camera.rotation[0],1,0,0)
             glRotatef(-camera.rotation[1],0,1,0)
             glRotatef(-camera.rotation[2],0,0,1)
@@ -114,7 +109,7 @@ def main():
                     object.draw()
         #____________________________________________
             pygame.display.flip()
-            somethingChanged=False
+            something_changed=False
         #for i in range(-10,10):
         #    for j in range(-10,10):
         #        my_object.draw(coordinates=[i,0,-j])
@@ -140,46 +135,46 @@ def main():
             pygame.quit()
             quit()
         if pygame.key.get_pressed()[pygame.K_UP]:
-            selected.add_coordinates([0,0,-0.05])
-            somethingChanged = True
+            selected.addCoordinates([0, 0, -0.05])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_DOWN]:
-            selected.add_coordinates([0,0,0.05])
-            somethingChanged = True
+            selected.addCoordinates([0, 0, 0.05])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_LEFT]:
-            selected.add_coordinates([-0.05,0,0])
-            somethingChanged = True
+            selected.addCoordinates([-0.05, 0, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_RIGHT]:
-            selected.add_coordinates([0.05,0,0])
-            somethingChanged = True
+            selected.addCoordinates([0.05, 0, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_i]:
-            selected.add_coordinates([0,-0.05,0])
-            somethingChanged = True
+            selected.addCoordinates([0, -0.05, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_u]:
-            selected.add_coordinates([0,0.05,0])
-            somethingChanged = True
+            selected.addCoordinates([0, 0.05, 0])
+            something_changed = True
 
         if pygame.key.get_pressed()[pygame.K_z]:
-            selected.add_rotation([-1,0,0])
-            somethingChanged = True
+            selected.addRotation([-1, 0, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_s]:
-            selected.add_rotation([1,0,0])
-            somethingChanged = True
+            selected.addRotation([1, 0, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_q]:
-            selected.add_rotation([0,-1,0])
-            somethingChanged = True
+            selected.addRotation([0, -1, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_d]:
-            selected.add_rotation([0,1,0])
-            somethingChanged = True
+            selected.addRotation([0, 1, 0])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_a]:
-            selected.add_rotation([0,0,1])
-            somethingChanged = True
+            selected.addRotation([0, 0, 1])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_e]:
-            selected.add_rotation([0,0,-1])
-            somethingChanged = True
+            selected.addRotation([0, 0, -1])
+            something_changed = True
         if pygame.key.get_pressed()[pygame.K_SPACE]:
             selected.rotation=[0,0,0]
             selected.coordinates=[0,0,0]
-            somethingChanged = True
+            something_changed = True
 
 
 #_______________________________________________________________________________________________________________________

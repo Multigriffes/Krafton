@@ -9,7 +9,7 @@ from random import randint
 
 
 class OBJECT_BASE:
-    def __init__(self,vertices=None,normals=None,triangles=None,quads=None,coordinates=None,rotation=None,color=None):
+    def __init__(self,vertices=None,normals=None,triangles=None,quads=None,coordinates=None,rotation=None,color=None,to_be_drew=False):
         self.vertices=vertices if vertices is not None else []
         self.normals=normals if normals is not None else []
         self.triangles=triangles if triangles is not None else []
@@ -18,7 +18,7 @@ class OBJECT_BASE:
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
         self.color=color if color is not None else [1,1,1]
-        self.to_be_drew=True
+        self.to_be_drew=to_be_drew
 
     def draw(self,coordinates=None,rotation=None):
         if self.gl_list_id is not None:
@@ -33,13 +33,13 @@ class OBJECT_BASE:
         else:
             print('Not compiled')
 
-    def add_coordinates(self,coordinates=None):
+    def addCoordinates(self,coordinates=None):
         if coordinates is not None:
             self.coordinates[0] += coordinates[0]
             self.coordinates[1] += coordinates[1]
             self.coordinates[2] += coordinates[2]
 
-    def add_rotation(self,rotation=None):
+    def addRotation(self,rotation=None):
         if rotation is not None:
             self.rotation[0] += rotation[0]
             self.rotation[1] += rotation[1]
