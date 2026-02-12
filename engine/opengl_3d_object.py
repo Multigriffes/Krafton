@@ -18,15 +18,16 @@ class OBJECT_BASE:
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
         self.color=color if color is not None else [1,1,1]
+        self.to_be_drew=True
 
-    def draw(self):
+    def draw(self,coordinates=None,rotation=None):
         if self.gl_list_id is not None:
             glMatrixMode(GL_MODELVIEW)
             glPushMatrix()
-            glTranslatef(self.coordinates[0],self.coordinates[1],self.coordinates[2])
-            glRotatef(self.rotation[0],1,0,0)
-            glRotatef(self.rotation[1],0,1,0)
-            glRotatef(self.rotation[2],0,0,1)
+            glTranslatef(self.coordinates[0],self.coordinates[1],self.coordinates[2]) if coordinates is None else glTranslatef(coordinates[0],coordinates[1],coordinates[2])
+            glRotatef(self.rotation[0],1,0,0) if rotation is None else glRotatef(rotation[0],1,0,0)
+            glRotatef(self.rotation[1],0,1,0) if rotation is None else glRotatef(rotation[1],0,1,0)
+            glRotatef(self.rotation[2],0,0,1) if rotation is None else glRotatef(rotation[2],0,0,1)
             glCallList(self.gl_list_id)
             glPopMatrix()
         else:
@@ -94,7 +95,7 @@ class FACES(OBJECT_BASE):
         else:
             print('Already compiled')
 
-class LINES_LOOP:
+class LINES_LOOP(OBJECT_BASE):
     def compile(self):
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)

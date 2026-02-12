@@ -1,8 +1,8 @@
-from engine import *
+from opengl_3d_object import *
 import pygame
 from OpenGL.GLU import *
 from math import cos,sin,radians
-from objparser import *
+from dot_obj_parser import *
 
 
 
@@ -24,6 +24,7 @@ def main():
     my_object_file.parse(forceParse=True)# Cache system not faster yet
 
     my_object=FACES(vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+    my_object.to_be_drew=False
 
     all_objects.append(my_object)
 
@@ -52,7 +53,7 @@ def main():
 
     pygame.init()
     # todo: changer le systeme de fenetre par celui de opengl GLUT
-    display = [1920,1080]
+    display = [1920//2,1080//2]
     pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
     glViewport(0,0,display[0],display[1])
     glMatrixMode(GL_PROJECTION)
@@ -76,7 +77,7 @@ def main():
 
 
     #glFrontFace(GL_CW)
-    #glCullFace(GL_FRONT)
+    #glCullFace(GL_BACK)
     #glEnable(GL_CULL_FACE)
     glEnable(GL_DEPTH_TEST)
     glClearColor(0,100/255,0,1)
@@ -88,32 +89,39 @@ def main():
     lastFps = 0
     selected = camera
     run = True
+    somethingChanged = True
 
 #_______________________________________________________Main Loop_______________________________________________________
     while run:
         clock.tick(144)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
+        if somethingChanged:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            glMatrixMode(GL_MODELVIEW)
+            glLoadIdentity()
 
-        glTranslatef(
-            -camera.coordinates[0],
-            -camera.coordinates[1],
-            -camera.coordinates[2]
-            )
-        glRotatef(-camera.rotation[0],1,0,0)
-        glRotatef(-camera.rotation[1],0,1,0)
-        glRotatef(-camera.rotation[2],0,0,1)
+            glTranslatef(
+                -camera.coordinates[0],
+                -camera.coordinates[1],
+                -camera.coordinates[2]
+                )
+            glRotatef(-camera.rotation[0],1,0,0)
+            glRotatef(-camera.rotation[1],0,1,0)
+            glRotatef(-camera.rotation[2],0,0,1)
 
         #______________Objects to be drew___________
-        for object in all_objects:
-            object.draw()
+            for object in all_objects:
+                if object.to_be_drew:
+                    object.draw()
         #____________________________________________
+            pygame.display.flip()
+            somethingChanged=False
+        #for i in range(-10,10):
+        #    for j in range(-10,10):
+        #        my_object.draw(coordinates=[i,0,-j])
 
 
 
-        pygame.display.flip()
-        #print(clock.get_fps())
+        print(clock.get_fps())
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -123,38 +131,55 @@ def main():
                     selected = all_objects[0]
                 if event.key == pygame.K_3:
                     selected = all_objects[1]
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+                quit()
         if pygame.key.get_pressed()[pygame.K_ESCAPE]:
             run = False
             pygame.quit()
             quit()
         if pygame.key.get_pressed()[pygame.K_UP]:
-                selected.add_coordinates([0,0,-0.05])
+            selected.add_coordinates([0,0,-0.05])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_DOWN]:
-                selected.add_coordinates([0,0,0.05])
+            selected.add_coordinates([0,0,0.05])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_LEFT]:
-                selected.add_coordinates([-0.05,0,0])
+            selected.add_coordinates([-0.05,0,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_RIGHT]:
-                selected.add_coordinates([0.05,0,0])
+            selected.add_coordinates([0.05,0,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_i]:
-                selected.add_coordinates([0,-0.05,0])
+            selected.add_coordinates([0,-0.05,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_u]:
-                selected.add_coordinates([0,0.05,0])
+            selected.add_coordinates([0,0.05,0])
+            somethingChanged = True
 
         if pygame.key.get_pressed()[pygame.K_z]:
-                selected.add_rotation([-1,0,0])
+            selected.add_rotation([-1,0,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_s]:
-                selected.add_rotation([1,0,0])
+            selected.add_rotation([1,0,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_q]:
-                selected.add_rotation([0,-1,0])
+            selected.add_rotation([0,-1,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_d]:
-                selected.add_rotation([0,1,0])
+            selected.add_rotation([0,1,0])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_a]:
-                selected.add_rotation([0,0,1])
+            selected.add_rotation([0,0,1])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_e]:
-                selected.add_rotation([0,0,-1])
+            selected.add_rotation([0,0,-1])
+            somethingChanged = True
         if pygame.key.get_pressed()[pygame.K_SPACE]:
             selected.rotation=[0,0,0]
             selected.coordinates=[0,0,0]
+            somethingChanged = True
 
 
 #_______________________________________________________________________________________________________________________
