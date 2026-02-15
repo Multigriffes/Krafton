@@ -1,7 +1,8 @@
 from opengl_3d_object import *
 import pygame
 from OpenGL.GLU import *
-from math import cos,sin,radians
+from math import cos,sin
+from mathlib import *
 from dot_obj_parser import *
 
 
@@ -9,13 +10,13 @@ from dot_obj_parser import *
 
 
 def main():
-    axe_x=AXES(vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
-    axe_y=AXES(vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
-    axe_z=AXES(vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
+    axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
+    axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
+    axe_z=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
 
-    rotation_axe_x=ROTATION_AXES(vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
-    rotation_axe_y=ROTATION_AXES(vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
-    rotation_axe_z=ROTATION_AXES(vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
+    rotation_axe_x=ROTATION_AXES(to_be_drew=True,vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
+    rotation_axe_y=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
+    rotation_axe_z=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
 
     all_objects=[]
     camera=CAMERA()
@@ -98,10 +99,17 @@ def main():
             glMatrixMode(GL_MODELVIEW)
             glLoadIdentity()
 
-            glTranslatef(-camera.coordinates[0],-camera.coordinates[1],-camera.coordinates[2])
-            glRotatef(-camera.rotation[0],1,0,0)
-            glRotatef(-camera.rotation[1],0,1,0)
-            glRotatef(-camera.rotation[2],0,0,1)
+            #glTranslatef(-camera.coordinates[0],-camera.coordinates[1],-camera.coordinates[2])
+            #glRotatef(-camera.rotation[0],1,0,0)
+            #glRotatef(-camera.rotation[1],0,1,0)
+            #glRotatef(-camera.rotation[2],0,0,1)
+
+            gluLookAt(
+                camera.coordinates[0],camera.coordinates[1],camera.coordinates[2],
+                0,0,0,
+                0,1,0
+            )
+
 
         #______________Objects to be drew___________
             for object in all_objects:
