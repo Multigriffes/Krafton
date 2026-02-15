@@ -29,8 +29,8 @@ filterByArea = True
 minArea = 1
 
 # Groupes de leds
-max_distance_pixel = 50
-min_samples = 3
+distance_max = 50
+distance_max_carre = distance_max**2
 
 # Analyse image
 kernel = np.ones((3,3), np.uint8)

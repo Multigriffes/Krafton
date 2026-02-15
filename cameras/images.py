@@ -1,38 +1,8 @@
 import cv2
 import numpy as np
 import time
-from sklearn import metrics
-from sklearn.cluster import DBSCAN
 from parameters import *
-
-def groupe_leds(points_list: list):
-    clustering = DBSCAN(eps=max_distance_pixel, min_samples=min_samples).fit(points_list)
-    print('a', clustering)
-
-    groups = {}
-    for i, label in enumerate(clustering.labels_):
-        if label == -1:
-            continue
-
-        groups.setdefault(label, []).append(points_list[i])
-
-    return list(groups.values())
-
-liste_points = [[120, 60], [83, 6], [59, 132], [47, 65], [129, 157], [6, 25], [587, 256], [489, 261]]
-print(groupe_leds(liste_points))
-
-
-def blob_detection_params():
-    params = cv2.SimpleBlobDetector_Params()
-    params.minThreshold = minThreshold
-    params.maxThreshold = maxThreshold
-    params.filterByColor = filterByColor
-    params.blobColor = blobColor
-    params.filterByArea = filterByArea
-    params.minArea = minArea
-
-    detector = cv2.SimpleBlobDetector_create(params)
-    return detector
+from fonctions_images import *
 
 # Faire fonction traitement image pour capture 1 et 2.
 capture = cv2.VideoCapture(0)
