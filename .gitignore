@@ -1,5 +1,5 @@
 /engine/models/
 /.venv
 /.idea
-test.py
+/engine/test.*
 __pycache__/
