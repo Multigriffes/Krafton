@@ -1,55 +1,7 @@
 from math import pi, sqrt
 
-def radians(degrees):
-    return degrees*pi/180
-
-def degrees(radians):
-    return radians*180/pi
-
-#class VEC3: # ça dégage enft on va juste utiliser des lists
-#    def __init__(self, x=0.0, y=0.0, z=0.0):
-#        self.x = x
-#        self.y = y
-#        self.z = z
-#        self.list=[x,y,z]
-    #def multiply(self, other):
-    #    assert type(other) == VEC3
-    #    return VEC3(x=)
-    # Enft Hamilton à pas trouver donc c pas possible on doit forcement passer aux quaternions
-    # Mais je viens de voire enft les vecteur 3d c'est juste des quaternions avec un parti real nul pour le w ou la partie scalaire donc .....
-
-def dotProduct(a, b):
-    assert len(a) == len(b)
-    dot_product = 0.0
-    for i in range(len(a)):
-        dot_product += a[i] * b[i]
-    return dot_product
-
-def crossProduct(a, b): # Le cross product de deux vecteur donne un vecteur perpendiculaire aux deux autres, c'est l'équivalent d'une multiplication
-    assert isinstance(a, QUATERNION) # faut faire comme ça selon les conventions PEP et pas type(a)==object
-    assert isinstance(b, QUATERNION)
-    return QUATERNION(w=0,
-        x = (a.y*b.z - a.z*b.y),
-        y = (a.z*b.x - a.x*b.z),
-        z = (a.x*b.y - a.y*b.x)
-    )
-
-def normalize(vector):
-    assert isinstance(vector, QUATERNION)
-    length = sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
-    return QUATERNION(w=0,
-        x = vector.x / length,
-        y = vector.y / length,
-        z = vector.z / length
-    )
-
-def crossProductNormalized(a, b): # https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process#/media/File:Gram-Schmidt_orthonormalization_process.gif
-    assert isinstance(a, QUATERNION)
-    assert isinstance(b, QUATERNION)
-    return normalize(crossProduct(a, b))
-
 class QUATERNION:
-    def __init__(self, w=0.0, x=0.0, y=0.0, z=0.0):
+    def __init__(self, w: float = 0.0, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> None:
         self.w = w # partie réel égale cos(angle/2)+sin(angle/2) pour les rotation et 0 pour un vecteur 3d
         self.x = x # co du vecteur 3d autour duquel je tourne
         self.y = y # co du vecteur 3d autour duquel je tourne
@@ -67,7 +19,7 @@ class QUATERNION:
             y=(self.w*other.y + self.y*other.w + self.z*other.x - self.x*other.z),
             z=(self.w*other.z + self.z*other.w + self.x*other.y - self.y*other.x)
         )
-    def __getitem__(self, index): #pour les object[i]
+    def __getitem__(self, index: int) -> float: #pour les object[i]
         return self.list[index]
 
     def inverse(self):
@@ -81,3 +33,53 @@ class QUATERNION:
 # Yvan Monka like ptn j'adore ce type c'est un dieu :
 # https://www.youtube.com/watch?v=zjMuIxRvygQ
 # https://www.youtube.com/watch?v=d4EgbgTm0Bg
+
+
+def radians(degrees: float) -> float:
+    return degrees*pi/180
+
+def degrees(radians: float) -> float:
+    return radians*180/pi
+
+#class VEC3: # ça dégage enft on va juste utiliser des lists
+#    def __init__(self, x=0.0, y=0.0, z=0.0):
+#        self.x = x
+#        self.y = y
+#        self.z = z
+#        self.list=[x,y,z]
+    #def multiply(self, other):
+    #    assert type(other) == VEC3
+    #    return VEC3(x=)
+    # Enft Hamilton à pas trouver donc c pas possible on doit forcement passer aux quaternions
+    # Mais je viens de voire enft les vecteur 3d c'est juste des quaternions avec un parti real nul pour le w ou la partie scalaire donc .....
+
+def dotProduct(a: list, b: list) -> float:
+    assert len(a) == len(b)
+    dot_product = 0.0
+    for i in range(len(a)):
+        dot_product += a[i] * b[i]
+    return dot_product
+
+def crossProduct(a: QUATERNION, b: QUATERNION) -> QUATERNION: # Le cross product de deux vecteur donne un vecteur perpendiculaire aux deux autres, c'est l'équivalent d'une multiplication
+    assert isinstance(a, QUATERNION) # faut faire comme ça selon les conventions PEP et pas type(a)==object
+    assert isinstance(b, QUATERNION)
+    return QUATERNION(w=0,
+        x = (a.y*b.z - a.z*b.y),
+        y = (a.z*b.x - a.x*b.z),
+        z = (a.x*b.y - a.y*b.x)
+    )
+
+def normalize(vector: QUATERNION) -> QUATERNION:
+    assert isinstance(vector, QUATERNION)
+    length = sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
+    return QUATERNION(w=0,
+        x = vector.x / length,
+        y = vector.y / length,
+        z = vector.z / length
+    )
+
+def crossProductNormalized(a: QUATERNION, b: QUATERNION) -> QUATERNION: # https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process#/media/File:Gram-Schmidt_orthonormalization_process.gif
+    assert isinstance(a, QUATERNION)
+    assert isinstance(b, QUATERNION)
+    return normalize(crossProduct(a, b))
+

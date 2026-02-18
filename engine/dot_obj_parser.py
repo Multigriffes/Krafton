@@ -1,7 +1,7 @@
 class OBJ_FILE:
-    def __init__(self, filePath):
+    def __init__(self, file_path: str) -> None:
         self.cache= {}
-        self.filePath = filePath
+        self.filePath = file_path
         self.file = None
         self.fileName = self.filePath.split('/')[-1].rstrip('.obj')
         self.cacheFile = None
@@ -17,8 +17,8 @@ class OBJ_FILE:
         self.trianglesVertices = []
         self.triangles = [self.trianglesVertices,self.trianglesTextures,self.trianglesNormals]
 
-    def parse(self,forceParse=False):
-        if forceParse:
+    def parse(self, force_parse: bool = False) -> None:
+        if force_parse:
             self.parseFile()
         else:
             from engine.models.models_cache import cache
@@ -28,14 +28,14 @@ class OBJ_FILE:
             else:
                 self.parseCache()
 
-    def parseCache(self):
+    def parseCache(self) -> None:
         self.vertices = self.cache[f'{self.fileName}_Vertices']
         self.normals = self.cache[f'{self.fileName}_Normals']
         self.textures = self.cache[f'{self.fileName}_Textures']
         self.triangles = self.cache[f'{self.fileName}_Triangles']
         self.quads = self.cache[f'{self.fileName}_Quads']
 
-    def parseFile(self):
+    def parseFile(self) -> None:
         self.file = open(self.filePath, "r")
         for line in self.file.readlines():
             line = line.split()
@@ -82,7 +82,7 @@ class OBJ_FILE:
         self.file.close()
         #self.writeToCache()
 
-    def writeToCache(self):
+    def writeToCache(self) -> None:
         print('WriteToCache')
         self.cache[f'{self.fileName}_Vertices'] = self.vertices
         self.cache[f'{self.fileName}_Normals'] = self.normals

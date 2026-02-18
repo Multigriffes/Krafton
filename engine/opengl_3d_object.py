@@ -12,7 +12,7 @@ from math import cos, sin
 
 
 class OBJECT_BASE:
-    def __init__(self,vertices=None,normals=None,triangles=None,quads=None,coordinates=None,rotation=None,color=None,to_be_drew=False):
+    def __init__(self,vertices: list = None,normals: list = None,triangles: list = None,quads: list = None,coordinates: list = None,rotation: list = None,color: list = None,to_be_drew: bool = False) -> None:
         self.vertices=vertices if vertices is not None else []
         self.normals=normals if normals is not None else []
         self.triangles=triangles if triangles is not None else []
@@ -23,7 +23,7 @@ class OBJECT_BASE:
         self.color=color if color is not None else [1,1,1]
         self.to_be_drew=to_be_drew
 
-    def draw(self,coordinates=None,rotation=None):
+    def draw(self,coordinates: list = None,rotation: list = None) -> None:
         if self.gl_list_id is not None:
             glMatrixMode(GL_MODELVIEW)
             glPushMatrix()
@@ -36,20 +36,20 @@ class OBJECT_BASE:
         else:
             print('Not compiled')
 
-    def addCoordinates(self,coordinates=None):
+    def addCoordinates(self,coordinates: list = None) -> None:
         if coordinates is not None:
             self.coordinates[0] += coordinates[0]
             self.coordinates[1] += coordinates[1]
             self.coordinates[2] += coordinates[2]
 
-    def addRotation(self,rotation=None):
+    def addRotation(self,rotation: list = None) -> None:
         if rotation is not None:
             self.rotation[0] += rotation[0]
             self.rotation[1] += rotation[1]
             self.rotation[2] += rotation[2]
 
 class VERTICES(OBJECT_BASE):
-    def compile(self):
+    def compile(self) -> None:
         if glIsList(self.gl_list_id) == GL_FALSE:
             self.gl_list_id = glGenLists(1, GL_COMPILE)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -62,7 +62,7 @@ class VERTICES(OBJECT_BASE):
             print('Already compiled')
 
 class FACES(OBJECT_BASE):
-    def compile(self):
+    def compile(self) -> None:
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -99,7 +99,7 @@ class FACES(OBJECT_BASE):
             print('Already compiled')
 
 class LINES_LOOP(OBJECT_BASE):
-    def compile(self):
+    def compile(self) -> None:
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -113,7 +113,7 @@ class LINES_LOOP(OBJECT_BASE):
             print('Already compiled')
 
 class CAMERA:
-    def __init__(self, coordinates=None, speed=None):
+    def __init__(self, coordinates: list = None, speed: float = None) -> None:
         self.coordinates = coordinates if coordinates is not None else [0,0,0]
         self.speed = speed if speed is not None else 0.05
         self.front = QUATERNION(w=0, x=0, y=0, z=-1)
@@ -123,16 +123,16 @@ class CAMERA:
         self.pitch = 0.0 # Pas indicatife d'une quelconque rotation
         self.roll = 0.0 # Pas indicatife d'une quelconque rotation
 
-    def updateFront(self): # On utilise le process de Gramm-Schimdt. Pour les autres aussi
+    def updateFront(self) -> None: # On utilise le process de Gramm-Schimdt. Pour les autres aussi
         self.front = crossProductNormalized(self.up, self.right)
 
-    def updateRight(self):
+    def updateRight(self) -> None:
         self.right = crossProductNormalized(self.front, self.up)
 
-    def updateUp(self):
+    def updateUp(self) -> None:
         self.up = crossProductNormalized(self.right, self.front)
 
-    def addYaw(self, angle):
+    def addYaw(self, angle: float) -> None:
         self.yaw += angle
         #invertedUp = not self.up
         halfAngle=radians(angle/2)
@@ -142,7 +142,7 @@ class CAMERA:
         self.front = quaternionForRotation * self.front * invertedQuaternionForRotation
         self.updateRight() # Mise à jour du dernier vecteur
 
-    def addPitch(self, angle):
+    def addPitch(self, angle: float) -> None:
         self.pitch += angle
         halfAngle=radians(angle/2)
         quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.right.x, y = sin(halfAngle)*self.right.y, z = sin(halfAngle)*self.right.z)
@@ -151,7 +151,7 @@ class CAMERA:
         self.up = quaternionForRotation * self.up * invertedQuaternionForRotation
         self.updateFront() # Mise à jour du dernier vecteur
 
-    def addRoll(self, angle):
+    def addRoll(self, angle: float) -> None:
         self.roll += angle
         halfAngle=radians(angle/2)
         quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.front.x, y = sin(halfAngle)*self.front.y, z = sin(halfAngle)*self.front.z)
@@ -160,13 +160,13 @@ class CAMERA:
         self.right = quaternionForRotation * self.right * invertedQuaternionForRotation
         self.updateUp() # Mise à jour du dernier vecteur
 
-    def addCoordinates(self,coordinates=None):
+    def addCoordinates(self,coordinates: list = None) -> None:
         if coordinates is not None:
             self.coordinates[0] += coordinates[0]
             self.coordinates[1] += coordinates[1]
             self.coordinates[2] += coordinates[2]
 
-    def forward3D(self, speed=None):
+    def forward3D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] += self.speed*self.front.x
             self.coordinates[1] += self.speed*self.front.y
@@ -176,7 +176,7 @@ class CAMERA:
             self.coordinates[1] += speed*self.front.y
             self.coordinates[2] += speed*self.front.z
 
-    def forward2D(self, speed=None):
+    def forward2D(self, speed: float = None) -> None:
         # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
         # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
         if speed is None:
@@ -189,7 +189,7 @@ class CAMERA:
             #self.coordinates[1] += speed*self.front.y
             self.coordinates[2] += speed*self.front.z
 
-    def backward3D(self, speed=None):
+    def backward3D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] -= self.speed*self.front.x
             self.coordinates[1] -= self.speed*self.front.y
@@ -199,7 +199,7 @@ class CAMERA:
             self.coordinates[1] -= speed*self.front.y
             self.coordinates[2] -= speed*self.front.z
 
-    def backward2D(self, speed=None):
+    def backward2D(self, speed: float = None) -> None:
         # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
         # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
         if speed is None:
@@ -212,7 +212,7 @@ class CAMERA:
             #self.coordinates[1] -= speed*self.front.y
             self.coordinates[2] -= speed*self.front.z
 
-    def up3D(self, speed=None):
+    def up3D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] += self.speed*self.up.x
             self.coordinates[1] += self.speed*self.up.y
@@ -222,7 +222,7 @@ class CAMERA:
             self.coordinates[1] += speed*self.up.y
             self.coordinates[2] += speed*self.up.z
 
-    def up2D(self, speed=None): # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
+    def up2D(self, speed: float = None) -> None: # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
         if speed is None:
             self.coordinates[0] += self.speed*self.up.x
             #self.coordinates[1] += self.speed*self.up.y
@@ -232,7 +232,7 @@ class CAMERA:
             #self.coordinates[1] += speed*self.up.y
             self.coordinates[2] += speed*self.up.z
 
-    def down3D(self, speed=None):
+    def down3D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] -= self.speed*self.up.x
             self.coordinates[1] -= self.speed*self.up.y
@@ -242,7 +242,7 @@ class CAMERA:
             self.coordinates[1] -= speed*self.up.y
             self.coordinates[2] -= speed*self.up.z
 
-    def down2D(self, speed=None): # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
+    def down2D(self, speed: float = None) -> None: # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
         if speed is None:
             self.coordinates[0] -= self.speed*self.up.x
             #self.coordinates[1] -= self.speed*self.up.y
@@ -252,7 +252,7 @@ class CAMERA:
             #self.coordinates[1] -= speed*self.up.y
             self.coordinates[2] -= speed*self.up.z
 
-    def right3D(self, speed=None):
+    def right3D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] += self.speed*self.right.x
             self.coordinates[1] += self.speed*self.right.y
@@ -262,7 +262,7 @@ class CAMERA:
             self.coordinates[1] += speed*self.right.y
             self.coordinates[2] += speed*self.right.z
 
-    def right2D(self, speed=None):
+    def right2D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] += self.speed*self.right.x
             #self.coordinates[1] += self.speed*self.right.y
@@ -272,7 +272,7 @@ class CAMERA:
             #self.coordinates[1] += speed*self.right.y
             self.coordinates[2] += speed*self.right.z
 
-    def left3D(self, speed=None):
+    def left3D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] -= self.speed*self.right.x
             self.coordinates[1] -= self.speed*self.right.y
@@ -282,7 +282,7 @@ class CAMERA:
             self.coordinates[1] -= speed*self.right.y
             self.coordinates[2] -= speed*self.right.z
 
-    def left2D(self, speed=None):
+    def left2D(self, speed: float = None) -> None:
         if speed is None:
             self.coordinates[0] -= self.speed*self.right.x
             #self.coordinates[1] -= self.speed*self.right.y
@@ -292,7 +292,7 @@ class CAMERA:
             #self.coordinates[1] -= speed*self.right.y
             self.coordinates[2] -= speed*self.right.z
 
-    def reset(self):
+    def reset(self) -> None:
         self.coordinates = [0,0,0]
         self.front = QUATERNION(w=0, x=0, y=0, z=-1)
         self.up = QUATERNION(w=0, x=0, y=1, z=0)
@@ -300,7 +300,7 @@ class CAMERA:
 
 
 class AXES(OBJECT_BASE):
-    def compile(self):
+    def compile(self) -> None:
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -314,7 +314,7 @@ class AXES(OBJECT_BASE):
             print('Already compiled')
 
 class ROTATION_AXES(OBJECT_BASE):
-    def compile(self):
+    def compile(self) -> None:
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
