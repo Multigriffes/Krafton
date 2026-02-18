@@ -119,9 +119,9 @@ class CAMERA:
         self.front = QUATERNION(w=0, x=0, y=0, z=-1)
         self.up = QUATERNION(w=0, x=0, y=1, z=0)
         self.right = QUATERNION(w=0, x=1, y=0, z=0)
-        self.yaw = 0.0
-        self.pitch = 0.0
-        self.roll = 0.0
+        self.yaw = 0.0 # Pas indicatife d'une quelconque rotation
+        self.pitch = 0.0 # Pas indicatife d'une quelconque rotation
+        self.roll = 0.0 # Pas indicatife d'une quelconque rotation
 
     def updateFront(self): # On utilise le process de Gramm-Schimdt. Pour les autres aussi
         self.front = crossProductNormalized(self.up, self.right)

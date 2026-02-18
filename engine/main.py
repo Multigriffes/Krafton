@@ -118,7 +118,7 @@ def main():
 
 
 
-        print(clock.get_fps())
+        #print(clock.get_fps())
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -175,37 +175,37 @@ def main():
 
         if pygame.key.get_pressed()[pygame.K_z]:
             if isinstance(selected, CAMERA):
-                selected.addPitch(-1)
+                selected.addPitch(1)
             else:
                 selected.addRotation([-1, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_s]:
             if isinstance(selected, CAMERA):
-                selected.addPitch(1)
+                selected.addPitch(-1)
             else:
                 selected.addRotation([1, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_q]:
             if isinstance(selected, CAMERA):
-                selected.addRoll(-1)
+                selected.addYaw(1)
             else:
                 selected.addRotation([0, -1, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_d]:
             if isinstance(selected, CAMERA):
-                selected.addRoll(1)
+                selected.addYaw(-1)
             else:
                 selected.addRotation([0, 1, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_a]:
             if isinstance(selected, CAMERA):
-                selected.addYaw(1)
+                selected.addRoll(-1)
             else:
                 selected.addRotation([0, 0, 1])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_e]:
             if isinstance(selected, CAMERA):
-                selected.addYaw(-1)
+                selected.addRoll(1)
             else:
                 selected.addRotation([0, 0, -1])
             something_changed = True
