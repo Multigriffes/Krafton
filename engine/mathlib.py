@@ -23,11 +23,13 @@ class QUATERNION:
         return self.list[index]
 
     def inverse(self):
-        length = self.w ** 2 + self.x ** 2 + self.y ** 2 + self.z ** 2
-        return QUATERNION(w=self.w / length, x=-self.x / length, y=-self.y / length, z=-self.z / length)
+        return QUATERNION(w=self.w / self.getLengthNoSqrt(), x=-self.x / self.getLengthNoSqrt(), y=-self.y / self.getLengthNoSqrt(), z=-self.z / self.getLengthNoSqrt())
 
     #def __invert__(self): # hihihi je m'amuse ducoup
     #    return QUATERNION(w=self.w, x= -self.x, y= -self.y, z= -self.z)
+
+    def getLengthNoSqrt(self) -> float:
+        return self.w ** 2 + self.x ** 2 + self.y ** 2 + self.z ** 2
 
 
 # Yvan Monka like ptn j'adore ce type c'est un dieu :
@@ -71,7 +73,7 @@ def crossProduct(a: QUATERNION, b: QUATERNION) -> QUATERNION: # Le cross product
 
 def normalize(vector: QUATERNION) -> QUATERNION:
     assert isinstance(vector, QUATERNION)
-    length = sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
+    length = sqrt(vector.getLengthNoSqrt())
     return QUATERNION(w=0,
         x = vector.x / length,
         y = vector.y / length,

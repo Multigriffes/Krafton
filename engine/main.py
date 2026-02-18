@@ -100,8 +100,9 @@ def main():
             pygame.display.flip()
             something_changed=False
 
+            #print(camera.front.list, camera.up.list, camera.right.list)
+            #print(camera.front.getLength(), camera.right.getLength(), camera.up.getLength())
         #print(clock.get_fps())
-        print(camera.front.w, camera.right.w, camera.up.w)
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
