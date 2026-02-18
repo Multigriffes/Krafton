@@ -38,8 +38,8 @@ def main():
 
     pygame.init()
     # todo: changer le système de fenêtre par celui de opengl GLUT
-    #display = [1920//2,1080//2]
-    display = [1920,1080]
+    display = [1920//2,1080//2]
+    #display = [1920,1080]
     pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
     glViewport(0,0,display[0],display[1])
     glMatrixMode(GL_PROJECTION)
