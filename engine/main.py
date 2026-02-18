@@ -6,8 +6,6 @@ from engine.dot_obj_parser import *
 
 
 
-
-
 def main():
     axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
     axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
@@ -20,10 +18,11 @@ def main():
     all_objects=[]
     camera=CAMERA()
 
-    my_object_file = OBJ_FILE('engine/models/theiere.obj')
+    my_object_file = OBJ_FILE('engine/models/backpack.obj')
     my_object_file.parse(forceParse=True)# Cache system not faster yet
 
     my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+    del my_object_file # Release some memory
 
     all_objects.append(my_object)
 
@@ -70,8 +69,8 @@ def main():
 
 
     #______________Objects to be compiled_______
-    for object in all_objects:
-        object.compile()
+    for object_to_be_compiled in all_objects:
+        object_to_be_compiled.compile()
     #___________________________________________
 
 
@@ -106,9 +105,9 @@ def main():
 
 
         #______________Objects to be drew___________
-            for object in all_objects:
-                if object.to_be_drew:
-                    object.draw()
+            for object_to_be_drew in all_objects:
+                if object_to_be_drew.to_be_drew:
+                    object_to_be_drew.draw()
         #____________________________________________
             pygame.display.flip()
             something_changed=False

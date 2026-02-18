@@ -18,11 +18,10 @@ class OBJ_FILE:
         self.triangles = [self.trianglesVertices,self.trianglesTextures,self.trianglesNormals]
 
     def parse(self,forceParse=False):
-        print('Parse')
         if forceParse:
             self.parseFile()
         else:
-            from models.models_cache import cache
+            from engine.models.models_cache import cache
             self.cache=cache
             if not (f'{self.fileName}_Vertices' in self.cache.keys()):
                 self.parseFile()
@@ -30,7 +29,6 @@ class OBJ_FILE:
                 self.parseCache()
 
     def parseCache(self):
-        print('ParseCache')
         self.vertices = self.cache[f'{self.fileName}_Vertices']
         self.normals = self.cache[f'{self.fileName}_Normals']
         self.textures = self.cache[f'{self.fileName}_Textures']
@@ -38,7 +36,6 @@ class OBJ_FILE:
         self.quads = self.cache[f'{self.fileName}_Quads']
 
     def parseFile(self):
-        print('ParseFile')
         self.file = open(self.filePath, "r")
         for line in self.file.readlines():
             line = line.split()
