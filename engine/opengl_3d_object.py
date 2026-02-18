@@ -112,6 +112,20 @@ class LINES_LOOP(OBJECT_BASE):
         else:
             print('Already compiled')
 
+class LINES(OBJECT_BASE):
+    def compile(self) -> None:
+        if self.gl_list_id is None:
+            self.gl_list_id = glGenLists(1)
+            glNewList(self.gl_list_id, GL_COMPILE)
+            glBegin(GL_LINES)
+            glColor3fv(self.color)
+            for vertex in self.vertices:
+                glVertex3fv(vertex)
+            glEnd()
+            glEndList()
+        else:
+            print('Already compiled')
+
 class CAMERA:
     def __init__(self, coordinates: list = None, speed: float = None) -> None:
         self.coordinates = coordinates if coordinates is not None else [0,0,0]
@@ -299,30 +313,8 @@ class CAMERA:
         self.right = QUATERNION(w=0, x=1, y=0, z=0)
 
 
-class AXES(OBJECT_BASE):
-    def compile(self) -> None:
-        if self.gl_list_id is None:
-            self.gl_list_id = glGenLists(1)
-            glNewList(self.gl_list_id, GL_COMPILE)
-            glBegin(GL_LINES)
-            glColor3fv(self.color)
-            for vertex in self.vertices:
-                glVertex3fv(vertex)
-            glEnd()
-            glEndList()
-        else:
-            print('Already compiled')
+class AXES(LINES):
+    pass
 
-class ROTATION_AXES(OBJECT_BASE):
-    def compile(self) -> None:
-        if self.gl_list_id is None:
-            self.gl_list_id = glGenLists(1)
-            glNewList(self.gl_list_id, GL_COMPILE)
-            glBegin(GL_LINE_LOOP)
-            glColor3fv(self.color)
-            for vertex in self.vertices:
-                glVertex3fv(vertex)
-            glEnd()
-            glEndList()
-        else:
-            print('Already compiled')
+class ROTATION_AXES(LINES_LOOP):
+    pass

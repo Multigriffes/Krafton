@@ -19,7 +19,7 @@ def main():
 
     all_objects.append(my_object)
 
-    debug_axes=False
+    debug_axes=True
     if debug_axes:
         axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
         axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
