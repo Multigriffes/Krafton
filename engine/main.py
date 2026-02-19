@@ -11,13 +11,16 @@ def main():
     all_objects=[]
     camera=CAMERA()
 
-    my_object_file = OBJ_FILE('engine/models/Theiere.obj')
-    my_object_file.parse(force_parse=True)# Cache system not faster yet
-
-    my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
-    del my_object_file # Release some memory
-
-    all_objects.append(my_object)
+    my_object_file = OBJ_FILE('engine/models/caca.obj')
+    try:
+        my_object_file.parse(force_parse=True)# Cache system not faster yet
+    except FileNotFoundError:
+        pass
+    else:
+        my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+        all_objects.append(my_object)
+    finally:
+        del my_object_file # Release some memory
 
     debug_axes=True
     if debug_axes:
