@@ -1,3 +1,5 @@
+"""Configuration centralisée du moteur : fenêtre, scène, projection, caméra et objets."""
+
 # Fenêtre
 DISPLAY = (960, 540)
 FPS_TARGET = 144

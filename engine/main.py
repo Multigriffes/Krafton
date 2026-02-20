@@ -1,3 +1,5 @@
+"""Point d'entrée du moteur 3D Krafton : initialisation OpenGL/pygame et boucle principale."""
+
 import pygame
 from pathlib import Path
 from OpenGL.GLU import *
@@ -10,6 +12,7 @@ MODELS_DIR = Path(__file__).parent / "models"
 
 
 def main():
+    """Initialise la scène, la fenêtre OpenGL et lance la boucle d'événements."""
 
     all_objects = []
     camera = CAMERA(speed=config.CAMERA_SPEED)

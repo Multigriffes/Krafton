@@ -1,3 +1,10 @@
+"""Calibration intrinsèque d'une caméra par détection de chessboard.
+
+Capture des photos avec la touche configurée dans parameters.py,
+détecte les coins du damier et calcule la matrice K via compute_intrinsics().
+Le résultat est sauvegardé avec write().
+"""
+
 import cv2
 import numpy as np
 from parameters import *

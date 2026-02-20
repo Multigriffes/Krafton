@@ -1,4 +1,13 @@
+"""Parser de fichiers Wavefront OBJ avec système de cache optionnel."""
+
+
 class OBJ_FILE:
+    """Charge et parse un fichier .obj en listes de sommets, normales, textures et faces.
+
+    Les faces sont séparées en triangles (3 sommets) et quads (4 sommets).
+    Chaque liste de faces est de la forme [vertices, textures, normales].
+    """
+
     def __init__(self, file_path: str) -> None:
         self.cache = {}
         self.filePath = file_path
@@ -22,6 +31,7 @@ class OBJ_FILE:
         ]
 
     def parse(self, force_parse: bool = False) -> None:
+        """Parse le fichier OBJ. Utilise le cache si disponible, sauf si force_parse=True."""
         if force_parse:
             self.parseFile()
         else:
@@ -34,6 +44,7 @@ class OBJ_FILE:
                 self.parseCache()
 
     def parseCache(self) -> None:
+        """Charge les données depuis le cache en mémoire (models_cache.py)."""
         self.vertices = self.cache[f"{self.fileName}_Vertices"]
         self.normals = self.cache[f"{self.fileName}_Normals"]
         self.textures = self.cache[f"{self.fileName}_Textures"]
@@ -55,6 +66,7 @@ class OBJ_FILE:
         return v, vt, vn
 
     def parseFile(self) -> None:
+        """Lit et parse le fichier .obj ligne par ligne (v, vn, vt, f)."""
         self.file = open(self.filePath, "r")
         for line in self.file.readlines():
             line = line.split()
@@ -102,6 +114,7 @@ class OBJ_FILE:
         # self.writeToCache()
 
     def writeToCache(self) -> None:
+        """Sauvegarde les données parsées dans models_cache.py (actuellement désactivé)."""
         print("WriteToCache")
         self.cache[f"{self.fileName}_Vertices"] = self.vertices
         self.cache[f"{self.fileName}_Normals"] = self.normals

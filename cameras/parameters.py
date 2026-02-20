@@ -1,3 +1,5 @@
+"""Paramètres partagés entre les scripts de la caméra (images.py, configuration_camera.py)."""
+
 import numpy as np
 
 """

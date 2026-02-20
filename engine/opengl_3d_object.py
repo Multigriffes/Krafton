@@ -1,3 +1,5 @@
+"""Objets OpenGL 3D : géométrie compilée en display lists et caméra à quaternions."""
+
 from OpenGL.GL import *
 from random import randint
 
@@ -11,6 +13,12 @@ from math import cos, sin
 
 
 class OBJECT_BASE:
+    """Classe de base pour tous les objets 3D renderables.
+
+    Gère la position, la rotation, la couleur et l'identifiant de display list OpenGL.
+    Les sous-classes implémentent `compile()` pour construire la display list.
+    """
+
     def __init__(
         self,
         vertices: list = None,
@@ -33,6 +41,10 @@ class OBJECT_BASE:
         self.to_be_drew = to_be_drew
 
     def draw(self, coordinates: list = None, rotation: list = None) -> None:
+        """Appelle la display list OpenGL avec translation et rotation.
+
+        Si coordinates/rotation sont None, utilise les valeurs de l'objet.
+        """
         if self.gl_list_id is not None:
             glMatrixMode(GL_MODELVIEW)
             glPushMatrix()
@@ -64,12 +76,14 @@ class OBJECT_BASE:
             print("Not compiled")
 
     def addCoordinates(self, coordinates: list = None) -> None:
+        """Déplace l'objet en ajoutant [dx, dy, dz] à sa position courante."""
         if coordinates is not None:
             self.coordinates[0] += coordinates[0]
             self.coordinates[1] += coordinates[1]
             self.coordinates[2] += coordinates[2]
 
     def addRotation(self, rotation: list = None) -> None:
+        """Applique une rotation incrémentale [rx, ry, rz] en degrés sur les axes X, Y, Z."""
         if rotation is not None:
             self.rotation[0] += rotation[0]
             self.rotation[1] += rotation[1]
@@ -78,6 +92,7 @@ class OBJECT_BASE:
 
 class VERTICES(OBJECT_BASE):
     def compile(self) -> None:
+        """Compile les sommets en une display list GL_POINTS."""
         if glIsList(self.gl_list_id) == GL_FALSE:
             self.gl_list_id = glGenLists(1, GL_COMPILE)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -92,6 +107,7 @@ class VERTICES(OBJECT_BASE):
 
 class FACES(OBJECT_BASE):
     def compile(self) -> None:
+        """Compile quads et triangles en une display list avec couleur aléatoire par face."""
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -142,6 +158,7 @@ class FACES(OBJECT_BASE):
 
 class LINES_LOOP(OBJECT_BASE):
     def compile(self) -> None:
+        """Compile les sommets en une display list GL_LINE_LOOP (contour fermé)."""
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -157,6 +174,7 @@ class LINES_LOOP(OBJECT_BASE):
 
 class LINES(OBJECT_BASE):
     def compile(self) -> None:
+        """Compile les sommets en une display list GL_LINES (segments)."""
         if self.gl_list_id is None:
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
@@ -171,6 +189,11 @@ class LINES(OBJECT_BASE):
 
 
 class CAMERA:
+    """Caméra libre 6 degrés de liberté avec orientation par quaternions.
+
+    Les trois axes (front, up, right) sont maintenus orthonormaux via Gram-Schmidt.
+    """
+
     def __init__(self, coordinates: list = None, speed: float = None) -> None:
         self.coordinates = coordinates if coordinates is not None else [0, 0, 0]
         self.speed = speed if speed is not None else 0.05
@@ -184,15 +207,19 @@ class CAMERA:
     def updateFront(
         self,
     ) -> None:  # On utilise le process de Gramm-Schimdt. Pour les autres aussi
+        """Recalcule le vecteur front comme cross product normalisé de up × right."""
         self.front = crossProductNormalized(self.up, self.right)
 
     def updateRight(self) -> None:
+        """Recalcule le vecteur right comme cross product normalisé de front × up."""
         self.right = crossProductNormalized(self.front, self.up)
 
     def updateUp(self) -> None:
+        """Recalcule le vecteur up comme cross product normalisé de right × front."""
         self.up = crossProductNormalized(self.right, self.front)
 
     def addYaw(self, angle: float) -> None:
+        """Tourne autour de l'axe up (rotation gauche/droite), angle en degrés."""
         self.yaw += angle
         # invertedUp = not self.up
         halfAngle = radians(angle / 2)
@@ -210,6 +237,7 @@ class CAMERA:
         self.updateRight()  # Mise à jour du dernier vecteur
 
     def addPitch(self, angle: float) -> None:
+        """Tourne autour de l'axe right (rotation haut/bas), angle en degrés."""
         self.pitch += angle
         halfAngle = radians(angle / 2)
         quaternionForRotation = QUATERNION(
@@ -226,6 +254,7 @@ class CAMERA:
         self.updateFront()  # Mise à jour du dernier vecteur
 
     def addRoll(self, angle: float) -> None:
+        """Tourne autour de l'axe front (inclinaison latérale), angle en degrés."""
         self.roll += angle
         halfAngle = radians(angle / 2)
         quaternionForRotation = QUATERNION(
@@ -242,6 +271,7 @@ class CAMERA:
         self.updateUp()  # Mise à jour du dernier vecteur
 
     def addCoordinates(self, coordinates: list = None) -> None:
+        """Déplace la caméra en ajoutant [dx, dy, dz] à sa position courante."""
         if coordinates is not None:
             self.coordinates[0] += coordinates[0]
             self.coordinates[1] += coordinates[1]
@@ -254,6 +284,14 @@ class CAMERA:
         include_y: bool = True,
         speed: float = None,
     ) -> None:
+        """Déplace la caméra le long d'un axe donné.
+
+        Args:
+            direction: vecteur de direction (front, up ou right)
+            sign: +1.0 = avant/haut/droite, -1.0 = arrière/bas/gauche
+            include_y: si False, ignore la composante verticale (déplacement 2D)
+            speed: vitesse override ; utilise self.speed si None
+        """
         s = speed if speed is not None else self.speed
         self.coordinates[0] += sign * s * direction.x
         if include_y:
@@ -297,6 +335,7 @@ class CAMERA:
         self._move(self.right, -1.0, False, speed)
 
     def reset(self) -> None:
+        """Réinitialise la position et l'orientation aux valeurs par défaut (origine, face vers -Z)."""
         self.coordinates = [0, 0, 0]
         self.front = QUATERNION(w=0, x=0, y=0, z=-1)
         self.up = QUATERNION(w=0, x=0, y=1, z=0)

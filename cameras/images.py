@@ -1,3 +1,5 @@
+"""Capture vidéo en temps réel : détection de marqueurs LED par blob detection."""
+
 import cv2
 import numpy as np
 import time
@@ -6,6 +8,7 @@ from fonctions_images import *
 
 
 def image_transform(image):
+    """Prépare une frame pour la détection : niveaux de gris → ouverture morphologique → seuillage → miroir."""
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
     _, image = cv2.threshold(image, 250, 255, cv2.THRESH_BINARY)

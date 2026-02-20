@@ -1,7 +1,17 @@
+"""Bibliothèque mathématique : quaternions et opérations vectorielles 3D."""
+
 from math import pi, sqrt
 
 
 class QUATERNION:
+    """Quaternion utilisé comme vecteur 3D (w=0) ou comme rotation (w=cos(θ/2)).
+
+    Attributs:
+        w: partie scalaire (réelle)
+        x, y, z: partie vectorielle
+        list: [w, x, y, z] pour accès par index
+    """
+
     def __init__(
         self, w: float = 0.0, x: float = 0.0, y: float = 0.0, z: float = 0.0
     ) -> None:
@@ -12,6 +22,7 @@ class QUATERNION:
         self.list = [w, x, y, z]
 
     def __mul__(self, other):  # jsp ce que je vais en faire,.... mtn je sais
+        """Multiplication de Hamilton : q1 * q2. Utilisée pour composer des rotations."""
         # il y a des méthodes qui permettent de faire supporter des operand a un object en l'occurance le *
         # python essaye d'abord la méthode de l'object de gauche spuis ensuite la méthode de droite
         # object1 * object2 --> object1.__mul__(object2) y'a aussi __rmul__ mais j'ai pas trop compris encore
@@ -44,9 +55,11 @@ class QUATERNION:
         )
 
     def __getitem__(self, index: int) -> float:  # pour les object[i]
+        """Accès par index : quaternion[0]=w, [1]=x, [2]=y, [3]=z."""
         return self.list[index]
 
     def inverse(self):
+        """Retourne le quaternion conjugué normalisé (inverse pour une rotation unitaire)."""
         return QUATERNION(
             w=self.w / self.getLengthNoSqrt(),
             x=-self.x / self.getLengthNoSqrt(),
@@ -58,6 +71,7 @@ class QUATERNION:
     #    return QUATERNION(w=self.w, x= -self.x, y= -self.y, z= -self.z)
 
     def getLengthNoSqrt(self) -> float:
+        """Retourne la norme au carré (w²+x²+y²+z²) sans racine carrée."""
         return self.w**2 + self.x**2 + self.y**2 + self.z**2
 
 
@@ -67,10 +81,12 @@ class QUATERNION:
 
 
 def radians(degrees: float) -> float:
+    """Convertit des degrés en radians."""
     return degrees * pi / 180
 
 
 def degrees(radians: float) -> float:
+    """Convertit des radians en degrés."""
     return radians * 180 / pi
 
 
@@ -88,6 +104,7 @@ def degrees(radians: float) -> float:
 
 
 def dotProduct(a: list, b: list) -> float:
+    """Produit scalaire de deux vecteurs représentés par des listes."""
     assert len(a) == len(b)
     dot_product = 0.0
     for i in range(len(a)):
@@ -100,6 +117,7 @@ def crossProduct(
 ) -> (
     QUATERNION
 ):  # Le cross product de deux vecteur donne un vecteur perpendiculaire aux deux autres, c'est l'équivalent d'une multiplication
+    """Produit vectoriel a × b. Retourne un quaternion perpendiculaire aux deux vecteurs (w=0)."""
     assert isinstance(
         a, QUATERNION
     )  # faut faire comme ça selon les conventions PEP et pas type(a)==object
@@ -113,6 +131,7 @@ def crossProduct(
 
 
 def normalize(vector: QUATERNION) -> QUATERNION:
+    """Normalise un vecteur quaternion (w=0) pour qu'il soit unitaire."""
     assert isinstance(vector, QUATERNION)
     length = sqrt(vector.getLengthNoSqrt())
     return QUATERNION(
@@ -125,6 +144,7 @@ def crossProductNormalized(
 ) -> (
     QUATERNION
 ):  # https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process#/media/File:Gram-Schmidt_orthonormalization_process.gif
+    """Produit vectoriel normalisé (processus de Gram-Schmidt). Utilisé pour maintenir l'orthonormalité des axes de la caméra."""
     assert isinstance(a, QUATERNION)
     assert isinstance(b, QUATERNION)
     return normalize(crossProduct(a, b))

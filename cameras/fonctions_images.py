@@ -1,8 +1,11 @@
+"""Fonctions de vision par ordinateur : clustering LED, homographies, calibration caméra."""
+
 from parameters import *
 import cv2
 
 
 def groupe_leds(point_list: list):
+    """Regroupe les points détectés en clusters de LEDs proches (distance < distance_max)."""
     point_visite = [
         1 for i in range(len(point_list))
     ]  # 1 pour point non visite, 0 sinon
@@ -23,6 +26,7 @@ def cluster_recur(
     point_visite: list,
     point_list: list,
 ):
+    """Approfondit récursivement un cluster en ajoutant les voisins non visités."""
     point_visite[index_point_depart] = 0
     cluster.append(point_depart)
     for i, point in enumerate(point_list):
@@ -35,6 +39,7 @@ def cluster_recur(
 
 
 def blob_detection_params():
+    """Crée et retourne un détecteur de blobs OpenCV configuré pour les LEDs blanches."""
     params = cv2.SimpleBlobDetector_Params()
     params.minThreshold = minThreshold
     params.maxThreshold = maxThreshold
@@ -71,6 +76,7 @@ def triangulate_parallel(p1, p2, K, B):
 
 
 def rotation_matrix_x(angle):
+    """Retourne la matrice de rotation 3×3 autour de l'axe X pour un angle en radians."""
     c = np.cos(angle)
     s = np.sin(angle)
     return np.array([[1, 0, 0], [0, c, -s], [0, s, c]])
@@ -107,6 +113,7 @@ def rectify_cameras(K1, R1, T1, K2, R2, T2):
 
 
 def compute_homography(obj_pts, img_pts):
+    """Calcule l'homographie 3×3 entre points objet 2D et points image 2D par DLT + SVD."""
     N = obj_pts.shape[0]
     A = []
 
@@ -128,6 +135,7 @@ def compute_homography(obj_pts, img_pts):
 
 
 def build_v_ij(H, i, j):
+    """Construit le vecteur v_ij de la méthode de Zhang pour la calibration (équation de contrainte)."""
     return np.array(
         [
             H[0, i] * H[0, j],

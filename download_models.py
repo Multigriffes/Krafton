@@ -40,6 +40,7 @@ _HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
 def download(filename: str, url: str) -> None:
+    """Télécharge filename depuis url dans MODELS_DIR. Sans effet si le fichier existe déjà."""
     dest = MODELS_DIR / filename
     if dest.exists():
         print(f"  {filename} déjà présent, ignoré.")
