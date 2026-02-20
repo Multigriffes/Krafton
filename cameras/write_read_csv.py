@@ -1,18 +1,28 @@
 import numpy as np
 import ast
 
-K = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+def write(name, data):
+    if isinstance(data, np.ndarray):
+        data = data.tolist()
 
-def write(matrice):
-    with open('cameras/sauvegarde_matrice.csv', 'w') as f:
-        f.write(str(matrice.tolist()))
+    new_line = f"{name}:{data}\n"
 
-def read(line_number):
+    with open('cameras/sauvegarde_matrice.csv', 'a') as f:
+        f.write(new_line)
+
+def read(name):
     with open('cameras/sauvegarde_matrice.csv', 'r') as f:
-        for i, line in enumerate(f):
-            if i == line_number:
-                return np.array(ast.literal_eval(line.strip()))
-    return None  # si la ligne n'existe pas
+        for line in f:
+            if line.startswith(name + ":"):
+                data_str = line.split(":", 1)[1].strip()
+                data = ast.literal_eval(data_str)
 
-write(K)
-print(read(0))
+                # Si matrice → reconvertir en numpy
+                if isinstance(data, list) and all(isinstance(row, list) for row in data):
+                    return np.array(data)
+
+                return data
+    return None
+
+def clear_file():
+    open('cameras/sauvegarde_matrice.csv', 'w').close()
