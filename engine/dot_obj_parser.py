@@ -1,9 +1,9 @@
 class OBJ_FILE:
     def __init__(self, file_path: str) -> None:
-        self.cache= {}
+        self.cache = {}
         self.filePath = file_path
         self.file = None
-        self.fileName = self.filePath.split('/')[-1].rstrip('.obj')
+        self.fileName = self.filePath.split("/")[-1].rstrip(".obj")
         self.cacheFile = None
         self.vertices = []
         self.normals = []
@@ -15,25 +15,30 @@ class OBJ_FILE:
         self.trianglesNormals = []
         self.trianglesTextures = []
         self.trianglesVertices = []
-        self.triangles = [self.trianglesVertices,self.trianglesTextures,self.trianglesNormals]
+        self.triangles = [
+            self.trianglesVertices,
+            self.trianglesTextures,
+            self.trianglesNormals,
+        ]
 
     def parse(self, force_parse: bool = False) -> None:
         if force_parse:
             self.parseFile()
         else:
             from engine.models.models_cache import cache
-            self.cache=cache
-            if not (f'{self.fileName}_Vertices' in self.cache.keys()):
+
+            self.cache = cache
+            if not (f"{self.fileName}_Vertices" in self.cache.keys()):
                 self.parseFile()
             else:
                 self.parseCache()
 
     def parseCache(self) -> None:
-        self.vertices = self.cache[f'{self.fileName}_Vertices']
-        self.normals = self.cache[f'{self.fileName}_Normals']
-        self.textures = self.cache[f'{self.fileName}_Textures']
-        self.triangles = self.cache[f'{self.fileName}_Triangles']
-        self.quads = self.cache[f'{self.fileName}_Quads']
+        self.vertices = self.cache[f"{self.fileName}_Vertices"]
+        self.normals = self.cache[f"{self.fileName}_Normals"]
+        self.textures = self.cache[f"{self.fileName}_Textures"]
+        self.triangles = self.cache[f"{self.fileName}_Triangles"]
+        self.quads = self.cache[f"{self.fileName}_Quads"]
 
     def _parse_face_token(self, token: str) -> tuple:
         """
@@ -43,10 +48,10 @@ class OBJ_FILE:
           v//vn    →  (v, None, vn)
           v/vt/vn  →  (v, vt, vn)
         """
-        parts = token.split('/')
-        v  = int(parts[0]) if len(parts) > 0 and parts[0] != '' else None
-        vt = int(parts[1]) if len(parts) > 1 and parts[1] != '' else None
-        vn = int(parts[2]) if len(parts) > 2 and parts[2] != '' else None
+        parts = token.split("/")
+        v = int(parts[0]) if len(parts) > 0 and parts[0] != "" else None
+        vt = int(parts[1]) if len(parts) > 1 and parts[1] != "" else None
+        vn = int(parts[2]) if len(parts) > 2 and parts[2] != "" else None
         return v, vt, vn
 
     def parseFile(self) -> None:
@@ -55,22 +60,22 @@ class OBJ_FILE:
             line = line.split()
             if not line == []:
                 match line[0]:
-                    case 'v':
-                        vertexCords=[]
+                    case "v":
+                        vertexCords = []
                         for word in line[1:]:
                             vertexCords.append(float(word))
                         self.vertices.append(vertexCords)
-                    case 'vn':
+                    case "vn":
                         normalCords = []
                         for word in line[1:]:
                             normalCords.append(float(word))
                         self.normals.append(normalCords)
-                    case 'vt':
+                    case "vt":
                         textureCords = []
                         for word in line[1:]:
                             textureCords.append(float(word))
                         self.textures.append(textureCords)
-                    case 'f':
+                    case "f":
                         faceVertices = []
                         faceTextures = []
                         faceNormals = []
@@ -94,16 +99,16 @@ class OBJ_FILE:
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)
         self.file.close()
-        #self.writeToCache()
+        # self.writeToCache()
 
     def writeToCache(self) -> None:
-        print('WriteToCache')
-        self.cache[f'{self.fileName}_Vertices'] = self.vertices
-        self.cache[f'{self.fileName}_Normals'] = self.normals
-        self.cache[f'{self.fileName}_Textures'] = self.textures
-        self.cache[f'{self.fileName}_Triangles'] = self.triangles
-        self.cache[f'{self.fileName}_Quads'] = self.quads
+        print("WriteToCache")
+        self.cache[f"{self.fileName}_Vertices"] = self.vertices
+        self.cache[f"{self.fileName}_Normals"] = self.normals
+        self.cache[f"{self.fileName}_Textures"] = self.textures
+        self.cache[f"{self.fileName}_Triangles"] = self.triangles
+        self.cache[f"{self.fileName}_Quads"] = self.quads
 
-        self.cacheFile = open('engine/models/models_cache.py', 'w')
-        self.cacheFile.write(f'cache = {self.cache}')
+        self.cacheFile = open("engine/models/models_cache.py", "w")
+        self.cacheFile.write(f"cache = {self.cache}")
         self.cacheFile.close()

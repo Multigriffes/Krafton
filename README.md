@@ -45,6 +45,14 @@ python download_models.py
 python -m engine.main
 ```
 
+## Développement
+
+Le code est formaté avec [black](https://black.readthedocs.io/). Lancer le formateur avant chaque commit :
+
+```bash
+black cameras/ engine/ download_models.py
+```
+
 ## Contrôles
 
 | Touche | Action |

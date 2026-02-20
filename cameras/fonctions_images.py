@@ -1,8 +1,11 @@
 from parameters import *
 import cv2
 
-def groupe_leds(point_list:list):
-    point_visite = [1 for i in range(len(point_list))] # 1 pour point non visite, 0 sinon
+
+def groupe_leds(point_list: list):
+    point_visite = [
+        1 for i in range(len(point_list))
+    ]  # 1 pour point non visite, 0 sinon
     liste_groupe = []
     for i, point in enumerate(point_list):
         if point_visite[i]:
@@ -13,14 +16,23 @@ def groupe_leds(point_list:list):
     return liste_groupe
 
 
-def cluster_recur(index_point_depart:int, point_depart:tuple, cluster:list, point_visite:list, point_list:list):
+def cluster_recur(
+    index_point_depart: int,
+    point_depart: tuple,
+    cluster: list,
+    point_visite: list,
+    point_list: list,
+):
     point_visite[index_point_depart] = 0
     cluster.append(point_depart)
     for i, point in enumerate(point_list):
         if point_visite[i]:
-            distance_carre = (point_depart[0]-point[0])**2 + (point_depart[1]-point[1])**2
+            distance_carre = (point_depart[0] - point[0]) ** 2 + (
+                point_depart[1] - point[1]
+            ) ** 2
             if distance_carre < distance_max_carre:
                 cluster_recur(i, point, cluster, point_visite, point_list)
+
 
 def blob_detection_params():
     params = cv2.SimpleBlobDetector_Params()
@@ -34,36 +46,35 @@ def blob_detection_params():
     detector = cv2.SimpleBlobDetector_create(params)
     return detector
 
+
 def triangulate_parallel(p1, p2, K, B):
     """
     triangulation dans le cas ou les caméras sont parallèles
     """
-    
+
     u1, v1 = p1
     u2, v2 = p2
-    
+
     f, cx, cy = K
-    
+
     disparity = u1 - u2
-    
+
     if disparity == 0:
         return None  # profondeur infinie
-    
+
     Z = f * B / disparity
-    
+
     X = Z * (u1 - cx) / f
     Y = Z * (v1 - cy) / f
-    
+
     return (X, Y, Z)
+
 
 def rotation_matrix_x(angle):
     c = np.cos(angle)
     s = np.sin(angle)
-    return np.array([
-        [1, 0, 0],
-        [0, c, -s],
-        [0, s, c]
-    ])
+    return np.array([[1, 0, 0], [0, c, -s], [0, s, c]])
+
 
 def rectify_cameras(K1, R1, T1, K2, R2, T2):
     """
@@ -94,6 +105,7 @@ def rectify_cameras(K1, R1, T1, K2, R2, T2):
 
     return H1, H2
 
+
 def compute_homography(obj_pts, img_pts):
     N = obj_pts.shape[0]
     A = []
@@ -102,8 +114,8 @@ def compute_homography(obj_pts, img_pts):
         X, Y = obj_pts[i]
         u, v = img_pts[i]
 
-        A.append([-X, -Y, -1, 0, 0, 0, u*X, u*Y, u])
-        A.append([0, 0, 0, -X, -Y, -1, v*X, v*Y, v])
+        A.append([-X, -Y, -1, 0, 0, 0, u * X, u * Y, u])
+        A.append([0, 0, 0, -X, -Y, -1, v * X, v * Y, v])
 
     A = np.array(A)
 
@@ -111,18 +123,22 @@ def compute_homography(obj_pts, img_pts):
     U, S, Vt = np.linalg.svd(A)
     h = Vt[-1]
 
-    H = h.reshape(3,3)
-    return H / H[2,2]
+    H = h.reshape(3, 3)
+    return H / H[2, 2]
+
 
 def build_v_ij(H, i, j):
-    return np.array([
-        H[0,i]*H[0,j],
-        H[0,i]*H[1,j] + H[1,i]*H[0,j],
-        H[1,i]*H[1,j],
-        H[2,i]*H[0,j] + H[0,i]*H[2,j],
-        H[2,i]*H[1,j] + H[1,i]*H[2,j],
-        H[2,i]*H[2,j]
-    ])
+    return np.array(
+        [
+            H[0, i] * H[0, j],
+            H[0, i] * H[1, j] + H[1, i] * H[0, j],
+            H[1, i] * H[1, j],
+            H[2, i] * H[0, j] + H[0, i] * H[2, j],
+            H[2, i] * H[1, j] + H[1, i] * H[2, j],
+            H[2, i] * H[2, j],
+        ]
+    )
+
 
 def compute_intrinsics(object_points_list, image_points_list):
     """
@@ -158,19 +174,15 @@ def compute_intrinsics(object_points_list, image_points_list):
     B11, B12, B22, B13, B23, B33 = b
 
     # 5. Extraction paramètres
-    v0 = (B12*B13 - B11*B23) / (B11*B22 - B12**2)
+    v0 = (B12 * B13 - B11 * B23) / (B11 * B22 - B12**2)
 
-    lambda_ = B33 - (B13**2 + v0*(B12*B13 - B11*B23)) / B11
+    lambda_ = B33 - (B13**2 + v0 * (B12 * B13 - B11 * B23)) / B11
 
     fx = np.sqrt(lambda_ / B11)
-    fy = np.sqrt(lambda_ * B11 / (B11*B22 - B12**2))
+    fy = np.sqrt(lambda_ * B11 / (B11 * B22 - B12**2))
     cx = -B13 / B11
     cy = v0
 
-    K = np.array([
-        [fx, 0, cx],
-        [0, fy, cy],
-        [0, 0, 1]
-    ])
+    K = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
 
     return K

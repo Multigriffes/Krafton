@@ -25,43 +25,42 @@ Compatibilité avec le parser de ce projet :
 import urllib.request
 from pathlib import Path
 
-MODELS_DIR = Path(__file__).parent / 'engine' / 'models'
+MODELS_DIR = Path(__file__).parent / "engine" / "models"
 
 # Modèles à télécharger : { 'nom_local.obj': 'https://url-directe.obj' }
 MODELS = {
     # Utah Teapot — modèle de test classique en informatique graphique
     # Source : alecjacobson/common-3d-test-models (MIT)
-    'teapot.obj': 'https://raw.githubusercontent.com/alecjacobson/common-3d-test-models/master/data/teapot.obj',
-
+    "teapot.obj": "https://raw.githubusercontent.com/alecjacobson/common-3d-test-models/master/data/teapot.obj",
     # Ajoute tes propres modèles ici :
     # 'monModele.obj': 'https://example.com/monModele.obj',
 }
 
-_HEADERS = {'User-Agent': 'Mozilla/5.0'}
+_HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
 def download(filename: str, url: str) -> None:
     dest = MODELS_DIR / filename
     if dest.exists():
-        print(f'  {filename} déjà présent, ignoré.')
+        print(f"  {filename} déjà présent, ignoré.")
         return
 
-    print(f'  Téléchargement de {filename}...')
+    print(f"  Téléchargement de {filename}...")
     try:
         req = urllib.request.Request(url, headers=_HEADERS)
         with urllib.request.urlopen(req) as response:
             dest.write_bytes(response.read())
-        print(f'  {filename} téléchargé.')
+        print(f"  {filename} téléchargé.")
     except Exception as e:
-        print(f'  Erreur pour {filename} : {e}')
+        print(f"  Erreur pour {filename} : {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
     if not MODELS:
-        print('Aucun modèle défini dans MODELS.')
+        print("Aucun modèle défini dans MODELS.")
     else:
         for filename, url in MODELS.items():
             download(filename, url)
-        print('Terminé.')
+        print("Terminé.")

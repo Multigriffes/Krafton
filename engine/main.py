@@ -6,35 +6,59 @@ from engine.mathlib import *
 from engine.dot_obj_parser import *
 from engine import config
 
-MODELS_DIR = Path(__file__).parent / 'models'
-
+MODELS_DIR = Path(__file__).parent / "models"
 
 
 def main():
 
-    all_objects=[]
-    camera=CAMERA(speed=config.CAMERA_SPEED)
+    all_objects = []
+    camera = CAMERA(speed=config.CAMERA_SPEED)
 
     my_object_file = OBJ_FILE(str(MODELS_DIR / config.MODEL_FILE))
     try:
-        my_object_file.parse(force_parse=True)# Cache system not faster yet
+        my_object_file.parse(force_parse=True)  # Cache system not faster yet
     except FileNotFoundError:
         pass
     else:
-        my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+        my_object = FACES(
+            to_be_drew=True,
+            vertices=my_object_file.vertices,
+            quads=my_object_file.quads,
+            triangles=my_object_file.triangles,
+            normals=my_object_file.normals,
+            coordinates=[0, 0, 0],
+        )
         all_objects.append(my_object)
     finally:
-        del my_object_file # Release some memory
+        del my_object_file  # Release some memory
 
-    debug_axes=config.DEBUG_AXES
+    debug_axes = config.DEBUG_AXES
     if debug_axes:
-        axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
-        axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
-        axe_z=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
+        axe_x = AXES(to_be_drew=True, vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
+        axe_y = AXES(to_be_drew=True, vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
+        axe_z = AXES(to_be_drew=True, vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
 
-        rotation_axe_x=ROTATION_AXES(to_be_drew=True,vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
-        rotation_axe_y=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
-        rotation_axe_z=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
+        rotation_axe_x = ROTATION_AXES(
+            to_be_drew=True,
+            vertices=[
+                (0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)
+            ],
+            color=[1, 0, 0],
+        )
+        rotation_axe_y = ROTATION_AXES(
+            to_be_drew=True,
+            vertices=[
+                (cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)
+            ],
+            color=[0, 1, 0],
+        )
+        rotation_axe_z = ROTATION_AXES(
+            to_be_drew=True,
+            vertices=[
+                (cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)
+            ],
+            color=[0, 0, 1],
+        )
         all_objects.append(rotation_axe_x)
         all_objects.append(rotation_axe_y)
         all_objects.append(rotation_axe_z)
@@ -42,48 +66,46 @@ def main():
         all_objects.append(axe_y)
         all_objects.append(axe_z)
 
-
     pygame.init()
     # todo: changer le système de fenêtre par celui de opengl GLUT
     display = config.DISPLAY
-    pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
-    glViewport(0,0,display[0],display[1])
+    pygame.display.set_mode(display, pygame.DOUBLEBUF | pygame.OPENGL)
+    glViewport(0, 0, display[0], display[1])
     glMatrixMode(GL_PROJECTION)
-    gluPerspective(config.FOV, display[0]/display[1], config.CLIP_NEAR, config.CLIP_FAR)
+    gluPerspective(
+        config.FOV, display[0] / display[1], config.CLIP_NEAR, config.CLIP_FAR
+    )
 
+    # light_ambient = [1.0, 1.0, 1.0, 1.0]
+    # light_diffuse = [1.0, 1.0, 1.0, 1.0]
+    # light_specular = [1.0, 1.0, 1.0, 1.0]
+    # light_position = [100.0, 2.0, 1.0, 1.0]
+    # glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
+    # glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
+    # glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
+    # glLightfv(GL_LIGHT0, GL_POSITION, light_position)
 
-    #light_ambient = [1.0, 1.0, 1.0, 1.0]
-    #light_diffuse = [1.0, 1.0, 1.0, 1.0]
-    #light_specular = [1.0, 1.0, 1.0, 1.0]
-    #light_position = [100.0, 2.0, 1.0, 1.0]
-    #glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
-    #glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
-    #glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
-    #glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-
-
-    #______________Objects to be compiled_______
+    # ______________Objects to be compiled_______
     for object_to_be_compiled in all_objects:
         object_to_be_compiled.compile()
-    #___________________________________________
+    # ___________________________________________
 
-
-    #glFrontFace(GL_CW)
-    #glCullFace(GL_BACK)
-    #glEnable(GL_CULL_FACE)
+    # glFrontFace(GL_CW)
+    # glCullFace(GL_BACK)
+    # glEnable(GL_CULL_FACE)
     glEnable(GL_DEPTH_TEST)
     glClearColor(*config.BACKGROUND)
 
-    #glEnable(GL_LIGHTING)
-    #glEnable(GL_LIGHT0)
+    # glEnable(GL_LIGHTING)
+    # glEnable(GL_LIGHT0)
 
-    clock=pygame.time.Clock()
+    clock = pygame.time.Clock()
     lastFps = 0
     selected = camera
     run = True
     something_changed = True
 
-#_______________________________________________________Main Loop_______________________________________________________
+    # _______________________________________________________Main Loop_______________________________________________________
     while run:
         clock.tick(config.FPS_TARGET)
         if something_changed:
@@ -92,23 +114,28 @@ def main():
             glLoadIdentity()
 
             gluLookAt(
-                camera.coordinates[0], camera.coordinates[1], camera.coordinates[2],
-                camera.coordinates[0]+camera.front.x, camera.coordinates[1]+camera.front.y, camera.coordinates[2]+camera.front.z,
-                camera.up.x, camera.up.y, camera.up.z
+                camera.coordinates[0],
+                camera.coordinates[1],
+                camera.coordinates[2],
+                camera.coordinates[0] + camera.front.x,
+                camera.coordinates[1] + camera.front.y,
+                camera.coordinates[2] + camera.front.z,
+                camera.up.x,
+                camera.up.y,
+                camera.up.z,
             )
 
-
-        #______________Objects to be drew___________
+            # ______________Objects to be drew___________
             for object_to_be_drew in all_objects:
                 if object_to_be_drew.to_be_drew:
                     object_to_be_drew.draw()
-        #____________________________________________
+            # ____________________________________________
             pygame.display.flip()
-            something_changed=False
+            something_changed = False
 
-            #print(camera.front.list, camera.up.list, camera.right.list)
-            #print(camera.front.getLength(), camera.right.getLength(), camera.up.getLength())
-        #print(clock.get_fps())
+            # print(camera.front.list, camera.up.list, camera.right.list)
+            # print(camera.front.getLength(), camera.right.getLength(), camera.up.getLength())
+        # print(clock.get_fps())
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -203,11 +230,11 @@ def main():
             if isinstance(selected, CAMERA):
                 selected.reset()
             else:
-                selected.rotation=[0,0,0]
-                selected.coordinates=[0,0,0]
+                selected.rotation = [0, 0, 0]
+                selected.coordinates = [0, 0, 0]
             something_changed = True
 
 
-#_______________________________________________________________________________________________________________________
+# _______________________________________________________________________________________________________________________
 if __name__ == "__main__":
     main()

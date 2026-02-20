@@ -4,6 +4,7 @@ import time
 from parameters import *
 from fonctions_images import *
 
+
 def image_transform(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
@@ -15,18 +16,18 @@ def image_transform(image):
 
 # Faire fonction traitement image pour capture 1 et 2.
 capture = cv2.VideoCapture(0)
-'''capture_1 = cv2.VideoCapture(1)'''
+"""capture_1 = cv2.VideoCapture(1)"""
 
-x=0
+x = 0
 timer = 0
 detector = blob_detection_params()
 list_point = []
 
 while capture.isOpened():
     start_time = time.perf_counter()
-    x+=1
+    x += 1
     ret, frame = capture.read()
-    
+
     frame = image_transform(frame)
 
     # Detection led
@@ -34,19 +35,24 @@ while capture.isOpened():
     if keypoints != ():
         list_point.append((keypoints[0].pt[0], keypoints[0].pt[1]))
         end_time = time.perf_counter()
-        timer += 1/(end_time-start_time)
-        print((timer)/x)
-    output = cv2.drawKeypoints(frame, keypoints, np.array([]), (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        timer += 1 / (end_time - start_time)
+        print((timer) / x)
+    output = cv2.drawKeypoints(
+        frame,
+        keypoints,
+        np.array([]),
+        (0, 0, 255),
+        cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
+    )
 
     if ret:
 
         # Affiche l'image
         cv2.imshow("test", output)
-        
 
         # Quitter la video
         if cv2.waitKey(1) == ord(quitter):
             break
-    
+
 
 capture.release()
