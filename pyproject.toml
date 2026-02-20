@@ -2,7 +2,7 @@
 name = "krafton"
 version = "0.1.0"
 description = "Moteur 3D OpenGL avec détection de marqueurs LED par vision par ordinateur"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "joblib",
     "numpy",
@@ -15,7 +15,7 @@ dependencies = [
 
 [tool.black]
 line-length = 88
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
