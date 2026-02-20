@@ -1,6 +1,6 @@
-/engine/models/
 /.venv
 /.idea
 test.*
 __pycache__/
 /program.prof
+tmpclaude*
