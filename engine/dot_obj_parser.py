@@ -35,6 +35,20 @@ class OBJ_FILE:
         self.triangles = self.cache[f'{self.fileName}_Triangles']
         self.quads = self.cache[f'{self.fileName}_Quads']
 
+    def _parse_face_token(self, token: str) -> tuple:
+        """
+        Parse un token de face OBJ. Formats supportés :
+          v        →  (v, None, None)
+          v/vt     →  (v, vt, None)
+          v//vn    →  (v, None, vn)
+          v/vt/vn  →  (v, vt, vn)
+        """
+        parts = token.split('/')
+        v  = int(parts[0]) if len(parts) > 0 and parts[0] != '' else None
+        vt = int(parts[1]) if len(parts) > 1 and parts[1] != '' else None
+        vn = int(parts[2]) if len(parts) > 2 and parts[2] != '' else None
+        return v, vt, vn
+
     def parseFile(self) -> None:
         self.file = open(self.filePath, "r")
         for line in self.file.readlines():
@@ -63,19 +77,19 @@ class OBJ_FILE:
                         match len(line[1:]):
                             case 3:
                                 for word in line[1:]:
-                                    infos = word.split('/')
-                                    faceVertices.append(int(infos[0])) if not infos[0] == '' else faceVertices.append(None)
-                                    faceTextures.append(int(infos[1])) if not infos[1] == '' else faceTextures.append(None)
-                                    faceNormals.append(int(infos[2])) if not infos[2] == '' else faceNormals.append(None)
+                                    v, vt, vn = self._parse_face_token(word)
+                                    faceVertices.append(v)
+                                    faceTextures.append(vt)
+                                    faceNormals.append(vn)
                                 self.trianglesVertices.append(faceVertices)
                                 self.trianglesTextures.append(faceTextures)
                                 self.trianglesNormals.append(faceNormals)
                             case 4:
                                 for word in line[1:]:
-                                    infos = word.split('/')
-                                    faceVertices.append(int(infos[0])) if not infos[0]=='' else faceVertices.append(None)
-                                    faceTextures.append(int(infos[1])) if not infos[1]=='' else faceTextures.append(None)
-                                    faceNormals.append(int(infos[2])) if not infos[2]=='' else faceNormals.append(None)
+                                    v, vt, vn = self._parse_face_token(word)
+                                    faceVertices.append(v)
+                                    faceTextures.append(vt)
+                                    faceNormals.append(vn)
                                 self.quadsVertices.append(faceVertices)
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)

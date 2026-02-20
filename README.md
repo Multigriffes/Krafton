@@ -31,6 +31,14 @@ Installer les dépendances :
 pip install -r requirements.txt
 ```
 
+## Modèles 3D
+
+Les modèles `.obj` ne sont pas inclus dans le dépôt. Pour les télécharger :
+
+```bash
+python download_models.py
+```
+
 ## Lancement
 
 ```bash
