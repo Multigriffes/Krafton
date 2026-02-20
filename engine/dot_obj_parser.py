@@ -64,18 +64,40 @@ class OBJ_FILE:
                             case 3:
                                 for word in line[1:]:
                                     infos = word.split('/')
-                                    faceVertices.append(int(infos[0])) if not infos[0] == '' else faceVertices.append(None)
-                                    faceTextures.append(int(infos[1])) if not infos[1] == '' else faceTextures.append(None)
-                                    faceNormals.append(int(infos[2])) if not infos[2] == '' else faceNormals.append(None)
+                                    match len(infos):
+                                        case 1:
+                                            faceVertices.append(int(word)) if not word == '' else faceVertices.append(None)
+                                            faceTextures.append(None)
+                                            faceNormals.append(None)
+                                        case 2:
+                                            faceVertices.append(int(infos[0])) if not infos[0] == '' else faceVertices.append(None)
+                                            faceTextures.append(int(infos[1])) if not infos[1] == '' else faceTextures.append(None)
+                                            faceNormals.append(None)
+                                        case 3:
+                                            faceVertices.append(int(infos[0])) if not infos[0] == '' else faceVertices.append(None)
+                                            faceTextures.append(int(infos[1])) if not infos[1] == '' else faceTextures.append(None)
+                                            faceNormals.append(int(infos[2])) if not infos[2] == '' else faceNormals.append(None)
+
                                 self.trianglesVertices.append(faceVertices)
                                 self.trianglesTextures.append(faceTextures)
                                 self.trianglesNormals.append(faceNormals)
                             case 4:
                                 for word in line[1:]:
                                     infos = word.split('/')
-                                    faceVertices.append(int(infos[0])) if not infos[0]=='' else faceVertices.append(None)
-                                    faceTextures.append(int(infos[1])) if not infos[1]=='' else faceTextures.append(None)
-                                    faceNormals.append(int(infos[2])) if not infos[2]=='' else faceNormals.append(None)
+                                    match len(infos):
+                                        case 1:
+                                            faceVertices.append(int(word)) if not word == '' else faceVertices.append(None)
+                                            faceTextures.append(None)
+                                            faceNormals.append(None)
+                                        case 2:
+                                            faceVertices.append(int(infos[0])) if not infos[0] == '' else faceVertices.append(None)
+                                            faceTextures.append(int(infos[1])) if not infos[1] == '' else faceTextures.append(None)
+                                            faceNormals.append(None)
+                                        case 3:
+                                            faceVertices.append(int(infos[0])) if not infos[0] == '' else faceVertices.append(None)
+                                            faceTextures.append(int(infos[1])) if not infos[1] == '' else faceTextures.append(None)
+                                            faceNormals.append(int(infos[2])) if not infos[2] == '' else faceNormals.append(None)
+
                                 self.quadsVertices.append(faceVertices)
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)
