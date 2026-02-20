@@ -1,8 +1,11 @@
 import pygame
+from pathlib import Path
 from OpenGL.GLU import *
 from engine.opengl_3d_object import *
 from engine.mathlib import *
 from engine.dot_obj_parser import *
+
+MODELS_DIR = Path(__file__).parent / 'models'
 
 
 
@@ -11,7 +14,7 @@ def main():
     all_objects=[]
     camera=CAMERA()
 
-    my_object_file = OBJ_FILE('engine/models/caca.obj')
+    my_object_file = OBJ_FILE(str(MODELS_DIR / 'bisous.obj'))
     try:
         my_object_file.parse(force_parse=True)# Cache system not faster yet
     except FileNotFoundError:
@@ -206,4 +209,5 @@ def main():
 
 
 #_______________________________________________________________________________________________________________________
-main()
+if __name__ == "__main__":
+    main()

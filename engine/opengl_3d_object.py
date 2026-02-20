@@ -180,131 +180,27 @@ class CAMERA:
             self.coordinates[1] += coordinates[1]
             self.coordinates[2] += coordinates[2]
 
-    def forward3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.front.x
-            self.coordinates[1] += self.speed*self.front.y
-            self.coordinates[2] += self.speed*self.front.z
-        else:
-            self.coordinates[0] += speed*self.front.x
-            self.coordinates[1] += speed*self.front.y
-            self.coordinates[2] += speed*self.front.z
+    def _move(self, direction: QUATERNION, sign: float, include_y: bool = True, speed: float = None) -> None:
+        s = speed if speed is not None else self.speed
+        self.coordinates[0] += sign * s * direction.x
+        if include_y:
+            self.coordinates[1] += sign * s * direction.y
+        self.coordinates[2] += sign * s * direction.z
 
-    def forward2D(self, speed: float = None) -> None:
-        # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
-        # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
-        if speed is None:
-            #front_x_normalized = normalize(front)
-            self.coordinates[0] += self.speed*self.front.x
-            #self.coordinates[1] += self.speed*self.front.y
-            self.coordinates[2] += self.speed*self.front.z
-        else:
-            self.coordinates[0] += speed*self.front.x
-            #self.coordinates[1] += speed*self.front.y
-            self.coordinates[2] += speed*self.front.z
+    def forward3D(self, speed: float = None) -> None:  self._move(self.front,  1.0, True,  speed)
+    def backward3D(self, speed: float = None) -> None: self._move(self.front, -1.0, True,  speed)
+    def forward2D(self, speed: float = None) -> None:  self._move(self.front,  1.0, False, speed)
+    def backward2D(self, speed: float = None) -> None: self._move(self.front, -1.0, False, speed)
 
-    def backward3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.front.x
-            self.coordinates[1] -= self.speed*self.front.y
-            self.coordinates[2] -= self.speed*self.front.z
-        else:
-            self.coordinates[0] -= speed*self.front.x
-            self.coordinates[1] -= speed*self.front.y
-            self.coordinates[2] -= speed*self.front.z
+    def up3D(self, speed: float = None) -> None:   self._move(self.up,  1.0, True,  speed)
+    def down3D(self, speed: float = None) -> None: self._move(self.up, -1.0, True,  speed)
+    def up2D(self, speed: float = None) -> None:   self._move(self.up,  1.0, False, speed)
+    def down2D(self, speed: float = None) -> None: self._move(self.up, -1.0, False, speed)
 
-    def backward2D(self, speed: float = None) -> None:
-        # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
-        # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
-        if speed is None:
-            #front_x_normalized = normalize(front)
-            self.coordinates[0] -= self.speed*self.front.x
-            #self.coordinates[1] -= self.speed*self.front.y
-            self.coordinates[2] -= self.speed*self.front.z
-        else:
-            self.coordinates[0] -= speed*self.front.x
-            #self.coordinates[1] -= speed*self.front.y
-            self.coordinates[2] -= speed*self.front.z
-
-    def up3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.up.x
-            self.coordinates[1] += self.speed*self.up.y
-            self.coordinates[2] += self.speed*self.up.z
-        else:
-            self.coordinates[0] += speed*self.up.x
-            self.coordinates[1] += speed*self.up.y
-            self.coordinates[2] += speed*self.up.z
-
-    def up2D(self, speed: float = None) -> None: # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
-        if speed is None:
-            self.coordinates[0] += self.speed*self.up.x
-            #self.coordinates[1] += self.speed*self.up.y
-            self.coordinates[2] += self.speed*self.up.z
-        else:
-            self.coordinates[0] += speed*self.up.x
-            #self.coordinates[1] += speed*self.up.y
-            self.coordinates[2] += speed*self.up.z
-
-    def down3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.up.x
-            self.coordinates[1] -= self.speed*self.up.y
-            self.coordinates[2] -= self.speed*self.up.z
-        else:
-            self.coordinates[0] -= speed*self.up.x
-            self.coordinates[1] -= speed*self.up.y
-            self.coordinates[2] -= speed*self.up.z
-
-    def down2D(self, speed: float = None) -> None: # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.up.x
-            #self.coordinates[1] -= self.speed*self.up.y
-            self.coordinates[2] -= self.speed*self.up.z
-        else:
-            self.coordinates[0] -= speed*self.up.x
-            #self.coordinates[1] -= speed*self.up.y
-            self.coordinates[2] -= speed*self.up.z
-
-    def right3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.right.x
-            self.coordinates[1] += self.speed*self.right.y
-            self.coordinates[2] += self.speed*self.right.z
-        else:
-            self.coordinates[0] += speed*self.right.x
-            self.coordinates[1] += speed*self.right.y
-            self.coordinates[2] += speed*self.right.z
-
-    def right2D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.right.x
-            #self.coordinates[1] += self.speed*self.right.y
-            self.coordinates[2] += self.speed*self.right.z
-        else:
-            self.coordinates[0] += speed*self.right.x
-            #self.coordinates[1] += speed*self.right.y
-            self.coordinates[2] += speed*self.right.z
-
-    def left3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.right.x
-            self.coordinates[1] -= self.speed*self.right.y
-            self.coordinates[2] -= self.speed*self.right.z
-        else:
-            self.coordinates[0] -= speed*self.right.x
-            self.coordinates[1] -= speed*self.right.y
-            self.coordinates[2] -= speed*self.right.z
-
-    def left2D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.right.x
-            #self.coordinates[1] -= self.speed*self.right.y
-            self.coordinates[2] -= self.speed*self.right.z
-        else:
-            self.coordinates[0] -= speed*self.right.x
-            #self.coordinates[1] -= speed*self.right.y
-            self.coordinates[2] -= speed*self.right.z
+    def right3D(self, speed: float = None) -> None: self._move(self.right,  1.0, True,  speed)
+    def left3D(self, speed: float = None) -> None:  self._move(self.right, -1.0, True,  speed)
+    def right2D(self, speed: float = None) -> None: self._move(self.right,  1.0, False, speed)
+    def left2D(self, speed: float = None) -> None:  self._move(self.right, -1.0, False, speed)
 
     def reset(self) -> None:
         self.coordinates = [0,0,0]

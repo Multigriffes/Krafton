@@ -34,21 +34,6 @@ def blob_detection_params():
     detector = cv2.SimpleBlobDetector_create(params)
     return detector
 
-def produit_scalaire(mat_1: np.array, mat_2: np.array) -> np.array:
-    if mat_1.shape[1] != mat_2.shape[0]:
-        raise ValueError("Dimensions incompatibles pour le produit matriciel")
-    
-    n, p = mat_1.shape
-    n2, p2 = mat_2.shape
-    
-    mat = np.zeros((n, p2))
-    
-    for i in range(n):
-        for j in range(p2):
-            mat[i, j] = sum(mat_1[i, k] * mat_2[k, j] for k in range(p))
-    
-    return mat
-
 def triangulate_parallel(p1, p2, K, B):
     """
     triangulation dans le cas ou les caméras sont parallèles
@@ -86,14 +71,14 @@ def rectify_cameras(K1, R1, T1, K2, R2, T2):
     permettant de rectifier les deux images.
     """
 
-    C1 = produit_scalaire(-R1.T, T1)
-    C2 = produit_scalaire(-R2.T, T2)
+    C1 = np.dot(-R1.T, T1)
+    C2 = np.dot(-R2.T, T2)
 
     baseline = C2 - C1
     x_new = baseline / np.linalg.norm(baseline)
 
-    z1 = produit_scalaire(R1.T, np.array([0, 0, 1]))
-    z2 = produit_scalaire(R2.T, np.array([0, 0, 1]))
+    z1 = np.dot(R1.T, np.array([0, 0, 1]))
+    z2 = np.dot(R2.T, np.array([0, 0, 1]))
     z_new = (z1 + z2) / 2
     z_new = z_new / np.linalg.norm(z_new)
 
@@ -104,8 +89,8 @@ def rectify_cameras(K1, R1, T1, K2, R2, T2):
 
     R_rect = np.vstack((x_new, y_new, z_new)).T
 
-    H1 = produit_scalaire(produit_scalaire(produit_scalaire(K1, R_rect), R1.T), np.linalg.inv(K1))
-    H2 = produit_scalaire(produit_scalaire(produit_scalaire(K2, R_rect), R2.T), np.linalg.inv(K2))
+    H1 = np.dot(np.dot(np.dot(K1, R_rect), R1.T), np.linalg.inv(K1))
+    H2 = np.dot(np.dot(np.dot(K2, R_rect), R2.T), np.linalg.inv(K2))
 
     return H1, H2
 
