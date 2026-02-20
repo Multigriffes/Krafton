@@ -1,7 +1,10 @@
 """Objets OpenGL 3D : géométrie compilée en display lists et caméra à quaternions."""
 
+import logging
 from OpenGL.GL import *
 from random import randint
+
+logger = logging.getLogger(__name__)
 
 from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize
 from math import cos, sin
@@ -73,7 +76,9 @@ class OBJECT_BASE:
             glCallList(self.gl_list_id)
             glPopMatrix()
         else:
-            print("Not compiled")
+            logger.warning(
+                "draw() appelé sur un objet non compilé (%s).", self.__class__.__name__
+            )
 
     def addCoordinates(self, coordinates: list = None) -> None:
         """Déplace l'objet en ajoutant [dx, dy, dz] à sa position courante."""
@@ -94,6 +99,7 @@ class VERTICES(OBJECT_BASE):
     def compile(self) -> None:
         """Compile les sommets en une display list GL_POINTS."""
         if glIsList(self.gl_list_id) == GL_FALSE:
+            logger.debug("Compilation VERTICES (%d points).", len(self.vertices))
             self.gl_list_id = glGenLists(1, GL_COMPILE)
             glNewList(self.gl_list_id, GL_COMPILE)
             glBegin(GL_POINTS)
@@ -101,14 +107,20 @@ class VERTICES(OBJECT_BASE):
                 glVertex3fv(vertex)
             glEnd()
             glEndList()
+            logger.debug("VERTICES compilé (list id=%d).", self.gl_list_id)
         else:
-            print("Already compiled")
+            logger.warning("VERTICES déjà compilé, ignoré.")
 
 
 class FACES(OBJECT_BASE):
     def compile(self) -> None:
         """Compile quads et triangles en une display list avec couleur aléatoire par face."""
         if self.gl_list_id is None:
+            logger.debug(
+                "Compilation FACES (%d quads, %d triangles).",
+                len(self.quads[0]),
+                len(self.triangles[0]),
+            )
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
             glBegin(GL_QUADS)
@@ -152,14 +164,16 @@ class FACES(OBJECT_BASE):
                     # glNormal3fv(self.normals[self.triangles[2][i][j]-1])
             glEnd()
             glEndList()
+            logger.debug("FACES compilé (list id=%d).", self.gl_list_id)
         else:
-            print("Already compiled")
+            logger.warning("FACES déjà compilé, ignoré.")
 
 
 class LINES_LOOP(OBJECT_BASE):
     def compile(self) -> None:
         """Compile les sommets en une display list GL_LINE_LOOP (contour fermé)."""
         if self.gl_list_id is None:
+            logger.debug("Compilation LINES_LOOP (%d sommets).", len(self.vertices))
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
             glBegin(GL_LINE_LOOP)
@@ -168,14 +182,16 @@ class LINES_LOOP(OBJECT_BASE):
                 glVertex3fv(vertex)
             glEnd()
             glEndList()
+            logger.debug("LINES_LOOP compilé (list id=%d).", self.gl_list_id)
         else:
-            print("Already compiled")
+            logger.warning("LINES_LOOP déjà compilé, ignoré.")
 
 
 class LINES(OBJECT_BASE):
     def compile(self) -> None:
         """Compile les sommets en une display list GL_LINES (segments)."""
         if self.gl_list_id is None:
+            logger.debug("Compilation LINES (%d sommets).", len(self.vertices))
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
             glBegin(GL_LINES)
@@ -184,8 +200,9 @@ class LINES(OBJECT_BASE):
                 glVertex3fv(vertex)
             glEnd()
             glEndList()
+            logger.debug("LINES compilé (list id=%d).", self.gl_list_id)
         else:
-            print("Already compiled")
+            logger.warning("LINES déjà compilé, ignoré.")
 
 
 class CAMERA:

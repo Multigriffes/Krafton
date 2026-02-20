@@ -22,8 +22,15 @@ Compatibilité avec le parser de ce projet :
 ---
 """
 
+import logging
 import urllib.request
 from pathlib import Path
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 MODELS_DIR = Path(__file__).parent / "engine" / "models"
 
@@ -43,25 +50,25 @@ def download(filename: str, url: str) -> None:
     """Télécharge filename depuis url dans MODELS_DIR. Sans effet si le fichier existe déjà."""
     dest = MODELS_DIR / filename
     if dest.exists():
-        print(f"  {filename} déjà présent, ignoré.")
+        logger.info("%s déjà présent, ignoré.", filename)
         return
 
-    print(f"  Téléchargement de {filename}...")
+    logger.info("Téléchargement de %s…", filename)
     try:
         req = urllib.request.Request(url, headers=_HEADERS)
         with urllib.request.urlopen(req) as response:
             dest.write_bytes(response.read())
-        print(f"  {filename} téléchargé.")
+        logger.info("%s téléchargé.", filename)
     except Exception as e:
-        print(f"  Erreur pour {filename} : {e}")
+        logger.error("Erreur pour %s : %s", filename, e)
 
 
 if __name__ == "__main__":
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
     if not MODELS:
-        print("Aucun modèle défini dans MODELS.")
+        logger.warning("Aucun modèle défini dans MODELS.")
     else:
         for filename, url in MODELS.items():
             download(filename, url)
-        print("Terminé.")
+        logger.info("Terminé.")

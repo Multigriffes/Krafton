@@ -1,5 +1,9 @@
 """Parser de fichiers Wavefront OBJ avec système de cache optionnel."""
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class OBJ_FILE:
     """Charge et parse un fichier .obj en listes de sommets, normales, textures et faces.
@@ -33,14 +37,21 @@ class OBJ_FILE:
     def parse(self, force_parse: bool = False) -> None:
         """Parse le fichier OBJ. Utilise le cache si disponible, sauf si force_parse=True."""
         if force_parse:
+            logger.info("Parsing forcé de '%s'.", self.fileName)
             self.parseFile()
         else:
             from engine.models.models_cache import cache
 
             self.cache = cache
             if not (f"{self.fileName}_Vertices" in self.cache.keys()):
+                logger.info(
+                    "Cache absent pour '%s', lecture du fichier.", self.fileName
+                )
                 self.parseFile()
             else:
+                logger.info(
+                    "Cache trouvé pour '%s', chargement depuis le cache.", self.fileName
+                )
                 self.parseCache()
 
     def parseCache(self) -> None:
@@ -50,6 +61,12 @@ class OBJ_FILE:
         self.textures = self.cache[f"{self.fileName}_Textures"]
         self.triangles = self.cache[f"{self.fileName}_Triangles"]
         self.quads = self.cache[f"{self.fileName}_Quads"]
+        logger.debug(
+            "Cache chargé : %d sommets, %d triangles, %d quads.",
+            len(self.vertices),
+            len(self.triangles[0]),
+            len(self.quads[0]),
+        )
 
     def _parse_face_token(self, token: str) -> tuple:
         """
@@ -67,6 +84,7 @@ class OBJ_FILE:
 
     def parseFile(self) -> None:
         """Lit et parse le fichier .obj ligne par ligne (v, vn, vt, f)."""
+        logger.debug("Ouverture du fichier : %s", self.filePath)
         self.file = open(self.filePath, "r")
         for line in self.file.readlines():
             line = line.split()
@@ -111,11 +129,18 @@ class OBJ_FILE:
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)
         self.file.close()
+        logger.info(
+            "Fichier parsé : %d sommets, %d normales, %d triangles, %d quads.",
+            len(self.vertices),
+            len(self.normals),
+            len(self.trianglesVertices),
+            len(self.quadsVertices),
+        )
         # self.writeToCache()
 
     def writeToCache(self) -> None:
         """Sauvegarde les données parsées dans models_cache.py (actuellement désactivé)."""
-        print("WriteToCache")
+        logger.debug("Écriture du cache pour '%s'.", self.fileName)
         self.cache[f"{self.fileName}_Vertices"] = self.vertices
         self.cache[f"{self.fileName}_Normals"] = self.normals
         self.cache[f"{self.fileName}_Textures"] = self.textures
