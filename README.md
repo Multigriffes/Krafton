@@ -53,6 +53,39 @@ Le code est formaté avec [black](https://black.readthedocs.io/). Lancer le form
 black cameras/ engine/ download_models.py
 ```
 
+## CI/CD
+
+### Pipelines GitHub Actions
+
+| Workflow | Déclencheur | Rôle |
+|----------|-------------|------|
+| `ci.yml` | push / PR → `master` | Vérifie le formatage black et la syntaxe Python |
+| `release-please.yml` | push → `master` | Crée automatiquement les PRs de release, bumpe la version dans `pyproject.toml` et génère le changelog |
+
+Le CI ne lance pas les tests applicatifs (pygame/OpenGL requièrent un display) — il se limite aux vérifications statiques.
+
+### Release Please
+
+[Release Please](https://github.com/googleapis/release-please) détecte les commits sur `master` et crée une PR de release qui :
+- incrémente la version sémantique dans `pyproject.toml`
+- génère / met à jour `CHANGELOG.md`
+- crée le tag Git et la GitHub Release au merge
+
+La version courante est définie dans `pyproject.toml` (`version = "..."`) et suivie dans `.release-please-manifest.json`.
+
+### Conventional Commits
+
+Release Please s'appuie sur la convention [Conventional Commits](https://www.conventionalcommits.org/) pour déterminer le type de bump et le contenu du changelog.
+
+| Préfixe | Effet sur la version | Exemple |
+|---------|----------------------|---------|
+| `fix:` | patch (`0.1.0` → `0.1.1`) | `fix: corriger le calcul de l'homographie` |
+| `feat:` | mineur (`0.1.0` → `0.2.0`) | `feat: ajouter le support des fichiers .gltf` |
+| `feat!:` ou `BREAKING CHANGE:` | majeur (`0.1.0` → `1.0.0`) | `feat!: refactoriser l'API caméra` |
+| `chore:`, `docs:`, `refactor:`… | aucun bump | `chore: mettre à jour les dépendances` |
+
+Les commits sans préfixe (comme les commits actuels) sont ignorés par Release Please et n'apparaissent pas dans le changelog.
+
 ## Contrôles
 
 | Touche | Action |

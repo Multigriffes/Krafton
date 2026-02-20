@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    name: Format check (black)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install black
+        run: pip install black
+
+      - name: Check formatting
+        run: black --check cameras/ engine/ download_models.py
+
+  syntax:
+    name: Syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Check syntax (py_compile)
+        run: |
+          python -m py_compile download_models.py
+          python -m py_compile engine/config.py
+          python -m py_compile engine/mathlib.py
+          python -m py_compile engine/dot_obj_parser.py
+          python -m py_compile engine/opengl_3d_object.py
+          python -m py_compile cameras/parameters.py
+          python -m py_compile cameras/fonctions_images.py || true
+          python -m py_compile cameras/write_read_csv.py
