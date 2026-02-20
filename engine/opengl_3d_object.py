@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from random import randint
 
-from engine.mathlib import crossProductNormalized, QUATERNION, radians
+from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize
 from math import cos, sin
 
 #no_mat = [0.0, 0.0, 0.0, 1.0]
@@ -112,6 +112,20 @@ class LINES_LOOP(OBJECT_BASE):
         else:
             print('Already compiled')
 
+class LINES(OBJECT_BASE):
+    def compile(self) -> None:
+        if self.gl_list_id is None:
+            self.gl_list_id = glGenLists(1)
+            glNewList(self.gl_list_id, GL_COMPILE)
+            glBegin(GL_LINES)
+            glColor3fv(self.color)
+            for vertex in self.vertices:
+                glVertex3fv(vertex)
+            glEnd()
+            glEndList()
+        else:
+            print('Already compiled')
+
 class CAMERA:
     def __init__(self, coordinates: list = None, speed: float = None) -> None:
         self.coordinates = coordinates if coordinates is not None else [0,0,0]
@@ -139,7 +153,7 @@ class CAMERA:
         quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.up.x, y = sin(halfAngle)*self.up.y, z = sin(halfAngle)*self.up.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.front = quaternionForRotation * self.front * invertedQuaternionForRotation
+        self.front = normalize(quaternionForRotation * self.front * invertedQuaternionForRotation)
         self.updateRight() # Mise à jour du dernier vecteur
 
     def addPitch(self, angle: float) -> None:
@@ -148,7 +162,7 @@ class CAMERA:
         quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.right.x, y = sin(halfAngle)*self.right.y, z = sin(halfAngle)*self.right.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.up = quaternionForRotation * self.up * invertedQuaternionForRotation
+        self.up = normalize(quaternionForRotation * self.up * invertedQuaternionForRotation)
         self.updateFront() # Mise à jour du dernier vecteur
 
     def addRoll(self, angle: float) -> None:
@@ -157,7 +171,7 @@ class CAMERA:
         quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.front.x, y = sin(halfAngle)*self.front.y, z = sin(halfAngle)*self.front.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.right = quaternionForRotation * self.right * invertedQuaternionForRotation
+        self.right = normalize(quaternionForRotation * self.right  * invertedQuaternionForRotation)
         self.updateUp() # Mise à jour du dernier vecteur
 
     def addCoordinates(self,coordinates: list = None) -> None:
@@ -299,30 +313,8 @@ class CAMERA:
         self.right = QUATERNION(w=0, x=1, y=0, z=0)
 
 
-class AXES(OBJECT_BASE):
-    def compile(self) -> None:
-        if self.gl_list_id is None:
-            self.gl_list_id = glGenLists(1)
-            glNewList(self.gl_list_id, GL_COMPILE)
-            glBegin(GL_LINES)
-            glColor3fv(self.color)
-            for vertex in self.vertices:
-                glVertex3fv(vertex)
-            glEnd()
-            glEndList()
-        else:
-            print('Already compiled')
+class AXES(LINES):
+    pass
 
-class ROTATION_AXES(OBJECT_BASE):
-    def compile(self) -> None:
-        if self.gl_list_id is None:
-            self.gl_list_id = glGenLists(1)
-            glNewList(self.gl_list_id, GL_COMPILE)
-            glBegin(GL_LINE_LOOP)
-            glColor3fv(self.color)
-            for vertex in self.vertices:
-                glVertex3fv(vertex)
-            glEnd()
-            glEndList()
-        else:
-            print('Already compiled')
+class ROTATION_AXES(LINES_LOOP):
+    pass

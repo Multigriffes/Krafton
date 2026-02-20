@@ -11,15 +11,18 @@ def main():
     all_objects=[]
     camera=CAMERA()
 
-    my_object_file = OBJ_FILE('engine/models/Theiere.obj')
-    my_object_file.parse(force_parse=True)# Cache system not faster yet
+    my_object_file = OBJ_FILE('engine/models/caca.obj')
+    try:
+        my_object_file.parse(force_parse=True)# Cache system not faster yet
+    except FileNotFoundError:
+        pass
+    else:
+        my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
+        all_objects.append(my_object)
+    finally:
+        del my_object_file # Release some memory
 
-    my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
-    del my_object_file # Release some memory
-
-    all_objects.append(my_object)
-
-    debug_axes=False
+    debug_axes=True
     if debug_axes:
         axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
         axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
@@ -38,8 +41,8 @@ def main():
 
     pygame.init()
     # todo: changer le système de fenêtre par celui de opengl GLUT
-    #display = [1920//2,1080//2]
-    display = [1920,1080]
+    display = [1920//2,1080//2]
+    #display = [1920,1080]
     pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
     glViewport(0,0,display[0],display[1])
     glMatrixMode(GL_PROJECTION)
@@ -100,8 +103,9 @@ def main():
             pygame.display.flip()
             something_changed=False
 
+            #print(camera.front.list, camera.up.list, camera.right.list)
+            #print(camera.front.getLength(), camera.right.getLength(), camera.up.getLength())
         #print(clock.get_fps())
-        print(camera.front.w, camera.right.w, camera.up.w)
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:

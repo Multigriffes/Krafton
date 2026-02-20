@@ -47,6 +47,8 @@ configuration_camera.py
 
 # dimension chessboard (en carres), dimension carre (en mm)
 checkboard_info = [(6, 8), 22]
+nb_photo_max = 15
+object_points_list = [[i, j] for i in range(checkboard_info[0][0]) for j in range(checkboard_info[0][1])]
 
 '''
 fin configuration_camera.py
