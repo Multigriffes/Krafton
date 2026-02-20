@@ -59,10 +59,10 @@ black cameras/ engine/ download_models.py
 
 | Workflow | Déclencheur | Rôle |
 |----------|-------------|------|
-| `ci.yml` | push / PR → `master` | Vérifie le formatage black et la syntaxe Python |
+| `ci.yml` | push / PR → `master` | Formatage black, syntaxe Python, tests unitaires (pytest) |
 | `release-please.yml` | push → `master` | Crée automatiquement les PRs de release, bumpe la version dans `pyproject.toml` et génère le changelog |
 
-Le CI ne lance pas les tests applicatifs (pygame/OpenGL requièrent un display) — il se limite aux vérifications statiques.
+Les tests couvrent la logique pure (math, parsing OBJ, caméra). Les méthodes OpenGL (`compile`, `draw`) et la boucle pygame nécessitent un contexte graphique et ne sont pas testées.
 
 ### Release Please
 
