@@ -45,32 +45,3 @@ capture2.release()
 
 clear_file()
 
-if lst_points1 != [] and lst_points2 != [0]:
-    K1 = compute_intrinsics(object_points_list_2D, lst_points1)
-    K2 = compute_intrinsics(object_points_list_2D, lst_points2)
-    write('K1', K1)
-    write('K2', K2)
-
-    R1 = np.identity(3)
-    T1 = [0, 0, 0]
-    write('R1', R1)
-    write('T1', T1)
-
-    ret, K1, dist1, K2, dist2, R2, T2, E, F = cv2.stereoCalibrate(
-        objectPoints=object_points_list_3D,
-        imagePoints1=lst_points1,
-        imagePoints2=lst_points2,
-        cameraMatrix1=K1,
-        distCoeffs1=None,
-        cameraMatrix2=K2,
-        distCoeffs2=None,
-        imageSize=image_size,
-        flags=cv2.CALIB_FIX_INTRINSIC
-    )
-
-    write('R2', R2)
-    write('T2', 'T2')
-
-    H1, H2 = rectify_cameras(K1, R1, T1, K2, R2, T2)
-    write('H1', H1)
-    write('H2', H2)
