@@ -1,6 +1,5 @@
 class OBJ_FILE:
     def __init__(self, file_path: str) -> None:
-        self.cache= {}
         self.filePath = file_path
         self.file = None
         self.fileName = self.filePath.split('/')[-1].rstrip('.obj')

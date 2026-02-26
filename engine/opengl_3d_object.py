@@ -1,6 +1,5 @@
 from OpenGL.GL import *
 from random import randint
-
 from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize
 from math import cos, sin
 
@@ -20,7 +19,7 @@ class OBJECT_BASE:
         self.gl_list_id=None
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
-        self.color=color if color is not None else [1,1,1]
+        self.color=color
         self.to_be_drew=to_be_drew
 
     def draw(self,coordinates: list = None,rotation: list = None) -> None:
@@ -75,7 +74,7 @@ class FACES(OBJECT_BASE):
                 #glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, no_shininess)
                 #glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, no_mat)
 
-                glColor3fv((randint(0, 255) / 255, randint(0, 255) / 255, randint(0, 255) / 255))
+                glColor3fv((randint(0, 255) / 255, randint(0, 255) / 255, randint(0, 255) / 255)) if self.color is None else glColor3fv(self.color)
                 for j in range(len(self.quads[0][i])):
                     glVertex3fv(self.vertices[self.quads[0][i][j] - 1])
                     #glNormal3fv(self.normals[self.quads[2][i][j]-1])
@@ -89,7 +88,7 @@ class FACES(OBJECT_BASE):
                 #glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, no_shininess)
                 #glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, no_mat)
 
-                glColor3fv((randint(0, 255) / 255, randint(0, 255) / 255, randint(0, 255) / 255))
+                glColor3fv((randint(0, 255) / 255, randint(0, 255) / 255, randint(0, 255) / 255)) if self.color is None else glColor3fv(self.color)
                 for j in range(len(self.triangles[0][i])):
                     glVertex3fv(self.vertices[self.triangles[0][i][j] - 1])
                     #glNormal3fv(self.normals[self.triangles[2][i][j]-1])
@@ -104,7 +103,7 @@ class LINES_LOOP(OBJECT_BASE):
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
             glBegin(GL_LINE_LOOP)
-            glColor3fv(self.color)
+            glColor3fv((randint(0, 255) / 255, randint(0, 255) / 255, randint(0, 255) / 255)) if self.color is None else glColor3fv(self.color)
             for vertex in self.vertices:
                 glVertex3fv(vertex)
             glEnd()
@@ -118,7 +117,7 @@ class LINES(OBJECT_BASE):
             self.gl_list_id = glGenLists(1)
             glNewList(self.gl_list_id, GL_COMPILE)
             glBegin(GL_LINES)
-            glColor3fv(self.color)
+            glColor3fv((randint(0, 255) / 255, randint(0, 255) / 255, randint(0, 255) / 255)) if self.color is None else glColor3fv(self.color)
             for vertex in self.vertices:
                 glVertex3fv(vertex)
             glEnd()
@@ -130,188 +129,116 @@ class CAMERA:
     def __init__(self, coordinates: list = None, speed: float = None) -> None:
         self.coordinates = coordinates if coordinates is not None else [0,0,0]
         self.speed = speed if speed is not None else 0.05
-        self.front = QUATERNION(w=0, x=0, y=0, z=-1)
-        self.up = QUATERNION(w=0, x=0, y=1, z=0)
-        self.right = QUATERNION(w=0, x=1, y=0, z=0)
-        self.yaw = 0.0 # Pas indicatife d'une quelconque rotation
-        self.pitch = 0.0 # Pas indicatife d'une quelconque rotation
-        self.roll = 0.0 # Pas indicatife d'une quelconque rotation
+        self.front_vec = QUATERNION(w=0, x=0, y=0, z=-1)
+        self.up_vec = QUATERNION(w=0, x=0, y=1, z=0)
+        self.right_vec = QUATERNION(w=0, x=1, y=0, z=0)
 
     def updateFront(self) -> None: # On utilise le process de Gramm-Schimdt. Pour les autres aussi
-        self.front = crossProductNormalized(self.up, self.right)
+        self.front_vec = crossProductNormalized(self.up_vec, self.right_vec)
 
     def updateRight(self) -> None:
-        self.right = crossProductNormalized(self.front, self.up)
+        self.right_vec = crossProductNormalized(self.front_vec, self.up_vec)
 
     def updateUp(self) -> None:
-        self.up = crossProductNormalized(self.right, self.front)
+        self.up_vec = crossProductNormalized(self.right_vec, self.front_vec)
 
     def addYaw(self, angle: float) -> None:
-        self.yaw += angle
-        #invertedUp = not self.up
-        halfAngle=radians(angle/2)
-        quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.up.x, y = sin(halfAngle)*self.up.y, z = sin(halfAngle)*self.up.z)
+        radiansHalfAngle=radians(angle/2)
+        usefulSin=sin(radiansHalfAngle)
+        usefulCos=cos(radiansHalfAngle)
+        quaternionForRotation = QUATERNION(w = usefulCos, x = usefulSin*self.up_vec.x, y = usefulSin * self.up_vec.y, z = usefulSin * self.up_vec.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.front = normalize(quaternionForRotation * self.front * invertedQuaternionForRotation)
+        self.front_vec = normalize(quaternionForRotation * self.front_vec * invertedQuaternionForRotation)
         self.updateRight() # Mise à jour du dernier vecteur
 
     def addPitch(self, angle: float) -> None:
-        self.pitch += angle
-        halfAngle=radians(angle/2)
-        quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.right.x, y = sin(halfAngle)*self.right.y, z = sin(halfAngle)*self.right.z)
+        radiansHalfAngle=radians(angle/2)
+        usefulSin=sin(radiansHalfAngle)
+        usefulCos=cos(radiansHalfAngle)
+        quaternionForRotation = QUATERNION(w = usefulCos, x = usefulSin*self.right_vec.x, y = usefulSin * self.right_vec.y, z = usefulSin * self.right_vec.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.up = normalize(quaternionForRotation * self.up * invertedQuaternionForRotation)
+        self.up_vec = normalize(quaternionForRotation * self.up_vec * invertedQuaternionForRotation)
         self.updateFront() # Mise à jour du dernier vecteur
 
     def addRoll(self, angle: float) -> None:
-        self.roll += angle
-        halfAngle=radians(angle/2)
-        quaternionForRotation = QUATERNION(w = cos(halfAngle), x = sin(halfAngle)*self.front.x, y = sin(halfAngle)*self.front.y, z = sin(halfAngle)*self.front.z)
+        radiansHalfAngle=radians(angle/2)
+        usefulSin=sin(radiansHalfAngle)
+        usefulCos=cos(radiansHalfAngle)
+        quaternionForRotation = QUATERNION(w = usefulCos, x = usefulSin*self.front_vec.x, y = usefulSin * self.front_vec.y, z = usefulSin * self.front_vec.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.right = normalize(quaternionForRotation * self.right  * invertedQuaternionForRotation)
+        self.right_vec = normalize(quaternionForRotation * self.right_vec * invertedQuaternionForRotation)
         self.updateUp() # Mise à jour du dernier vecteur
 
-    def addCoordinates(self,coordinates: list = None) -> None:
+    def moveByVec(self,coordinates: list = None) -> None:
         if coordinates is not None:
             self.coordinates[0] += coordinates[0]
             self.coordinates[1] += coordinates[1]
             self.coordinates[2] += coordinates[2]
 
-    def forward3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.front.x
-            self.coordinates[1] += self.speed*self.front.y
-            self.coordinates[2] += self.speed*self.front.z
-        else:
-            self.coordinates[0] += speed*self.front.x
-            self.coordinates[1] += speed*self.front.y
-            self.coordinates[2] += speed*self.front.z
+    def moveAlong(self, coefficient: float = 1, vector = None) -> None:
+        if vector is not None:
+            self.coordinates[0] += vector[0] * coefficient
+            self.coordinates[1] += vector[1] * coefficient
+            self.coordinates[2] += vector[2] * coefficient
 
-    def forward2D(self, speed: float = None) -> None:
-        # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
-        # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
+    def moveForward(self, speed: float = None, lock_height : bool = False) -> None:
         if speed is None:
-            #front_x_normalized = normalize(front)
-            self.coordinates[0] += self.speed*self.front.x
-            #self.coordinates[1] += self.speed*self.front.y
-            self.coordinates[2] += self.speed*self.front.z
-        else:
-            self.coordinates[0] += speed*self.front.x
-            #self.coordinates[1] += speed*self.front.y
-            self.coordinates[2] += speed*self.front.z
+            speed = self.speed
+        self.coordinates[0] += speed*self.front_vec.x
+        self.coordinates[2] += speed*self.front_vec.z
+        if not lock_height:
+            # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
+            # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
+            self.coordinates[1] += speed*self.front_vec.y
 
-    def backward3D(self, speed: float = None) -> None:
+    def moveBackward(self, speed: float = None, lock_height : bool = False) -> None:
         if speed is None:
-            self.coordinates[0] -= self.speed*self.front.x
-            self.coordinates[1] -= self.speed*self.front.y
-            self.coordinates[2] -= self.speed*self.front.z
-        else:
-            self.coordinates[0] -= speed*self.front.x
-            self.coordinates[1] -= speed*self.front.y
-            self.coordinates[2] -= speed*self.front.z
+            speed = self.speed
+        self.coordinates[0] -= speed*self.front_vec.x
+        self.coordinates[2] -= speed*self.front_vec.z
+        if not lock_height:
+            self.coordinates[1] -= speed*self.front_vec.y
 
-    def backward2D(self, speed: float = None) -> None:
-        # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
-        # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
+    def moveUp(self, speed: float = None, lock_height : bool = False) -> None:
         if speed is None:
-            #front_x_normalized = normalize(front)
-            self.coordinates[0] -= self.speed*self.front.x
-            #self.coordinates[1] -= self.speed*self.front.y
-            self.coordinates[2] -= self.speed*self.front.z
-        else:
-            self.coordinates[0] -= speed*self.front.x
-            #self.coordinates[1] -= speed*self.front.y
-            self.coordinates[2] -= speed*self.front.z
+            speed = self.speed
+        self.coordinates[0] += speed*self.up_vec.x
+        self.coordinates[2] += speed*self.up_vec.z
+        if not lock_height:
+            self.coordinates[1] += speed*self.up_vec.y
 
-    def up3D(self, speed: float = None) -> None:
+    def moveDown(self, speed: float = None, lock_height : bool = False) -> None:
         if speed is None:
-            self.coordinates[0] += self.speed*self.up.x
-            self.coordinates[1] += self.speed*self.up.y
-            self.coordinates[2] += self.speed*self.up.z
-        else:
-            self.coordinates[0] += speed*self.up.x
-            self.coordinates[1] += speed*self.up.y
-            self.coordinates[2] += speed*self.up.z
+            speed = self.speed
+        self.coordinates[0] -= speed*self.up_vec.x
+        self.coordinates[2] -= speed*self.up_vec.z
+        if not lock_height:
+            self.coordinates[1] -= speed*self.up_vec.y
 
-    def up2D(self, speed: float = None) -> None: # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
+    def moveLeft(self, speed: float = None, lock_height : bool = False) -> None:
         if speed is None:
-            self.coordinates[0] += self.speed*self.up.x
-            #self.coordinates[1] += self.speed*self.up.y
-            self.coordinates[2] += self.speed*self.up.z
-        else:
-            self.coordinates[0] += speed*self.up.x
-            #self.coordinates[1] += speed*self.up.y
-            self.coordinates[2] += speed*self.up.z
+            speed = self.speed
+        self.coordinates[0] -= speed*self.right_vec.x
+        self.coordinates[2] -= speed*self.right_vec.z
+        if not lock_height:
+            self.coordinates[1] -= speed*self.right_vec.y
 
-    def down3D(self, speed: float = None) -> None:
+    def moveRight(self, speed: float = None, lock_height : bool = False) -> None:
         if speed is None:
-            self.coordinates[0] -= self.speed*self.up.x
-            self.coordinates[1] -= self.speed*self.up.y
-            self.coordinates[2] -= self.speed*self.up.z
-        else:
-            self.coordinates[0] -= speed*self.up.x
-            self.coordinates[1] -= speed*self.up.y
-            self.coordinates[2] -= speed*self.up.z
-
-    def down2D(self, speed: float = None) -> None: # OUUUUIIIIII je sais ça sert logiquement à rien, chut....
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.up.x
-            #self.coordinates[1] -= self.speed*self.up.y
-            self.coordinates[2] -= self.speed*self.up.z
-        else:
-            self.coordinates[0] -= speed*self.up.x
-            #self.coordinates[1] -= speed*self.up.y
-            self.coordinates[2] -= speed*self.up.z
-
-    def right3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.right.x
-            self.coordinates[1] += self.speed*self.right.y
-            self.coordinates[2] += self.speed*self.right.z
-        else:
-            self.coordinates[0] += speed*self.right.x
-            self.coordinates[1] += speed*self.right.y
-            self.coordinates[2] += speed*self.right.z
-
-    def right2D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] += self.speed*self.right.x
-            #self.coordinates[1] += self.speed*self.right.y
-            self.coordinates[2] += self.speed*self.right.z
-        else:
-            self.coordinates[0] += speed*self.right.x
-            #self.coordinates[1] += speed*self.right.y
-            self.coordinates[2] += speed*self.right.z
-
-    def left3D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.right.x
-            self.coordinates[1] -= self.speed*self.right.y
-            self.coordinates[2] -= self.speed*self.right.z
-        else:
-            self.coordinates[0] -= speed*self.right.x
-            self.coordinates[1] -= speed*self.right.y
-            self.coordinates[2] -= speed*self.right.z
-
-    def left2D(self, speed: float = None) -> None:
-        if speed is None:
-            self.coordinates[0] -= self.speed*self.right.x
-            #self.coordinates[1] -= self.speed*self.right.y
-            self.coordinates[2] -= self.speed*self.right.z
-        else:
-            self.coordinates[0] -= speed*self.right.x
-            #self.coordinates[1] -= speed*self.right.y
-            self.coordinates[2] -= speed*self.right.z
+            speed = self.speed
+        self.coordinates[0] += speed*self.right_vec.x
+        self.coordinates[2] += speed*self.right_vec.z
+        if not lock_height:
+            self.coordinates[1] += speed*self.right_vec.y
 
     def reset(self) -> None:
         self.coordinates = [0,0,0]
-        self.front = QUATERNION(w=0, x=0, y=0, z=-1)
-        self.up = QUATERNION(w=0, x=0, y=1, z=0)
-        self.right = QUATERNION(w=0, x=1, y=0, z=0)
-
+        self.front_vec.w, self.front_vec.x, self.front_vec.y, self.front_vec.z = 0, 0, 0, -1
+        self.up_vec.w, self.up_vec.x, self.up_vec.y, self.up_vec.z = 0, 0, 1, 0
+        self.right_vec.w, self.right_vec.x, self.right_vec.y, self.right_vec.z = 0, 1, 0, 0
 
 class AXES(LINES):
     pass

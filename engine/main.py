@@ -3,6 +3,7 @@ from OpenGL.GLU import *
 from engine.opengl_3d_object import *
 from engine.mathlib import *
 from engine.dot_obj_parser import *
+from engine import project
 
 
 
@@ -11,42 +12,44 @@ def main():
     all_objects=[]
     camera=CAMERA()
 
-    my_object_file = OBJ_FILE('engine/models/caca.obj')
-    try:
-        my_object_file.parse(force_parse=True)# Cache system not faster yet
-    except FileNotFoundError:
-        pass
-    else:
-        my_object=FACES(to_be_drew=True,vertices=my_object_file.vertices,quads=my_object_file.quads,triangles=my_object_file.triangles,normals=my_object_file.normals,coordinates=[0,0,0])
-        all_objects.append(my_object)
-    finally:
-        del my_object_file # Release some memory
+    for object_to_be_created in project.objects:
+        object_file = OBJ_FILE(object_to_be_created['path'])
+        try:
+            object_file.parse(force_parse=True)# Cache system not faster yet
+        except FileNotFoundError:
+            pass
+        else:
+            if object_to_be_created['type'] == 'Faces':
+                my_object=FACES(to_be_drew=True,vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+            elif object_to_be_created['type'] == 'Vertices':
+                my_object=VERTICES(to_be_drew=True,vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+            all_objects.append(my_object)
+        finally:
+            del object_file # Release some memory
 
-    debug_axes=True
-    if debug_axes:
+    if project.debug_axes:
         axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
         axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
         axe_z=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
+        all_objects.append(axe_x)
+        all_objects.append(axe_y)
+        all_objects.append(axe_z)
 
+    if project.debug_rotation_axes:
         rotation_axe_x=ROTATION_AXES(to_be_drew=True,vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
         rotation_axe_y=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
         rotation_axe_z=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
         all_objects.append(rotation_axe_x)
         all_objects.append(rotation_axe_y)
         all_objects.append(rotation_axe_z)
-        all_objects.append(axe_x)
-        all_objects.append(axe_y)
-        all_objects.append(axe_z)
 
 
     pygame.init()
     # todo: changer le système de fenêtre par celui de opengl GLUT
-    display = [1920//2,1080//2]
-    #display = [1920,1080]
-    pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
-    glViewport(0,0,display[0],display[1])
+    pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
+    glViewport(0,0, project.display[0], project.display[1])
     glMatrixMode(GL_PROJECTION)
-    gluPerspective(45,display[0]/display[1], 1, 500)
+    gluPerspective(project.fov, project.display[0]/project.display[1], project.near_plane, project.far_plane)
 
 
     #light_ambient = [1.0, 1.0, 1.0, 1.0]
@@ -90,8 +93,8 @@ def main():
 
             gluLookAt(
                 camera.coordinates[0], camera.coordinates[1], camera.coordinates[2],
-                camera.coordinates[0]+camera.front.x, camera.coordinates[1]+camera.front.y, camera.coordinates[2]+camera.front.z,
-                camera.up.x, camera.up.y, camera.up.z
+                camera.coordinates[0] + camera.front_vec.x, camera.coordinates[1] + camera.front_vec.y, camera.coordinates[2] + camera.front_vec.z,
+                camera.up_vec.x, camera.up_vec.y, camera.up_vec.z
             )
 
 
@@ -103,8 +106,8 @@ def main():
             pygame.display.flip()
             something_changed=False
 
-            #print(camera.front.list, camera.up.list, camera.right.list)
-            #print(camera.front.getLength(), camera.right.getLength(), camera.up.getLength())
+            #print(camera.front_vec.list, camera.right_vec.list, camera.up_vec.list)
+            #print(camera.front_vec.getLengthNoSqrt(), camera.right_vec.getLengthNoSqrt(), camera.up_vec.getLengthNoSqrt())
         #print(clock.get_fps())
 
         for event in pygame.event.get():
@@ -125,37 +128,37 @@ def main():
             quit()
         if pygame.key.get_pressed()[pygame.K_UP]:
             if isinstance(selected, CAMERA):
-                selected.forward3D()
+                selected.moveForward()
             else:
                 selected.addCoordinates([0, 0, -0.05])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_DOWN]:
             if isinstance(selected, CAMERA):
-                selected.backward3D()
+                selected.moveBackward()
             else:
                 selected.addCoordinates([0, 0, 0.05])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             if isinstance(selected, CAMERA):
-                selected.left3D()
+                selected.moveLeft()
             else:
                 selected.addCoordinates([-0.05, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_RIGHT]:
             if isinstance(selected, CAMERA):
-                selected.right3D()
+                selected.moveRight()
             else:
                 selected.addCoordinates([0.05, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_c]:
             if isinstance(selected, CAMERA):
-                selected.down3D()
+                selected.moveDown()
             else:
                 selected.addCoordinates([0, -0.05, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_SPACE]:
             if isinstance(selected, CAMERA):
-                selected.up3D()
+                selected.moveUp()
             else:
                 selected.addCoordinates([0, 0.05, 0])
             something_changed = True
@@ -199,9 +202,6 @@ def main():
         if pygame.key.get_pressed()[pygame.K_RETURN]:
             if isinstance(selected, CAMERA):
                 selected.reset()
-            else:
-                selected.rotation=[0,0,0]
-                selected.coordinates=[0,0,0]
             something_changed = True
 
 

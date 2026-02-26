@@ -3,10 +3,17 @@ from math import pi, sqrt
 class QUATERNION:
     def __init__(self, w: float = 0.0, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> None:
         self.w = w # partie réel égale cos(angle/2)+sin(angle/2) pour les rotation et 0 pour un vecteur 3d
+        self.init_w = w
         self.x = x # co du vecteur 3d autour duquel je tourne
+        self.init_x = x
         self.y = y # co du vecteur 3d autour duquel je tourne
+        self.init_y = y
         self.z = z # co du vecteur 3d autour duquel je tourne
+        self.init_z = z
         self.list=[w,x,y,z]
+
+    def reset(self):
+        self.w, self.x, self.y, self.z = self.init_w, self.init_x, self.init_y, self.init_z
 
     def __mul__(self, other): # jsp ce que je vais en faire,.... mtn je sais
         # il y a des méthodes qui permettent de faire supporter des operand a un object en l'occurance le *
@@ -25,8 +32,8 @@ class QUATERNION:
     def inverse(self):
         return QUATERNION(w=self.w / self.getLengthNoSqrt(), x=-self.x / self.getLengthNoSqrt(), y=-self.y / self.getLengthNoSqrt(), z=-self.z / self.getLengthNoSqrt())
 
-    #def __invert__(self): # hihihi je m'amuse ducoup
-    #    return QUATERNION(w=self.w, x= -self.x, y= -self.y, z= -self.z)
+    def __invert__(self): # hihihi je m'amuse ducoup
+        return QUATERNION(w=self.w / self.getLengthNoSqrt(), x=-self.x / self.getLengthNoSqrt(), y=-self.y / self.getLengthNoSqrt(), z=-self.z / self.getLengthNoSqrt())
 
     def getLengthNoSqrt(self) -> float:
         return self.w ** 2 + self.x ** 2 + self.y ** 2 + self.z ** 2
