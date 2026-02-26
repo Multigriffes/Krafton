@@ -1,5 +1,6 @@
 from parameters import *
 import cv2
+from math import sqrt
 
 def groupe_leds(point_list:list):
     point_visite = [1 for i in range(len(point_list))] # 1 pour point non visite, 0 sinon
@@ -34,7 +35,7 @@ def blob_detection_params():
     detector = cv2.SimpleBlobDetector_create(params)
     return detector
 
-def produit_scalaire(mat_1: np.array, mat_2: np.array) -> np.array:
+def produit_matriciel(mat_1: np.array, mat_2: np.array) -> np.array:
     if mat_1.shape[1] != mat_2.shape[0]:
         raise ValueError("Dimensions incompatibles pour le produit matriciel")
     
@@ -74,7 +75,52 @@ def compute_A(lst_points_image, lst_points_realite):
         A[i+1, 7] = lst_points_image[i][1]*lst_points_realite[i][1]
         A[i+1, 8] = lst_points_image[i][1]
 
-def calcul_SVD(A:np.array):
-    A_t = A.T
-    A_tA = produit_scalaire(A_t, A)
+    return A
+
+def compute_homography(lst_images):
+    lst_H = []
+    for image in range(lst_images):
+        A = compute_A(image, object_points_list_2D)
+
+        U, S, V = np.linalg.svd(A)
+        h = V[-1]
+        H = reshape(h, (3, 3))
+        # Normaliser
+        lst_H.append(A)
+
+    return lst_H
+
+def reshape(mat, dimension):
+    mat2 = np.zeros(dimension)
+
+    for i in range(len(mat)):
+        x, y = i%3, i//3
+        mat2[x, y] = mat[i]
     
+    return mat2
+
+def compute_intrinsincs(B, H):
+    Cy = (B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2])/(B[0, 0]*B[1, 1] - B[0, 1]**2)
+    l = B[2, 2] - (B[0, 2]**2 + Cy(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
+    Fx = sqrt(l/B[0, 0])
+    Fy = sqrt(l*B[0, 0]/(B[0, 0]*B[1, 1] - B[0, 1]**2))
+    g = -B[0, 1]*(Fx**2)*Fy/l
+    Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
+
+    K = np.array([[Fx, l, Cx], [0, Fy, Cy], [0, 0, 1]])
+
+    inv_K = np.linalg.inv(K)
+    r1_r2_t = produit_matriciel(inv_K, H)
+
+    R1 = produit_matriciel(inv_K, H[:, 0])
+    R2 = produit_matriciel(inv_K, H[:, 1])
+    T = produit_matriciel(inv_K, H[:, 2])
+
+    r1 = l*R1
+    r2 = l*R2
+    r3 = produit_matriciel(r1, r2)
+    T = l*T
+
+    R = np.array([r1, r2, r3]).T
+
+    return K, R, T
