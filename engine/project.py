@@ -13,3 +13,7 @@ display = [1920//2, 1080//2]
 fov = 45
 near_plane = 1
 far_plane = 500
+
+# Déplacements
+speed = 0.05
+twoDMovement = True

@@ -19,11 +19,13 @@ def main():
         except FileNotFoundError:
             pass
         else:
-            if object_to_be_created['type'] == 'Faces':
-                my_object=FACES(to_be_drew=True,vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
-            elif object_to_be_created['type'] == 'Vertices':
-                my_object=VERTICES(to_be_drew=True,vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
-            all_objects.append(my_object)
+            match object_to_be_created['type']:
+                case 'Faces':
+                    my_object=FACES(to_be_drew=True,vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+                    all_objects.append(my_object)
+                case 'Vertices':
+                    my_object=VERTICES(to_be_drew=True,vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+                    all_objects.append(my_object)
         finally:
             del object_file # Release some memory
 
@@ -128,37 +130,37 @@ def main():
             quit()
         if pygame.key.get_pressed()[pygame.K_UP]:
             if isinstance(selected, CAMERA):
-                selected.moveForward()
+                selected.moveForward(lock_height=project.twoDMovement)
             else:
                 selected.addCoordinates([0, 0, -0.05])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_DOWN]:
             if isinstance(selected, CAMERA):
-                selected.moveBackward()
+                selected.moveBackward(lock_height=project.twoDMovement)
             else:
                 selected.addCoordinates([0, 0, 0.05])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             if isinstance(selected, CAMERA):
-                selected.moveLeft()
+                selected.moveLeft(lock_height=project.twoDMovement)
             else:
                 selected.addCoordinates([-0.05, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_RIGHT]:
             if isinstance(selected, CAMERA):
-                selected.moveRight()
+                selected.moveRight(lock_height=project.twoDMovement)
             else:
                 selected.addCoordinates([0.05, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_c]:
             if isinstance(selected, CAMERA):
-                selected.moveDown()
+                selected.moveDown(lock_height=project.twoDMovement)
             else:
                 selected.addCoordinates([0, -0.05, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_SPACE]:
             if isinstance(selected, CAMERA):
-                selected.moveUp()
+                selected.moveUp(lock_height=project.twoDMovement)
             else:
                 selected.addCoordinates([0, 0.05, 0])
             something_changed = True
