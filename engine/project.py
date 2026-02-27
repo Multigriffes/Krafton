@@ -8,6 +8,7 @@ objects = [
 
 # Display
 display = [1920//2, 1080//2]
+fpsLimit = 144
 
 # Projection
 fov = 45
@@ -16,4 +17,4 @@ far_plane = 500
 
 # Déplacements
 speed = 0.05
-twoDMovement = True
+lockedAxe = None

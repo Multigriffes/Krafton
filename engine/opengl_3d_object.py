@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from random import randint
 from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize
-from math import cos, sin, sqrt
+from math import cos, sin
 
 #no_mat = [0.0, 0.0, 0.0, 1.0]
 #mat_ambient = [0.0, 0.0, 0.3, 1.0]
@@ -184,89 +184,95 @@ class CAMERA:
             self.coordinates[1] += vector[1] * coefficient
             self.coordinates[2] += vector[2] * coefficient
 
-    def moveForward(self, speed: float = None, lock_height : bool = False) -> None:
+    def moveForward(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:
             speed = self.speed
-        if not lock_height:
+        if locked_axe is None:
             # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
             # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
             self.coordinates[0] += speed*self.front_vec.x
             self.coordinates[1] += speed*self.front_vec.y
             self.coordinates[2] += speed*self.front_vec.z
         else:
-            missingLength = 1 - sqrt(self.front_vec.getLengthNoSqrt())
-            self.coordinates[0] += speed * (self.front_vec.x + (missingLength * self.front_vec.x))
-            self.coordinates[2] += speed * (self.front_vec.z + (missingLength * self.front_vec.z))
+            newUpVector=self.front_vec.getVectorWithout(locked_axe)
+            self.coordinates[0] += speed * newUpVector.x
+            self.coordinates[1] += speed * newUpVector.y
+            self.coordinates[2] += speed * newUpVector.z
 
-    def moveBackward(self, speed: float = None, lock_height : bool = False) -> None:
+    def moveBackward(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:
             speed = self.speed
-        if not lock_height:
+        if locked_axe is None:
             # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
             # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
             self.coordinates[0] -= speed*self.front_vec.x
             self.coordinates[1] -= speed*self.front_vec.y
             self.coordinates[2] -= speed*self.front_vec.z
         else:
-            missingLength = 1 - sqrt(self.front_vec.getLengthNoSqrt())
-            self.coordinates[0] -= speed * (self.front_vec.x + (missingLength * self.front_vec.x))
-            self.coordinates[2] -= speed * (self.front_vec.z + (missingLength * self.front_vec.z))
+            newUpVector=self.front_vec.getVectorWithout(locked_axe)
+            self.coordinates[0] -= speed * newUpVector.x
+            self.coordinates[1] -= speed * newUpVector.y
+            self.coordinates[2] -= speed * newUpVector.z
 
-    def moveUp(self, speed: float = None, lock_height : bool = False) -> None:
+    def moveUp(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:
             speed = self.speed
-        if not lock_height:
+        if locked_axe is None:
             # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
             # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
             self.coordinates[0] += speed*self.up_vec.x
             self.coordinates[1] += speed*self.up_vec.y
             self.coordinates[2] += speed*self.up_vec.z
         else:
-            missingLength = 1 - sqrt(self.up_vec.getLengthNoSqrt())
-            self.coordinates[0] += speed * (self.up_vec.x + (missingLength * self.up_vec.x))
-            self.coordinates[2] += speed * (self.up_vec.z + (missingLength * self.up_vec.z))
+            newUpVector=self.up_vec.getVectorWithout(locked_axe)
+            self.coordinates[0] += speed * newUpVector.x
+            self.coordinates[1] += speed * newUpVector.y
+            self.coordinates[2] += speed * newUpVector.z
 
-    def moveDown(self, speed: float = None, lock_height : bool = False) -> None:
+    def moveDown(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:
             speed = self.speed
-        if not lock_height:
+        if locked_axe is None:
             # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
             # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
             self.coordinates[0] -= speed*self.up_vec.x
             self.coordinates[1] -= speed*self.up_vec.y
             self.coordinates[2] -= speed*self.up_vec.z
         else:
-            missingLength = 1 - sqrt(self.up_vec.getLengthNoSqrt())
-            self.coordinates[0] -= speed * (self.up_vec.x + (missingLength * self.up_vec.x))
-            self.coordinates[2] -= speed * (self.up_vec.z + (missingLength * self.up_vec.z))
+            newUpVector=self.up_vec.getVectorWithout(locked_axe)
+            self.coordinates[0] -= speed * newUpVector.x
+            self.coordinates[1] -= speed * newUpVector.y
+            self.coordinates[2] -= speed * newUpVector.z
 
-    def moveLeft(self, speed: float = None, lock_height : bool = False) -> None:
+    def moveLeft(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:
             speed = self.speed
-        if not lock_height:
+        if locked_axe is None:
             # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
             # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
             self.coordinates[0] -= speed*self.right_vec.x
             self.coordinates[1] -= speed*self.right_vec.y
             self.coordinates[2] -= speed*self.right_vec.z
         else:
-            missingLength = 1 - sqrt(self.right_vec.getLengthNoSqrt())
-            self.coordinates[0] -= speed * (self.right_vec.x + (missingLength * self.right_vec.x))
-            self.coordinates[2] -= speed * (self.right_vec.z + (missingLength * self.right_vec.z))
+            newUpVector=self.right_vec.getVectorWithout(locked_axe)
+            self.coordinates[0] -= speed * newUpVector.x
+            self.coordinates[1] -= speed * newUpVector.y
+            self.coordinates[2] -= speed * newUpVector.z
 
-    def moveRight(self, speed: float = None, lock_height : bool = False) -> None:
+    def moveRight(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:
             speed = self.speed
-        if not lock_height:
+        if locked_axe is None:
             # Il faudrait pas qu'en regardant en haut on se mette à moins avancer tout droit si on se déplace que sur le plan.
             # Il suffit pas de juste ne pas faire de déplacement en Y. Je sais pas encore comment faire ah si ah non
             self.coordinates[0] += speed*self.right_vec.x
             self.coordinates[1] += speed*self.right_vec.y
             self.coordinates[2] += speed*self.right_vec.z
         else:
-            missingLength = 1 - sqrt(self.right_vec.getLengthNoSqrt())
-            self.coordinates[0] += speed * (self.right_vec.x + (missingLength * self.right_vec.x))
-            self.coordinates[2] += speed * (self.right_vec.z + (missingLength * self.right_vec.z))
+            newUpVector=self.right_vec.getVectorWithout(locked_axe)
+            self.coordinates[0] += speed * newUpVector.x
+            self.coordinates[1] += speed * newUpVector.y
+            self.coordinates[2] += speed * newUpVector.z
 
     def reset(self) -> None:
         self.coordinates = [0,0,0]

@@ -29,7 +29,7 @@ def main():
         finally:
             del object_file # Release some memory
 
-    if project.debug_axes:
+    if project.debug_axes: # Création des axes en créant des lignes à deux points
         axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
         axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
         axe_z=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
@@ -37,7 +37,7 @@ def main():
         all_objects.append(axe_y)
         all_objects.append(axe_z)
 
-    if project.debug_rotation_axes:
+    if project.debug_rotation_axes: # Création des axes de rotation à partir des sin et cos
         rotation_axe_x=ROTATION_AXES(to_be_drew=True,vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
         rotation_axe_y=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
         rotation_axe_z=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
@@ -80,14 +80,13 @@ def main():
     #glEnable(GL_LIGHT0)
 
     clock=pygame.time.Clock()
-    lastFps = 0
     selected = camera
     run = True
     something_changed = True
 
 #_______________________________________________________Main Loop_______________________________________________________
     while run:
-        clock.tick(144)
+        clock.tick(project.fpsLimit)
         if something_changed:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             glMatrixMode(GL_MODELVIEW)
@@ -130,37 +129,37 @@ def main():
             quit()
         if pygame.key.get_pressed()[pygame.K_UP]:
             if isinstance(selected, CAMERA):
-                selected.moveForward(lock_height=project.twoDMovement)
+                selected.moveForward(locked_axe=project.lockedAxe)
             else:
                 selected.addCoordinates([0, 0, -0.05])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_DOWN]:
             if isinstance(selected, CAMERA):
-                selected.moveBackward(lock_height=project.twoDMovement)
+                selected.moveBackward(locked_axe=project.lockedAxe)
             else:
                 selected.addCoordinates([0, 0, 0.05])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             if isinstance(selected, CAMERA):
-                selected.moveLeft(lock_height=project.twoDMovement)
+                selected.moveLeft(locked_axe=project.lockedAxe)
             else:
                 selected.addCoordinates([-0.05, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_RIGHT]:
             if isinstance(selected, CAMERA):
-                selected.moveRight(lock_height=project.twoDMovement)
+                selected.moveRight(locked_axe=project.lockedAxe)
             else:
                 selected.addCoordinates([0.05, 0, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_c]:
             if isinstance(selected, CAMERA):
-                selected.moveDown(lock_height=project.twoDMovement)
+                selected.moveDown(locked_axe=project.lockedAxe)
             else:
                 selected.addCoordinates([0, -0.05, 0])
             something_changed = True
         if pygame.key.get_pressed()[pygame.K_SPACE]:
             if isinstance(selected, CAMERA):
-                selected.moveUp(lock_height=project.twoDMovement)
+                selected.moveUp(locked_axe=project.lockedAxe)
             else:
                 selected.addCoordinates([0, 0.05, 0])
             something_changed = True
