@@ -107,7 +107,7 @@ def compute_intrinsincs(B, H):
     g = -B[0, 1]*(Fx**2)*Fy/l
     Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
 
-    K = np.array([[Fx, l, Cx], [0, Fy, Cy], [0, 0, 1]])
+    K = np.array([[Fx, g, Cx], [0, Fy, Cy], [0, 0, 1]])
 
     inv_K = np.linalg.inv(K)
     r1_r2_t = produit_matriciel(inv_K, H)
@@ -124,3 +124,26 @@ def compute_intrinsincs(B, H):
     R = np.array([r1, r2, r3]).T
 
     return K, R, T
+
+def compute_v(hi, hj):
+    return np.array([hi[0]*hj[0],
+                     hi[0]*hj[1] + hi[1]*hj[0],
+                     hi[1]*hj[1],
+                     hi[2]*hj[0] + hi[0]*hj[2],
+                     hi[2]*hj[1] + hi[1]*hj[2],
+                     hi[2]*hj[2]])
+
+def compute_V(lst_H):
+    V = np.zeros((len(lst_H)*2, 1))
+    for i in range(0, 2*len(lst_H), 2):
+        h1 = lst_H[i/2][:, 0]
+        h2 = lst_H[i/2][:, 1]
+
+        v11 = compute_v(h1, h1)
+        v12 = compute_v(h1, h2)
+        v22 = compute_v(h1, h2)
+
+        V[i, 0] = v12.T
+        V[i+1, 0] = v11.T - v22.T
+
+    return V
