@@ -49,16 +49,14 @@ configuration_camera.py
 # dimension chessboard (en carres), dimension carre (en mm)
 chessboard_info = [(6, 8), 22]
 nb_photo_max = 15
-object_points_list_2D = [[i*chessboard_info[1], j*chessboard_info[1]] for i in range(chessboard_info[0][0]) for j in range(chessboard_info[0][1])]
-object_points_list_3D = [[x*chessboard_info[1], y*chessboard_info[1], 0] for y in range(chessboard_info[0][0]) for x in range(chessboard_info[0][1])]
+object_points_list = [[i*chessboard_info[1], j*chessboard_info[1]] for i in range(chessboard_info[0][0]) for j in range(chessboard_info[0][1])]
+
 K1 = read('K1')
 K2 = read('K2')
-R1 = read('R1')
-R2 = read('R2')
-T1 = read('T1')
-T2 = read('T2')
-H1 = read('H1')
-H2 = read('H2')
+R = read('R')
+t = read('t')
+P1 = read('P1')
+P2 = read('P2')
 
 '''
 fin configuration_camera.py

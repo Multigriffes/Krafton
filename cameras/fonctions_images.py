@@ -51,79 +51,56 @@ def produit_matriciel(mat_1: np.array, mat_2: np.array) -> np.array:
     return mat
 
 def compute_A(lst_points_image, lst_points_realite):
-    A = np.zeros((len(lst_points_realite)*2, 9))
-    lst_type = [[], []]
 
-    for i in range(0, len(lst_points_realite), 2):
-        A[i, 0] = -lst_points_realite[i][0]
-        A[i, 1] = -lst_points_realite[i][1]
-        A[i, 2] = -1
-        A[i, 3] = 0
-        A[i, 4] = 0
-        A[i, 5] = 0
-        A[i, 6] = lst_points_image[i][0]*lst_points_realite[i][0]
-        A[i, 7] = lst_points_image[i][0]*lst_points_realite[i][1]
-        A[i, 8] = lst_points_image[i][0]
+    n = len(lst_points_realite)
+    A = np.zeros((2*n, 9))
 
-        A[i+1, 0] = 0
-        A[i+1, 1] = 0
-        A[i+1, 2] = 0
-        A[i+1, 3] = -lst_points_realite[i][0]
-        A[i+1, 4] = -lst_points_realite[i][1]
-        A[i+1, 5] = -1
-        A[i+1, 6] = lst_points_image[i][1]*lst_points_realite[i][0]
-        A[i+1, 7] = lst_points_image[i][1]*lst_points_realite[i][1]
-        A[i+1, 8] = lst_points_image[i][1]
+    for i in range(n):
+        X, Y = lst_points_realite[i]
+        u, v = lst_points_image[i]
+
+        A[2*i] = [-X, -Y, -1, 0, 0, 0, u*X, u*Y, u]
+        A[2*i+1] = [0, 0, 0, -X, -Y, -1, v*X, v*Y, v]
 
     return A
 
-def compute_homography(lst_images):
-    lst_H = []
-    for image in range(lst_images):
-        A = compute_A(image, object_points_list_2D)
+def compute_homography(lst_images, object_points):
 
-        U, S, V = np.linalg.svd(A)
-        h = V[-1]
-        H = reshape(h, (3, 3))
-        # Normaliser
-        lst_H.append(A)
+    lst_H = []
+
+    for image_points in lst_images:
+
+        img_norm, T_img = normalize_points(image_points)
+        obj_norm, T_obj = normalize_points(object_points)
+
+        A = compute_A(img_norm, obj_norm)
+
+        U, S, Vt = np.linalg.svd(A)
+        h = Vt[-1]
+        H_norm = h.reshape(3,3)
+
+        H = produit_matriciel(np.linalg.inv(T_img),
+                              produit_matriciel(H_norm, T_obj))
+
+        H = H / H[2,2]
+
+        lst_H.append(H)
 
     return lst_H
 
-def reshape(mat, dimension):
-    mat2 = np.zeros(dimension)
-
-    for i in range(len(mat)):
-        x, y = i%3, i//3
-        mat2[x, y] = mat[i]
-    
-    return mat2
-
-def compute_intrinsincs(B, H):
+def compute_intrinsincs(B):
     Cy = (B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2])/(B[0, 0]*B[1, 1] - B[0, 1]**2)
-    l = B[2, 2] - (B[0, 2]**2 + Cy(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
+    l = B[2, 2] - (B[0, 2]**2 + Cy*(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
     Fx = sqrt(l/B[0, 0])
     Fy = sqrt(l*B[0, 0]/(B[0, 0]*B[1, 1] - B[0, 1]**2))
     g = -B[0, 1]*(Fx**2)*Fy/l
     Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
 
-    K = np.array([[Fx, g, Cx], [0, Fy, Cy], [0, 0, 1]])
+    K = np.array([[Fx, g, Cx],
+                  [0, Fy, Cy],
+                  [0, 0, 1]])
 
-    inv_K = np.linalg.inv(K)
-    r1_r2_t = produit_matriciel(inv_K, H)
-
-    R1 = produit_matriciel(inv_K, H[:, 0])
-    R2 = produit_matriciel(inv_K, H[:, 1])
-    T = produit_matriciel(inv_K, H[:, 2])
-
-    r1 = l*R1
-    r2 = l*R2
-    r3 = produit_matriciel(r1, r2)
-    T = l*T
-
-    R = np.array([r1, r2, r3]).T
-
-    return K, R, T
+    return K
 
 def compute_v(hi, hj):
     return np.array([hi[0]*hj[0],
@@ -134,16 +111,114 @@ def compute_v(hi, hj):
                      hi[2]*hj[2]])
 
 def compute_V(lst_H):
-    V = np.zeros((len(lst_H)*2, 1))
-    for i in range(0, 2*len(lst_H), 2):
-        h1 = lst_H[i/2][:, 0]
-        h2 = lst_H[i/2][:, 1]
+    V = np.zeros((2*len(lst_H), 6))
+    for i in range(len(lst_H)):
+        h1 = lst_H[i][:, 0]
+        h2 = lst_H[i][:, 1]
 
         v11 = compute_v(h1, h1)
         v12 = compute_v(h1, h2)
-        v22 = compute_v(h1, h2)
+        v22 = compute_v(h2, h2)
 
-        V[i, 0] = v12.T
-        V[i+1, 0] = v11.T - v22.T
+        V[2*i] = v12
+        V[2*i+1] = v11.T - v22.T
 
     return V
+
+def compute_B(V):
+    U, S, Vt = np.linalg.svd(V)
+    b = Vt[-1]
+    B11, B12, B22, B13, B23, B33 = b
+    B = np.array([[B11, B12, B13],
+                  [B12, B22, B23],
+                  [B13, B23, B33]])
+    
+    return B
+
+def compute_extrinsics(K, H):
+    inv_K = np.linalg.inv(K)
+
+    h1 = H[:,0].reshape(3,1)
+    h2 = H[:,1].reshape(3,1)
+    h3 = H[:,2].reshape(3,1)
+
+    r1 = produit_matriciel(inv_K, h1)
+    l = 1 / np.linalg.norm(r1)
+    r1 = l * r1
+
+    r2 = l * produit_matriciel(inv_K, h2)
+    r3 = np.cross(r1.flatten(), r2.flatten()).reshape(3,1)
+
+    t = l * produit_matriciel(inv_K, h3)
+
+    R = np.column_stack((r1.flatten(), r2.flatten(), r3.flatten()))
+
+    # Correction orthogonalité
+    U, _, Vt = np.linalg.svd(R)
+    R = produit_matriciel(U, Vt)
+
+    return R, t.flatten()
+
+def normalize_points(points):
+    n = len(points)
+    points = np.array(points)
+
+    mean_x = np.mean(points[:,0])
+    mean_y = np.mean(points[:,1])
+
+    translated = points - np.array([mean_x, mean_y])
+
+    dist = sqrt(translated[:,0]**2 + translated[:,1]**2)
+    mean_dist = np.mean(dist)
+
+    s = np.sqrt(2) / mean_dist
+
+    T = np.array([
+        [s, 0, -s*mean_x],
+        [0, s, -s*mean_y],
+        [0, 0, 1]
+    ])
+
+    points_h = np.column_stack((points, np.ones(n))).T
+    normalized = produit_matriciel(T, points_h)
+
+    normalized = normalized[:2].T
+
+    return normalized, T
+
+def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
+    R_list = []
+    t_list = []
+
+    for (R1, t1), (R2, t2) in zip(extrinsics1, extrinsics2):
+        
+        R12 = produit_matriciel(R2, R1.T)
+        t12 = produit_matriciel(t2-R12, t1)
+
+        R_list.append(R12)
+        t_list.append(t12)
+
+    
+    # Moyenne des translation
+    t_mean = np.mean(t_list, axis=0)
+
+    # Moyenne des rotations (avec svd)
+    R_stack = np.mean(R_list, axis=0)
+    U, _, Vt = np.linalg.svd(R_stack)
+    R_mean = produit_matriciel(U, Vt)
+
+    return R_mean, t_mean
+
+def compute_projection_matrices(K1, K2, R, t):
+
+    P1 = produit_matriciel(K1, np.hstack((np.eye(3), np.zeros((3,1)))))
+    P2 = produit_matriciel(K2, np.hstack((R, t.reshape(3,1))))
+
+    return P1, P2
+
+def compute_projection_matrices(K1, K2, R, t):
+
+    P1 = K1 @ np.hstack((np.eye(3), np.zeros((3,1))))
+    P2 = K2 @ np.hstack((R, t.reshape(3,1)))
+
+    return P1, P2
