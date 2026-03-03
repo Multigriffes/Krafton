@@ -47,6 +47,12 @@ class OBJECT_BASE:
             self.rotation[1] += rotation[1]
             self.rotation[2] += rotation[2]
 
+    def moveAlong(self, coefficient: float = 1, vector = None) -> None:
+        if vector is not None:
+            self.coordinates[0] += vector[0] * coefficient
+            self.coordinates[1] += vector[1] * coefficient
+            self.coordinates[2] += vector[2] * coefficient
+
 class VERTICES(OBJECT_BASE):
     def compile(self) -> None:
         if glIsList(self.gl_list_id) == GL_FALSE:

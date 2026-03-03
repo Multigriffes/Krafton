@@ -86,7 +86,16 @@ def main():
 
 #_______________________________________________________Main Loop_______________________________________________________
     while run:
-        clock.tick(project.fpsLimit)
+        timeSinceLastFrame = clock.tick(project.fpsLimit)
+        #_____________Animation_____________________
+        if project.animation:
+            for animation in project.animation:
+                object_to_be_animated = all_objects[animation['object']-1]
+                animationVector = [animation['goto'][0]-object_to_be_animated.coordinates[0], animation['goto'][1]-object_to_be_animated.coordinates[1], animation['goto'][2]-object_to_be_animated.coordinates[2]]
+                object_to_be_animated.moveAlong(timeSinceLastFrame/animation['time'], animationVector)
+                print(object_to_be_animated.coordinates)
+            something_changed = True
+        #___________________________________________
         if something_changed:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             glMatrixMode(GL_MODELVIEW)
