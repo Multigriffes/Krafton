@@ -1,12 +1,10 @@
 import cv2
-import numpy as np
-from parameters import object_points_list
-from fonctions_images import *
-import csv
+from parameters import object_points_list, take_photo, nb_photo_max, quitter
+from fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices
 from write_read_csv import write, clear_file
 
-capture1 = cv2.VideoCapture(0)
-capture2 = cv2.VideoCapture(1)
+capture1 = cv2.VideoCapture(1)
+capture2 = cv2.VideoCapture(2)
 ret, frame = capture1.read()
 image_size = (frame.shape[0], frame.shape[1])
 
@@ -20,12 +18,16 @@ while capture1.isOpened() and capture2.isOpened():
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
 
-    if cv2.waitKey(1) == ord(take_photo) and nb_photo != nb_photo_max:
+    if cv2.waitKey(100) == ord(take_photo) and nb_photo != nb_photo_max:
         nb_photo += 1
         lst_photo1.append(frame1)
         lst_photo2.append(frame2)
+        ret1, corners1 = cv2.findChessboardCorners()
+        cv2.imshow(str(nb_photo), frame1)
+        cv2.imshow(str(nb_photo)*2, frame2)
+        print(nb_photo)
 
-    if cv2.waitKey(1) == ord(quitter):
+    if (cv2.waitKey(100) == ord(quitter)) or nb_photo == nb_photo_max:
         break
     if ret1 and ret2:
         cv2.imshow("test1", frame1)

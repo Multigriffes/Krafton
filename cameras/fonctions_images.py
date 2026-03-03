@@ -218,7 +218,7 @@ def compute_projection_matrices(K1, K2, R, t):
 
 def compute_projection_matrices(K1, K2, R, t):
 
-    P1 = K1 @ np.hstack((np.eye(3), np.zeros((3,1))))
-    P2 = K2 @ np.hstack((R, t.reshape(3,1)))
+    P1 = produit_matriciel(K1, np.hstack((np.eye(3), np.zeros((3,1)))))
+    P2 = produit_matriciel(K2, np.hstack((R, t.reshape(3,1))))
 
     return P1, P2
