@@ -30,9 +30,6 @@ while capture1.isOpened() and capture2.isOpened():
 
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
-    
-    frame1 = image_transform(frame1, H1)
-    frame2 = image_transform(frame2, H2)
 
     # Detection led
     keypoints1 = detector.detect(frame1)
