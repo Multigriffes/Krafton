@@ -50,7 +50,7 @@ def produit_matriciel(mat_1: np.array, mat_2: np.array) -> np.array:
     
     return mat
 
-def compute_A(lst_points_image, lst_points_realite):
+def compute_A(lst_points_realite, lst_points_image):
 
     n = len(lst_points_realite)
     A = np.zeros((2*n, 9))
@@ -73,7 +73,7 @@ def compute_homography(lst_images, object_points):
         img_norm, T_img = normalize_points(image_points)
         obj_norm, T_obj = normalize_points(object_points)
 
-        A = compute_A(img_norm, obj_norm)
+        A = compute_A(obj_norm, img_norm)
 
         U, S, Vt = np.linalg.svd(A)
         h = Vt[-1]
@@ -153,7 +153,6 @@ def compute_extrinsics(K, H):
 
     R = np.column_stack((r1.flatten(), r2.flatten(), r3.flatten()))
 
-    # Correction orthogonalité
     U, _, Vt = np.linalg.svd(R)
     R = produit_matriciel(U, Vt)
 
@@ -193,14 +192,15 @@ def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
     for (R1, t1), (R2, t2) in zip(extrinsics1, extrinsics2):
         
         R12 = produit_matriciel(R2, R1.T)
-        t12 = produit_matriciel(t2-R12, t1)
+        t12 = t2 - produit_matriciel(R12, t1.reshape(3,1)).flatten()
 
         R_list.append(R12)
         t_list.append(t12)
 
     
     # Moyenne des translation
-    t_mean = np.mean(t_list, axis=0)
+    t_list = [t.reshape(3,) for t in t_list]
+    t_mean = np.mean(np.array(t_list), axis=0)
 
     # Moyenne des rotations (avec svd)
     R_stack = np.mean(R_list, axis=0)
@@ -208,13 +208,6 @@ def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
     R_mean = produit_matriciel(U, Vt)
 
     return R_mean, t_mean
-
-def compute_projection_matrices(K1, K2, R, t):
-
-    P1 = produit_matriciel(K1, np.hstack((np.eye(3), np.zeros((3,1)))))
-    P2 = produit_matriciel(K2, np.hstack((R, t.reshape(3,1))))
-
-    return P1, P2
 
 def compute_projection_matrices(K1, K2, R, t):
 

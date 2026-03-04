@@ -1,16 +1,12 @@
 import cv2
-from parameters import object_points_list, take_photo, nb_photo_max, quitter
+from parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info
 from fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices
 from write_read_csv import write, clear_file
 
-capture1 = cv2.VideoCapture(1)
-capture2 = cv2.VideoCapture(2)
-ret, frame = capture1.read()
-image_size = (frame.shape[0], frame.shape[1])
+capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
 
 nb_photo = 0
-lst_points1 = []
-lst_points2 = []
 lst_photo1 = []
 lst_photo2 = []
 
@@ -18,17 +14,25 @@ while capture1.isOpened() and capture2.isOpened():
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
 
-    if cv2.waitKey(100) == ord(take_photo) and nb_photo != nb_photo_max:
-        nb_photo += 1
-        lst_photo1.append(frame1)
-        lst_photo2.append(frame2)
-        ret1, corners1 = cv2.findChessboardCorners()
-        cv2.imshow(str(nb_photo), frame1)
-        cv2.imshow(str(nb_photo)*2, frame2)
-        print(nb_photo)
+    key = cv2.waitKey(100)
 
-    if (cv2.waitKey(100) == ord(quitter)) or nb_photo == nb_photo_max:
+    if key == ord(take_photo) and nb_photo != nb_photo_max:
+        frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+        frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+        corners_ret1, corners1 = cv2.findChessboardCorners(frame1, chessboard_info[0])
+        corners_ret2, corners2 = cv2.findChessboardCorners(frame2, chessboard_info[0])
+
+        if corners_ret1 and corners_ret2:
+            lst_photo1.append(corners1.reshape(-1,2))
+            lst_photo2.append(corners2.reshape(-1,2))
+            nb_photo += 1
+            print(nb_photo)
+        else:
+            print("Chessboard non detecte")
+
+    elif (key == ord(quitter)) or nb_photo == nb_photo_max:
         break
+    
     if ret1 and ret2:
         cv2.imshow("test1", frame1)
         cv2.imshow("test2", frame2)
