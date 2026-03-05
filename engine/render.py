@@ -8,3 +8,4 @@ class MAIN:
 
 
     def addObject(self, obj):
+        pass

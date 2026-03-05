@@ -39,6 +39,33 @@ class MAIN:
 
 
 
+class MAIN:
+    def __init__(self):
+        self.allObjects = []
+        self.allAnimation = project.animation
+
+
+    def parse_objects_from_project(self):
+        for object_to_be_created in project.objects:
+            object_file = OBJ_FILE(object_to_be_created['path'])
+            try:
+                object_file.parse(force_parse=True)# Cache system not faster yet
+            except FileNotFoundError:
+                pass
+            else:
+                match object_to_be_created['type']:
+                    case 'Faces':
+                        my_object=FACES(to_be_drew=True,vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+                        self.allObjects.append(my_object)
+                    case 'Vertices':
+                        my_object=VERTICES(to_be_drew=True,vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+                        self.allObjects.append(my_object)
+            finally:
+                del object_file # Release some memory
+
+
+
+
 def main():
 
     all_objects=[]
@@ -135,9 +162,9 @@ def main():
 
 
         #______________Objects to be drew___________
-            for object_to_be_drew in all_objects:
-                if object_to_be_drew.to_be_drew:
-                    object_to_be_drew.draw()
+            for object in all_objects:
+                if object.to_be_drew:
+                    object.draw()
         #____________________________________________
             pygame.display.flip()
             something_changed=False
