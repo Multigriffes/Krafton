@@ -148,13 +148,10 @@ def compute_intrinsincs(B):
     import numpy as np
     from math import sqrt
 
-    print(B)
     Cy = (B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2])/(B[0, 0]*B[1, 1] - B[0, 1]**2)
     l = B[2, 2] - (B[0, 2]**2 + Cy*(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
     Fx = sqrt(l/B[0, 0])
-    print(l*B[0, 0])
-    print((B[0, 0]*B[1, 1] - B[0, 1]**2))
-    Fy = sqrt(l*B[0, 0]/(B[0, 0]*B[1, 1] - B[0, 1]**2))
+    Fy = sqrt(l*B[0, 0]/B[0, 0]*B[1, 1] - B[0, 1]**2)
     g = -B[0, 1]*(Fx**2)*Fy/l
     Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
 
@@ -258,7 +255,7 @@ def normalize_points(points):
 
     translated = points - np.array([mean_x, mean_y])
 
-    dist = np.sqrt(translated[0,0]**2 + translated[0,1]**2)
+    dist = np.sqrt(translated[:,0]**2 + translated[:,1]**2)
     mean_dist = np.mean(dist)
 
     s = np.sqrt(2) / mean_dist
@@ -313,7 +310,41 @@ def compute_projection_matrices(K1, K2, R, t):
     '''
     import numpy as np
 
-    P1 = produit_matriciel(K1, np.hstack((np.eye(3), np.zeros((3,1)))))
-    P2 = produit_matriciel(K2, np.hstack((R, t.reshape(3,1))))
+    P1 = K1 @ np.hstack((np.eye(3), np.zeros((3,1))))
+    P2 = K2 @ np.hstack((R, t.reshape(3,1)))
 
     return P1, P2
+
+def triangulate_point(P1, P2, pt1, pt2):
+    '''
+    Triangulation d'un point 3D à partir de deux observations image.
+    
+    P1 : matrice projection camera 1 (3x4)
+    P2 : matrice projection camera 2 (3x4)
+    pt1 : (u1,v1)
+    pt2 : (u2,v2)
+
+    retourne : (X,Y,Z)
+    '''
+
+    import numpy as np
+
+    u1, v1 = pt1
+    u2, v2 = pt2
+
+    A = np.array([
+        u1 * P1[2] - P1[0],
+        v1 * P1[2] - P1[1],
+        u2 * P2[2] - P2[0],
+        v2 * P2[2] - P2[1]
+    ])
+
+    # résolution AX = 0 par SVD
+    U, S, Vt = np.linalg.svd(A)
+
+    X = Vt[-1]
+
+    # passage homogène -> cartésien
+    X = X / X[3]
+
+    return X[:3]
