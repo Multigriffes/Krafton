@@ -23,7 +23,9 @@ class OBJECT_BASE:
         self.to_be_drew=to_be_drew
 
     def draw(self,coordinates: list = None,rotation: list = None) -> None:
-        if self.gl_list_id is not None:
+        if self.gl_list_id is None:
+            self.compile()
+        else:
             glMatrixMode(GL_MODELVIEW)
             glPushMatrix()
             glTranslatef(self.coordinates[0],self.coordinates[1],self.coordinates[2]) if coordinates is None else glTranslatef(coordinates[0],coordinates[1],coordinates[2])
@@ -32,8 +34,6 @@ class OBJECT_BASE:
             glRotatef(self.rotation[2],0,0,1) if rotation is None else glRotatef(rotation[2],0,0,1)
             glCallList(self.gl_list_id)
             glPopMatrix()
-        else:
-            print('Not compiled')
 
     def addCoordinates(self,coordinates: list = None) -> None:
         if coordinates is not None:

@@ -1,3 +1,4 @@
+from multiprocessing.shared_memory import ShareableList
 import pygame
 from OpenGL.GLU import *
 from engine.opengl_3d_object import *
@@ -6,62 +7,11 @@ from engine.dot_obj_parser import *
 from engine import project
 
 
-class MAIN:
-    def __init__(self):
-        self.allObjects=[]
-        self.camera=CAMERA()
-        self.allAnimation = project.animation
-
-    def parse_animation_from_project(self):
-        self.allAnimation = project.animation
-
-    def parse_objects_from_project(self):
-        for object_to_be_created in project.objects:
-            object_file = OBJ_FILE(object_to_be_created['path'])
-            try:
-                object_file.parse(force_parse=True)# Cache system not faster yet
-            except FileNotFoundError:
-                pass
-            else:
-                match object_to_be_created['type']:
-                    case 'Faces':
-                        my_object=FACES(to_be_drew=True,vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
-                        self.allObjects.append(my_object)
-                    case 'Vertices':
-                        my_object=VERTICES(to_be_drew=True,vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
-                        self.allObjects.append(my_object)
-            finally:
-                del object_file # Release some memory
-
-    def add_animation(self, goto: list, time: float):
-        pass
-
-
-
 
 class MAIN:
     def __init__(self):
-        self.allObjects = []
-        self.allAnimation = project.animation
+        self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
 
-
-    def parse_objects_from_project(self):
-        for object_to_be_created in project.objects:
-            object_file = OBJ_FILE(object_to_be_created['path'])
-            try:
-                object_file.parse(force_parse=True)# Cache system not faster yet
-            except FileNotFoundError:
-                pass
-            else:
-                match object_to_be_created['type']:
-                    case 'Faces':
-                        my_object=FACES(to_be_drew=True,vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
-                        self.allObjects.append(my_object)
-                    case 'Vertices':
-                        my_object=VERTICES(to_be_drew=True,vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
-                        self.allObjects.append(my_object)
-            finally:
-                del object_file # Release some memory
 
 
 
@@ -106,7 +56,6 @@ def main():
 
 
     pygame.init()
-    # todo: changer le système de fenêtre par celui de opengl GLUT
     pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
     glViewport(0,0, project.display[0], project.display[1])
     glMatrixMode(GL_PROJECTION)
@@ -146,9 +95,6 @@ def main():
 #_______________________________________________________Main Loop_______________________________________________________
     while run:
         timeSinceLastFrame = clock.tick(project.fpsLimit)
-        #_____________Animation_____________________
-
-        #___________________________________________
         if something_changed:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             glMatrixMode(GL_MODELVIEW)
