@@ -1,8 +1,8 @@
 import cv2
-import numpy as np
 import time
-from parameters import *
-from fonctions_images import *
+import numpy as np
+from parameters import kernel, quitter
+from fonctions_images import blob_detection_params, groupe_leds
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -37,9 +37,18 @@ while capture1.isOpened() and capture2.isOpened():
     if keypoints1 != () and keypoints2 != ():
         list_point1.append((keypoints1[0].pt[0], keypoints1[0].pt[1]))
         list_point2.append((keypoints2[0].pt[0], keypoints2[0].pt[1]))
+
+        groupe_img_1 = groupe_leds(list_point1)
+        groupe_img_2 = groupe_leds(list_point2)
+
+        for groupe in groupe_img_1:
+            for led in groupe:
+                
+       
         end_time = time.perf_counter()
         timer += 1/(end_time-start_time)
         print((timer)/x)
+
     output1 = cv2.drawKeypoints(frame1, keypoints1, np.array([]), (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     output2 = cv2.drawKeypoints(frame2, keypoints2, np.array([]), (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 

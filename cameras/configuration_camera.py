@@ -50,7 +50,7 @@ for i, capture in enumerate(lst_img):
 
     capture = cv2.cvtColor(capture, cv2.COLOR_BGR2GRAY)
     ret, corner = cv2.findChessboardCorners(capture, chessboard_info[0])
-    if i//2 == 0:
+    if i%2 == 0:
         lst_photo1.append(corner.reshape(-1,2))
     else:
         lst_photo2.append(corner.reshape(-1,2))
@@ -90,6 +90,10 @@ P1, P2 = compute_projection_matrices(K1, K2, R, t)
 write('K1', K1)
 write('K2', K2)
 write('R', R)
+write('R1', R1)
+write('R2', R2)
 write('t', t)
+write('t1', t1)
+write('t2', t2)
 write('P1', P1)
 write('P2', P2)
