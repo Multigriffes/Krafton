@@ -148,9 +148,12 @@ def compute_intrinsincs(B):
     import numpy as np
     from math import sqrt
 
+    print(B)
     Cy = (B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2])/(B[0, 0]*B[1, 1] - B[0, 1]**2)
     l = B[2, 2] - (B[0, 2]**2 + Cy*(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
     Fx = sqrt(l/B[0, 0])
+    print(l*B[0, 0])
+    print((B[0, 0]*B[1, 1] - B[0, 1]**2))
     Fy = sqrt(l*B[0, 0]/(B[0, 0]*B[1, 1] - B[0, 1]**2))
     g = -B[0, 1]*(Fx**2)*Fy/l
     Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
@@ -207,6 +210,9 @@ def compute_B(V):
                   [B12, B22, B23],
                   [B13, B23, B33]])
     
+    if B[0,0] < 0:
+        B = -B
+    
     return B
 
 def compute_extrinsics(K, H):
@@ -252,7 +258,7 @@ def normalize_points(points):
 
     translated = points - np.array([mean_x, mean_y])
 
-    dist = sqrt(translated[:,0]**2 + translated[:,1]**2)
+    dist = np.sqrt(translated[0,0]**2 + translated[0,1]**2)
     mean_dist = np.mean(dist)
 
     s = np.sqrt(2) / mean_dist
