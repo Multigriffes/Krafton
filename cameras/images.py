@@ -1,8 +1,8 @@
 import cv2
 import time
 import numpy as np
-from parameters import kernel, quitter
-from fonctions_images import blob_detection_params, groupe_leds
+from parameters import kernel, quitter, P1, P2
+from fonctions_images import blob_detection_params, groupe_leds, triangulate_point
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -15,8 +15,8 @@ def image_transform(image, H):
 
 
 # Faire fonction traitement image pour capture 1 et 2.
-capture1 = cv2.VideoCapture(0)
-capture2 = cv2.VideoCapture(1)
+capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
 x=0
 timer = 0
@@ -41,13 +41,18 @@ while capture1.isOpened() and capture2.isOpened():
         groupe_img_1 = groupe_leds(list_point1)
         groupe_img_2 = groupe_leds(list_point2)
 
-        for groupe in groupe_img_1:
-            for led in groupe:
+        pos_groupes = []
+        if groupe_img_1 != [] and groupe_img_2 != []:
+            for i in range(min(len(groupe_img_1), len(groupe_img_2))):
+                print(1, groupe_img_1)
+                print(2, groupe_img_2)
+                pos_groupes.append(triangulate_point(P1, P2, groupe_img_1[i][0], groupe_img_2[i][0]))
+            
+            print(3, pos_groupes)
                 
        
         end_time = time.perf_counter()
         timer += 1/(end_time-start_time)
-        print((timer)/x)
 
     output1 = cv2.drawKeypoints(frame1, keypoints1, np.array([]), (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     output2 = cv2.drawKeypoints(frame2, keypoints2, np.array([]), (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
