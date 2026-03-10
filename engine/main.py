@@ -1,7 +1,7 @@
 from multiprocessing.shared_memory import ShareableList
 import pygame
 from OpenGL.GLU import *
-from engine.opengl_3d_object import *
+from engine.render_object import *
 from engine.mathlib import *
 from engine.dot_obj_parser import *
 from engine import project

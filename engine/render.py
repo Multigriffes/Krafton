@@ -1,7 +1,7 @@
 from multiprocessing.shared_memory import ShareableList
-
+from shareLib import *
 from engine.dot_obj_parser import *
-from engine.opengl_3d_object import *
+from engine.render_object import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 import pygame
@@ -16,12 +16,12 @@ class RENDERER:
         self.all_objects = []
         self.all_debug_objects = []
         self.cameraSharedList = ShareableList(name='CameraList')
-        self.camera = {
-            'coordinates': [self.cameraSharedList[0], self.cameraSharedList[1], self.cameraSharedList[2]],
-            'front_vec': [self.cameraSharedList[3], self.cameraSharedList[4], self.cameraSharedList[5]],
-            'up_vec': [self.cameraSharedList[6], self.cameraSharedList[7], self.cameraSharedList[8]],
-            'right_vec': [self.cameraSharedList[9], self.cameraSharedList[10], self.cameraSharedList[11]]
-        }
+        self.camera = CAMERA(
+            coordinates = [self.cameraSharedList[0], self.cameraSharedList[1], self.cameraSharedList[2]],
+            front_vec = [self.cameraSharedList[3], self.cameraSharedList[4], self.cameraSharedList[5]],
+            up_vec = [self.cameraSharedList[6], self.cameraSharedList[7], self.cameraSharedList[8]],
+            right_vec = [self.cameraSharedList[9], self.cameraSharedList[10], self.cameraSharedList[11]]
+        )
 
         pygame.init()
         pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
@@ -44,7 +44,7 @@ class RENDERER:
 
         self.parseAndCreateObjects()
         self.createDebugAxes()
-        self.registerSharedList(name = 'sharedKey', size = 133)
+        registerSharedList(self, name = 'sharedKey', size = 133)
         self.main()
 
     def parseAndCreateObjects(self):
@@ -69,24 +69,6 @@ class RENDERER:
         keyPressed = pygame.key.get_pressed()
         for i in range(len(keyPressed)):
             self.sharedList['sharedKey'][i] = keyPressed[i]
-
-    def registerSharedList(self, name: str, size: int):
-        try:
-            headIndex = self.sharedMainList.index(None)
-        except ValueError:
-            return False
-        else:
-            self.sharedMainList[headIndex] = name
-            self.sharedList[name](ShareableList(sequence=[None for i in range(size)], name=name))
-
-    def constructSharedList(self):
-        for sharedElementName in self.sharedMainList:
-            if sharedElementName is not None:
-                self.sharedList[sharedElementName] = ShareableList(name=sharedElementName)
-
-    def closeAllSharedObjects(self):
-        for sharedElementName in self.sharedMainList:
-            self.sharedList[sharedElementName].shm.close()
 
 
     def createDebugAxes(self):
