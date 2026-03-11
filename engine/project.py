@@ -21,5 +21,4 @@ near_plane = 1
 far_plane = 500
 
 # Déplacements
-speed = 0.05
 lockedAxe = None

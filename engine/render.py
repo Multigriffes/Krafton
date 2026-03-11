@@ -16,12 +16,8 @@ class RENDERER:
         self.all_objects = []
         self.all_debug_objects = []
         self.cameraSharedList = ShareableList(name='CameraList')
-        self.camera = CAMERA(
-            coordinates = [self.cameraSharedList[0], self.cameraSharedList[1], self.cameraSharedList[2]],
-            front_vec = [self.cameraSharedList[3], self.cameraSharedList[4], self.cameraSharedList[5]],
-            up_vec = [self.cameraSharedList[6], self.cameraSharedList[7], self.cameraSharedList[8]],
-            right_vec = [self.cameraSharedList[9], self.cameraSharedList[10], self.cameraSharedList[11]]
-        )
+        self.sharedKey = ShareableList(name='sharedKey')
+        self.somethingChanged = ShareableList(name='somethingChanged')
 
         pygame.init()
         pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
@@ -44,7 +40,8 @@ class RENDERER:
 
         self.parseAndCreateObjects()
         self.createDebugAxes()
-        registerSharedList(self, name = 'sharedKey', size = 133)
+        constructSharedList(self)
+
         self.main()
 
     def parseAndCreateObjects(self):
@@ -65,10 +62,28 @@ class RENDERER:
             finally:
                 del object_file # Release some memory
 
+
     def sendInput(self):
+        #print(self.sharedKey)
         keyPressed = pygame.key.get_pressed()
-        for i in range(len(keyPressed)):
-            self.sharedList['sharedKey'][i] = keyPressed[i]
+        self.sharedKey[K_ESCAPE] = keyPressed[pygame.K_ESCAPE]
+        self.sharedKey[K_UP] = keyPressed[pygame.K_UP]
+        self.sharedKey[K_DOWN] = keyPressed[pygame.K_DOWN]
+        self.sharedKey[K_LEFT] = keyPressed[pygame.K_LEFT]
+        self.sharedKey[K_RIGHT] = keyPressed[pygame.K_RIGHT]
+
+        self.sharedKey[K_z] = keyPressed[pygame.K_z]
+        self.sharedKey[K_s] = keyPressed[pygame.K_s]
+        self.sharedKey[K_q] = keyPressed[pygame.K_q]
+        self.sharedKey[K_d] = keyPressed[pygame.K_d]
+        self.sharedKey[K_e] = keyPressed[pygame.K_e]
+        self.sharedKey[K_a] = keyPressed[pygame.K_a]
+
+        self.sharedKey[K_SPACE] = keyPressed[pygame.K_SPACE]
+        self.sharedKey[K_c] = keyPressed[pygame.K_c]
+
+        self.sharedKey[K_RETURN] = keyPressed[pygame.K_RETURN]
+
 
 
     def createDebugAxes(self):
@@ -91,14 +106,15 @@ class RENDERER:
     def main(self):
         while self.run:
             timeSinceLastFrame = self.clock.tick(project.fpsLimit)
+            #if self.somethingChanged[0]:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             glMatrixMode(GL_MODELVIEW)
             glLoadIdentity()
 
             gluLookAt(
-                self.camera['coordinates'][0], self.camera['coordinates'][1], self.camera['coordinates'][2],
-                self.camera['coordinates'][0] + self.camera['front_vec'][0], self.camera['coordinates'][1] + self.camera['front_vec'][1], self.camera['coordinates'][2] + self.camera['front_vec'][2],
-                self.camera['up_vec'][0], self.camera['up_vec'][1], self.camera['up_vec'][2]
+                self.cameraSharedList[0], self.cameraSharedList[1], self.cameraSharedList[2],
+                self.cameraSharedList[0] + self.cameraSharedList[3], self.cameraSharedList[1] + self.cameraSharedList[4], self.cameraSharedList[2] + self.cameraSharedList[5],
+                self.cameraSharedList[6], self.cameraSharedList[7], self.cameraSharedList[8]
             )
 
             #______________Draw all objects___________
@@ -115,6 +131,18 @@ class RENDERER:
             #__________________________________________
 
             pygame.display.flip()
+            print(self.clock.get_fps())
+            #self.somethingChanged[0]=False
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+                    pygame.quit()
+
+            self.sendInput()
+            if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                self.run = False
+                pygame.quit()
 
 
 render = RENDERER()
