@@ -353,10 +353,18 @@ def calculate_point_pos(lst_pts):
     x = 0
     y = 0
     z = 0
+<<<<<<< Updated upstream
     length = len(lst_pts)
+=======
+    lenght = len(lst_pts)
+>>>>>>> Stashed changes
     for pts in lst_pts:
-        x += pts[0]
-        y += pts[1]
-        z += pts[2]
+        x += float(pts[0])
+        y += float(pts[1])
+        z += float(pts[2])
 
+<<<<<<< Updated upstream
     return [x / length, y / length, z / length]
+=======
+    return x/lenght, y/lenght, z/lenght
+>>>>>>> Stashed changes
