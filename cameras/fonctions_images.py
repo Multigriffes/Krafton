@@ -352,10 +352,11 @@ def triangulate_point(P1, P2, pt1, pt2):
 def calculate_point_pos(lst_pts):
     x = 0
     y = 0
-    lenght = len(lst_pts)
+    z = 0
+    length = len(lst_pts)
     for pts in lst_pts:
         x += pts[0]
         y += pts[1]
         z += pts[2]
 
-    return (x/lenght, y/lenght)
+    return [x / length, y / length, z / length]
