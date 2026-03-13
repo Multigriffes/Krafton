@@ -7,8 +7,7 @@ from engine.physic_object import *
 class PHYSIC:
     def __init__(self):
         self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
-        self.sharedLists = {}
-        self.objects = []
+        self.all_objects = {}
         self.clock = Clock()
         self.sharedKey = ShareableList(name='sharedKey', sequence=[False for i in range(14)])
 
@@ -22,7 +21,7 @@ class PHYSIC:
         self.something_changed = ShareableList(name='somethingChanged', sequence=[True])
 
         self.run = True
-        constructSharedList(self)
+        self.parseAndCreateObjects()
         self.main()
 
     def main(self):
@@ -30,6 +29,14 @@ class PHYSIC:
             timeSinceLastFrame = self.clock.tick(project.fpsLimit)
             self.processKey()
             self.sendCamera()
+            #self.sendObjects()
+
+    def parseAndCreateObjects(self):
+        for object_to_be_created in project.objects:
+            self.all_objects[object_to_be_created] = OBJECT_BASE(coordinates=project.objects[object_to_be_created]['coordinates'])
+
+    def processAnimation(self):
+        pass
 
     def sendCamera(self):
         #print(self.camera)
@@ -46,11 +53,13 @@ class PHYSIC:
         self.cameraShared[10] = self.camera.right_vec.y
         self.cameraShared[11] = self.camera.right_vec.z
 
+    #def sendObjects(self):
+    #    for object in self.all_objects:
+
 
     def processKey(self):
         if self.sharedKey[K_ESCAPE]:
             self.run = False
-
             
         if self.sharedKey[K_UP]:
             self.camera.moveForward(locked_axe=project.lockedAxe)

@@ -1,12 +1,19 @@
-from OpenGL.GL import *
-from random import randint
-from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize
+from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize4, normalize3
 from math import cos, sin
 
-#no_mat = [0.0, 0.0, 0.0, 1.0]
-#mat_ambient = [0.0, 0.0, 0.3, 1.0]
-#mat_diffuse = [1.0, 0.0, 0.0, 1.0]
-#no_shininess = [0.0]
+class ANIMATION:
+    def __init__(self, coordinates: list = None, time: float = None) -> None:
+        self.goto = coordinates
+        self.time = time if time is not None else 0
+        self.timePassed = 0.0
+        self.timeLeft = time
+
+    def move(self, timeSinceLastFrame: float, object) -> None:
+        vector = [self.goto[0] - object.coordinates[0], self.goto[1] - object.coordinates[1], self.goto[2] - object.coordinates[2]]
+
+
+
+        self.timeLeft = self.time - self.timePassed
 
 
 
@@ -14,6 +21,11 @@ class OBJECT_BASE:
     def __init__(self,coordinates: list = None,rotation: list = None) -> None:
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
+        self.animation = {}
+
+    def addAnimation(self, name: str, animation: ANIMATION) -> None:
+        self.animation[name] = animation
+
 
     def addCoordinates(self,coordinates: list = None) -> None:
         if coordinates is not None:
@@ -27,29 +39,13 @@ class OBJECT_BASE:
             self.rotation[1] += rotation[1]
             self.rotation[2] += rotation[2]
 
-    def moveAlong(self, coefficient: float = 1, vector = None) -> None:
+    def moveAlong(self, unit: float = 1, vector: list = None) -> None:
         if vector is not None:
-            self.coordinates[0] += vector[0] * coefficient
-            self.coordinates[1] += vector[1] * coefficient
-            self.coordinates[2] += vector[2] * coefficient
+            vector = normalize3(vector)
+            self.coordinates[0] += vector[0] * unit
+            self.coordinates[1] += vector[1] * unit
+            self.coordinates[2] += vector[2] * unit
 
-class VERTICES(OBJECT_BASE):
-    pass
-
-class FACES(OBJECT_BASE):
-    pass
-
-class LINES_LOOP(OBJECT_BASE):
-    pass
-
-class LINES(OBJECT_BASE):
-    pass
-
-class AXES(LINES):
-    pass
-
-class ROTATION_AXES(LINES_LOOP):
-    pass
 
 class CAMERA:
     def __init__(self, coordinates: list = None, speed: float = None) -> None:
@@ -75,7 +71,7 @@ class CAMERA:
         quaternionForRotation = QUATERNION(w = usefulCos, x = usefulSin*self.up_vec.x, y = usefulSin * self.up_vec.y, z = usefulSin * self.up_vec.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.front_vec = normalize(quaternionForRotation * self.front_vec * invertedQuaternionForRotation)
+        self.front_vec = normalize4(quaternionForRotation * self.front_vec * invertedQuaternionForRotation)
         self.updateRight() # Mise à jour du dernier vecteur
 
     def addPitch(self, angle: float) -> None:
@@ -85,7 +81,7 @@ class CAMERA:
         quaternionForRotation = QUATERNION(w = usefulCos, x = usefulSin*self.right_vec.x, y = usefulSin * self.right_vec.y, z = usefulSin * self.right_vec.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.up_vec = normalize(quaternionForRotation * self.up_vec * invertedQuaternionForRotation)
+        self.up_vec = normalize4(quaternionForRotation * self.up_vec * invertedQuaternionForRotation)
         self.updateFront() # Mise à jour du dernier vecteur
 
     def addRoll(self, angle: float) -> None:
@@ -95,20 +91,8 @@ class CAMERA:
         quaternionForRotation = QUATERNION(w = usefulCos, x = usefulSin*self.front_vec.x, y = usefulSin * self.front_vec.y, z = usefulSin * self.front_vec.z)
         invertedQuaternionForRotation = quaternionForRotation.inverse()
 
-        self.right_vec = normalize(quaternionForRotation * self.right_vec * invertedQuaternionForRotation)
+        self.right_vec = normalize4(quaternionForRotation * self.right_vec * invertedQuaternionForRotation)
         self.updateUp() # Mise à jour du dernier vecteur
-
-    def moveByVec(self,coordinates: list = None) -> None:
-        if coordinates is not None:
-            self.coordinates[0] += coordinates[0]
-            self.coordinates[1] += coordinates[1]
-            self.coordinates[2] += coordinates[2]
-
-    def moveAlong(self, coefficient: float = 1, vector = None) -> None:
-        if vector is not None:
-            self.coordinates[0] += vector[0] * coefficient
-            self.coordinates[1] += vector[1] * coefficient
-            self.coordinates[2] += vector[2] * coefficient
 
     def moveForward(self, speed: float = None, locked_axe : str = None) -> None:
         if speed is None:

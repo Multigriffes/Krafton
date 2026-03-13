@@ -1,13 +1,5 @@
 from OpenGL.GL import *
 from random import randint
-from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize
-from math import cos, sin
-
-#no_mat = [0.0, 0.0, 0.0, 1.0]
-#mat_ambient = [0.0, 0.0, 0.3, 1.0]
-#mat_diffuse = [1.0, 0.0, 0.0, 1.0]
-#no_shininess = [0.0]
-
 
 
 class OBJECT_BASE:

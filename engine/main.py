@@ -8,14 +8,6 @@ from engine import project
 
 
 
-class MAIN:
-    def __init__(self):
-        self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
-
-
-
-
-
 def main():
 
     all_objects=[]

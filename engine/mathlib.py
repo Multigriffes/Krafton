@@ -3,21 +3,14 @@ from math import pi, sqrt
 class QUATERNION:
     def __init__(self, w: float = 0.0, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> None:
         self.w = w # partie réel égale cos(angle/2)+sin(angle/2) pour les rotation et 0 pour un vecteur 3d
-        self.init_w = w
         self.x = x # co du vecteur 3d autour duquel je tourne
-        self.init_x = x
         self.y = y # co du vecteur 3d autour duquel je tourne
-        self.init_y = y
         self.z = z # co du vecteur 3d autour duquel je tourne
-        self.init_z = z
-        self.list=[w,x,y,z]
-
-    def reset(self):
-        self.w, self.x, self.y, self.z = self.init_w, self.init_x, self.init_y, self.init_z
+        self.list=[self.w,self.x,self.y,self.z]
 
     def __mul__(self, other): # jsp ce que je vais en faire,.... mtn je sais
         # il y a des méthodes qui permettent de faire supporter des operand a un object en l'occurance le *
-        # python essaye d'abord la méthode de l'object de gauche spuis ensuite la méthode de droite
+        # python essaye d'abord la méthode de l'object de gauche puis ensuite la méthode de droite
         # object1 * object2 --> object1.__mul__(object2) y'a aussi __rmul__ mais j'ai pas trop compris encore
         assert isinstance(other, QUATERNION)
         return QUATERNION(
@@ -49,11 +42,11 @@ class QUATERNION:
     def getVectorWithout(self, axe: str):
         match axe:
             case "x":
-                return normalize(QUATERNION(y = self.y, z = self.z))
+                return normalize4(QUATERNION(y = self.y, z = self.z))
             case "y":
-                return normalize(QUATERNION(x = self.x, z = self.z))
+                return normalize4(QUATERNION(x = self.x, z = self.z))
             case "z":
-                return normalize(QUATERNION(x = self.x, y = self.y))
+                return normalize4(QUATERNION(x = self.x, y = self.y))
             case _:
                 return self
 
@@ -97,7 +90,7 @@ def crossProduct(a: QUATERNION, b: QUATERNION) -> QUATERNION: # Le cross product
         z = (a.x*b.y - a.y*b.x)
     )
 
-def normalize(vector: QUATERNION) -> QUATERNION:
+def normalize4(vector: QUATERNION) -> QUATERNION:
     assert isinstance(vector, QUATERNION)
     length = sqrt(vector.getLengthNoSqrt())
     if length != 0.0:
@@ -106,6 +99,15 @@ def normalize(vector: QUATERNION) -> QUATERNION:
             y = vector.y / length,
             z = vector.z / length
         )
+    else:
+        return vector
+
+def normalize3(vector: list) -> list:
+    length = sqrt((vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2))
+    if length != 0.0:
+        return [vector[0] / length,
+                vector[1] / length,
+                vector[2] / length]
     else:
         return vector
 
