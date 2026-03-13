@@ -2,7 +2,7 @@ import cv2
 import time
 import numpy as np
 from parameters import kernel, quitter, P1, P2
-from fonctions_images import blob_detection_params, groupe_leds, triangulate_point
+from fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -44,12 +44,14 @@ while capture1.isOpened() and capture2.isOpened():
         pos_groupes = []
         if groupe_img_1 != [] and groupe_img_2 != []:
             for i in range(min(len(groupe_img_1), len(groupe_img_2))):
-                print(1, groupe_img_1)
-                print(2, groupe_img_2)
-                pos_groupes.append(triangulate_point(P1, P2, groupe_img_1[i][0], groupe_img_2[i][0]))
+                for k in range(min(len(groupe_img_1[i]), len(groupe_img_2[i]))):
+                    pos_groupes[i].append(triangulate_point(P1, P2, groupe_img_1[i][k], groupe_img_2[i][k]))
+                pos_groupes.append([])
             
-            print(3, pos_groupes)
-                
+        pos_manettes = []
+        for pos in pos_groupes:
+            pos_manettes.append(calculate_point_pos(pos))
+
        
         end_time = time.perf_counter()
         timer += 1/(end_time-start_time)
