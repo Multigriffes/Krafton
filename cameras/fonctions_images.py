@@ -356,5 +356,6 @@ def calculate_point_pos(lst_pts):
     for pts in lst_pts:
         x += pts[0]
         y += pts[1]
+        z += pts[2]
 
     return (x/lenght, y/lenght)
