@@ -1,15 +1,10 @@
-import os
-
-print(f"Current working directory: {os.getcwd()}")
-
-os.chdir('Krafton')
-
-print(f"Current working directory: {os.getcwd()}")
-
-from engine.shareLib import *
+#from engine.shareLib import *
+from shareLib import *
 from pygame import Clock
-from engine import project
-from engine.physic_object import *
+#from engine import project
+import project
+#from engine.physic_object import *
+from physic_object import *
 
 
 class PHYSIC:

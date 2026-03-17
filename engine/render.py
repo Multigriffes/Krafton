@@ -1,13 +1,15 @@
 from math import cos, radians, sin
 from multiprocessing.shared_memory import ShareableList
 from shareLib import *
-from engine.dot_obj_parser import *
-from engine.render_object import *
+#from engine.dot_obj_parser import *
+from dot_obj_parser import *
+#from engine.render_object import *
+from render_object import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 import pygame
-from engine import project
-
+#from engine import project
+import project
 
 
 class RENDERER:

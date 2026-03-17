@@ -1,11 +1,14 @@
 from multiprocessing.shared_memory import ShareableList
 import pygame
 from OpenGL.GLU import *
-from engine.render_object import *
-from engine.mathlib import *
-from engine.dot_obj_parser import *
-from engine import project
-
+#from engine.render_object import *
+from render_object import *
+#from engine.mathlib import *
+from mathlib import *
+#from engine.dot_obj_parser import *
+from dot_obj_parser import *
+#from engine import project
+import project
 
 
 def main():

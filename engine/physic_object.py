@@ -1,4 +1,5 @@
-from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize4, normalize3
+#from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize4, normalize3
+from mathlib import crossProductNormalized, QUATERNION, radians, normalize4, normalize3
 from math import cos, sin
 
 class ANIMATION:
