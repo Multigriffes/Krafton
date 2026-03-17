@@ -1,3 +1,11 @@
+import os
+
+print(f"Current working directory: {os.getcwd()}")
+
+os.chdir('Krafton')
+
+print(f"Current working directory: {os.getcwd()}")
+
 from engine.shareLib import *
 from pygame import Clock
 from engine import project
