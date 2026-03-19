@@ -1,9 +1,13 @@
+# Importer OBJ_FILE
+
 class Block:
-    def __init__(self, color:tuple, pos:lst, obj=None):
+    def __init__(self, color:tuple, pos:list, obj_path=None):
         self.color = color
         self.pos = pos
         self.size = 100
-        self.obj = obj
+        
+        if obj_path != None:
+            self.obj = OBJ_FILE(obj_path)
 
     def get_color(self):
         return self.color
