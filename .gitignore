@@ -1,4 +1,6 @@
 /engine/models/
 test.*
+*.iml
+*.xml
 __pycache__/
 /program.prof
