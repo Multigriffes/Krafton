@@ -1,9 +1,6 @@
-#from engine.shareLib import *
 from shareLib import *
 from pygame import Clock
-#from engine import project
 import project
-#from engine.physic_object import *
 from physic_object import *
 
 
@@ -102,12 +99,6 @@ class PHYSIC:
 
         if self.sharedKey[K_RETURN]:
             self.camera.reset()
-
-
-
-
-
-
 
 
 physic = PHYSIC()
