@@ -1,31 +1,23 @@
 from engine.dot_obj_parser import OBJ_FILE
+from engine.shareLib import ShareableList
+from random import randint
 
 class Objet:
-    def __init__(self, color:tuple, pos:list, obj_path=None):
+    def __init__(self, color:tuple, pos:list):
         self.color = color
         self.pos = pos
-        
-        if obj_path != None:
-            self.obj = OBJ_FILE(obj_path)
 
     def get_color(self):
         return self.color
     
     def get_pos(self):
         return self.pos
-    
-    def get_obj(self):
-        return self.obj
-    
-    def move(self, translation:tuple):
-        self.pos[0] += translation(0)
-        self.pos[1] += translation(1)
-        self.pos[2] += translation(2)
+
 
 class Block(Objet):
-    def __init__(self):
+    def __init__(self, color:tuple, pos:list):
         self.size = 100
-        super().__init__()
+        super().__init__(color, pos)
 
     def get_size(self):
         return self.size
@@ -44,7 +36,16 @@ class Block(Objet):
 
         return False
 
+    def auto_move(self):
+        pass
+
 
 class Controller(Objet):
-    def __init__(self, color:tuple, pos:list, obj_path:str):
-        super().__init__(color, pos, obj_path)
+    def __init__(self, color:tuple, pos:list):
+        super().__init__(color, pos)
+
+
+def game():
+    pos_lst = ShareableList(name='pos_lst')
+    left_controller = Controller(color=(255,0,0), pos=eval(pos_lst[0]))
+    right_controller = Controller(color=(0, 0, 255), pos=eval(pos_lst[1]))

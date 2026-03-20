@@ -1,8 +1,9 @@
 import cv2
 import time
 import numpy as np
-from parameters import kernel, quitter, P1, P2
+from parameters import kernel, quitter, P1, P2, nb_groupe
 from fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
+from engine.shareLib import ShareableList
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -23,6 +24,7 @@ timer = 0
 detector = blob_detection_params()
 list_point1 = []
 list_point2 = []
+shared_pos_list = ShareableList(name='PosList')
 
 while capture1.isOpened() and capture2.isOpened():
     start_time = time.perf_counter()
@@ -51,6 +53,9 @@ while capture1.isOpened() and capture2.isOpened():
         pos_manettes = []
         for pos in pos_groupes:
             pos_manettes.append(calculate_point_pos(pos))
+
+        if len(pos_manettes) == nb_groupe:
+            shared_pos_list[0], shared_pos_list[1] = str(pos_manettes[0]), str(pos_manettes[1])
 
        
         end_time = time.perf_counter()

@@ -2,11 +2,13 @@ from shareLib import *
 from pygame import Clock
 import project
 from physic_object import *
+from game.game import *
 
 
 class PHYSIC:
     def __init__(self):
         self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
+        self.sharedPosList = ShareableList(name='PosList', sequence=['' for i in range(2)])
         self.all_objects = {}
         self.clock = Clock()
         self.sharedKey = ShareableList(name='sharedKey', sequence=[False for i in range(14)])
@@ -25,11 +27,19 @@ class PHYSIC:
         self.main()
 
     def main(self):
+        timer = 0
         while self.run:
             timeSinceLastFrame = self.clock.tick(project.fpsLimit)
             self.processKey()
             self.sendCamera()
             #self.sendObjects()
+
+            #__________game__________
+            timer += timeSinceLastFrame
+            game()
+            if timer >= project.temps_spawn_cube:
+                timer = 0
+            #__________game__________
 
     def parseAndCreateObjects(self):
         for object_to_be_created in project.objects:
