@@ -8,7 +8,7 @@ from game.game import *
 class PHYSIC:
     def __init__(self):
         self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
-        self.sharedPosList = ShareableList(name='PosList', sequence=['' for i in range(2)])
+        #self.sharedPosList = ShareableList(name='PosList', sequence=['' for i in range(2)])
         self.all_objects = {}
         self.clock = Clock()
         self.sharedKey = ShareableList(name='sharedKey', sequence=[False for i in range(14)])
@@ -35,10 +35,10 @@ class PHYSIC:
             #self.sendObjects()
 
             #__________game__________
-            timer += timeSinceLastFrame
+            '''timer += timeSinceLastFrame
             game()
             if timer >= project.temps_spawn_cube:
-                timer = 0
+                timer = 0'''
             #__________game__________
 
     def parseAndCreateObjects(self):
