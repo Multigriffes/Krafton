@@ -1,9 +1,12 @@
 import cv2
 import time
 import numpy as np
-from parameters import kernel, quitter, P1, P2, nb_groupe
+from parameters import kernel, quitter, P1, P2, nb_groupe, left_controller, right_controller
+from game.game_parameters import LEFT_CONTROLLER, RIGHT_CONTROLLER
 from fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 from engine.shareLib import ShareableList
+
+shared_pos_list = ShareableList(name='PosList', sequence=range(12))
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -24,7 +27,6 @@ timer = 0
 detector = blob_detection_params()
 list_point1 = []
 list_point2 = []
-shared_pos_list = ShareableList(name='PosList')
 
 while capture1.isOpened() and capture2.isOpened():
     start_time = time.perf_counter()
@@ -49,13 +51,18 @@ while capture1.isOpened() and capture2.isOpened():
                 for k in range(min(len(groupe_img_1[i]), len(groupe_img_2[i]))):
                     pos_groupes[i].append(triangulate_point(P1, P2, groupe_img_1[i][k], groupe_img_2[i][k]))
                 pos_groupes.append([])
-            
-        pos_manettes = []
-        for pos in pos_groupes:
-            pos_manettes.append(calculate_point_pos(pos))
 
-        if len(pos_manettes) == nb_groupe:
-            shared_pos_list[0], shared_pos_list[1] = str(pos_manettes[0]), str(pos_manettes[1])
+        for pos in pos_groupes:
+            pos_manette = calculate_point_pos(pos)
+            if len(pos) == left_controller:
+                shared_pos_list[LEFT_CONTROLLER] = pos_manette[0]
+                shared_pos_list[LEFT_CONTROLLER+1] = pos_manette[1]
+                shared_pos_list[LEFT_CONTROLLER+2] = pos_manette[2]
+            elif len(pos) == right_controller:
+                shared_pos_list[RIGHT_CONTROLLER] = pos_manette[0]
+                shared_pos_list[LEFT_CONTROLLER+1] = pos_manette[1]
+                shared_pos_list[LEFT_CONTROLLER+2] = pos_manette[2]
+
 
        
         end_time = time.perf_counter()

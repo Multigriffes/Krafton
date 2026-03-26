@@ -31,3 +31,4 @@ lockedAxe = None
 
 # Jeux
 temps_spawn_cube = 1000
+liste_nom_objet = ['left_controller', 'right_controller', 'Block_1', 'Block_2', 'Block_3', 'Block_4']

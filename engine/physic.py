@@ -8,7 +8,6 @@ from game.game import *
 class PHYSIC:
     def __init__(self):
         self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
-        self.sharedPosList = ShareableList(name='PosList', sequence=["Bonjour,je_suis_ton_pere_et_je_suis_aussi_le_nom_d'un_objet" for i in range(5)])
         self.all_objects = {}
         self.clock = Clock()
         self.sharedKey = ShareableList(name='sharedKey', sequence=[False for i in range(14)])

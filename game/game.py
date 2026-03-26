@@ -16,7 +16,6 @@ class Objet:
 
 class Block(Objet):
     def __init__(self, color:tuple, pos:list):
-        self.size = 100
         super().__init__(color, pos)
 
     def get_size(self):
@@ -29,6 +28,7 @@ class Block(Objet):
 class Controller(Objet):
     def __init__(self, color:tuple, pos:list):
         super().__init__(color, pos)
+        self.size = 100
 
     def detect_collision(self, object_pos_lst: list) -> bool:
         x, y, z = self.pos
@@ -52,14 +52,20 @@ def pos_object_to_lst(pos:str):
 
 def game():
     pos_lst = ShareableList(name='PosList')
-    left_controller = Controller(color=(255,0,0), pos=eval(pos_lst[0])) #a modifier quand liste prete
-    right_controller = Controller(color=(0, 0, 255), pos=eval(pos_lst[1])) # de même
+    lst_to_be_drew = ShareableList(name='ToBeDrewList')
+    left_controller = Controller(color=(255,0,0), pos=[pos_lst[LEFT_CONTROLLER], pos_lst[LEFT_CONTROLLER+1], pos_lst[LEFT_CONTROLLER+2]])
+    right_controller = Controller(color=(0, 0, 255), pos=[pos_lst[RIGHT_CONTROLLER], pos_lst[RIGHT_CONTROLLER+1], pos_lst[RIGHT_CONTROLLER+2]])
+    block_1 = Block(color=(0,255,0), pos=[pos_lst[BLOCK_1], pos_lst[BLOCK_1+1], pos_lst[BLOCK_1+2]])
+    block_2 = Block(color=(0,255,0), pos=[pos_lst[BLOCK_2], pos_lst[BLOCK_2+1], pos_lst[BLOCK_2+2]])
+    block_3 = Block(color=(0, 255, 0), pos=[pos_lst[BLOCK_3], pos_lst[BLOCK_3+1], pos_lst[BLOCK_3+2]])
+    block_4 = Block(color=(0, 255, 0), pos=[pos_lst[BLOCK_4], pos_lst[BLOCK_4+1], pos_lst[BLOCK_4+2]])
 
-    for i, object in enumerate(object_pos_lst):
+    block_lst = [block_1, block_2, block_3, block_4]
+
+    for i, object in enumerate(block_lst):
         if left_controller.detect_collision(object):
-            pos_lst[i] = None
+            lst_to_be_drew[i] = False
 
-    if right_controller.detect_collision():
-        objects_to_be_drew['right_controller'] = False
-
-    return lst_objects_to_be_drew
+    for i, object in enumerate(block_lst):
+        if right_controller.detect_collision(object):
+            lst_to_be_drew[i] = False

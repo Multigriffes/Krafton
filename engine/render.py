@@ -17,6 +17,7 @@ class RENDERER:
         self.cameraSharedList = ShareableList(name='CameraList')
         self.sharedKey = ShareableList(name='sharedKey')
         self.somethingChanged = ShareableList(name='somethingChanged')
+        self.sharedToBeDrew = ShareableList(name='ToBeDrew', sequence=[True for i in range(6)])
 
         pygame.init()
         pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
@@ -105,12 +106,16 @@ class RENDERER:
                 self.cameraSharedList[6], self.cameraSharedList[7], self.cameraSharedList[8]
             )
 
+            #______Change to_be_drew attribute________
+            for i in range(len(self.sharedToBeDrew)):
+                self.all_objects[project.liste_nom_objet[i]] = self.sharedToBeDrew[i]
+            #_________________________________________
+
             #______________Draw all objects___________
             for object in self.all_objects:
                 if self.all_objects[object].to_be_drew:
                     self.all_objects[object].draw()
             #__________________________________________
-
 
             #______________Draw all debug___________
             for object in self.all_debug_objects:

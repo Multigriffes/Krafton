@@ -34,6 +34,10 @@ distance_max = 50
 distance_max_carre = distance_max**2
 nb_groupe = 2
 
+# Nombre leds par manette
+left_controller = 4
+right_controller = 5
+
 # Analyse image
 kernel = np.ones((3,3), np.uint8)
 
