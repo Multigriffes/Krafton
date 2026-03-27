@@ -1,6 +1,7 @@
 from engine.shareLib import ShareableList
-from game_parameters import *
-from random import randint
+from game.game_parameters import *
+
+shared_pos_list = ShareableList(name='PosList', sequence=range(18))
 
 class Objet:
     def __init__(self, color:tuple, pos:list):
@@ -30,17 +31,17 @@ class Controller(Objet):
         super().__init__(color, pos)
         self.size = 100
 
-    def detect_collision(self, object_pos_lst: list) -> bool:
+    def detect_collision(self, object: Objet) -> bool:
         x, y, z = self.pos
         size = self.size
+        x_object, y_object, z_object = object.get_pos()
 
-        for pos in object_pos_lst:
-            x_in = x - size / 2 <= pos[0] <= x + size / 2
-            y_in = y - size / 2 <= pos[1] <= y + size / 2
-            z_in = z - size / 2 <= pos[2] <= z + size / 2
+        x_in = x - size / 2 <= x_object <= x + size / 2
+        y_in = y - size / 2 <= y_object <= y + size / 2
+        z_in = z - size / 2 <= z_object <= z + size / 2
 
-            if x_in and y_in and z_in:
-                return True
+        if x_in and y_in and z_in:
+            return True
 
         return False
 

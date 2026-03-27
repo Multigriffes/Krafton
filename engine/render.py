@@ -17,7 +17,7 @@ class RENDERER:
         self.cameraSharedList = ShareableList(name='CameraList')
         self.sharedKey = ShareableList(name='sharedKey')
         self.somethingChanged = ShareableList(name='somethingChanged')
-        self.sharedToBeDrew = ShareableList(name='ToBeDrew', sequence=[True for i in range(6)])
+        self.sharedToBeDrew = ShareableList(name='ToBeDrewList')
 
         pygame.init()
         pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
@@ -41,7 +41,7 @@ class RENDERER:
             try:
                 object_file.parseFile()# Cache system not faster yet
             except FileNotFoundError:
-                print("Not Found")
+                print(object_file.filePath, "Not Found")
             else:
                 match project.objects[object_to_be_created]['type']:
                     case 'Faces':
@@ -107,8 +107,9 @@ class RENDERER:
             )
 
             #______Change to_be_drew attribute________
+            print(self.all_objects)
             for i in range(len(self.sharedToBeDrew)):
-                self.all_objects[project.liste_nom_objet[i]] = self.sharedToBeDrew[i]
+                self.all_objects[project.liste_nom_objet[i]].to_be_drew = self.sharedToBeDrew[i]
             #_________________________________________
 
             #______________Draw all objects___________

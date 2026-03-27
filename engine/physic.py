@@ -8,6 +8,7 @@ from game.game import *
 class PHYSIC:
     def __init__(self):
         self.sharedMainList = ShareableList(name='MainList', sequence=[None for i in range(256)])
+        self.sharedToBeDrew = ShareableList(name='ToBeDrewList', sequence=[True for i in range(6)])
         self.all_objects = {}
         self.clock = Clock()
         self.sharedKey = ShareableList(name='sharedKey', sequence=[False for i in range(14)])
@@ -34,7 +35,7 @@ class PHYSIC:
             #self.sendObjects()
 
             #__________game__________
-            lst_objects_to_be_drew = game()
+            game()
             #__________game__________
 
     def parseAndCreateObjects(self):

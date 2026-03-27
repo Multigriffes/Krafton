@@ -6,7 +6,7 @@ from game.game_parameters import LEFT_CONTROLLER, RIGHT_CONTROLLER
 from fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 from engine.shareLib import ShareableList
 
-shared_pos_list = ShareableList(name='PosList', sequence=range(12))
+shared_pos_list = ShareableList(name='PosList')
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
