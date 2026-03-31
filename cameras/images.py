@@ -1,9 +1,9 @@
 import cv2
 import time
 import numpy as np
-from parameters import kernel, quitter, P1, P2, nb_groupe, left_controller, right_controller
+from cameras.parameters import kernel, quitter, P1, P2, left_controller, right_controller
 from game.game_parameters import LEFT_CONTROLLER, RIGHT_CONTROLLER
-from fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
+from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 from engine.shareLib import ShareableList
 
 shared_pos_list = ShareableList(name='PosList')

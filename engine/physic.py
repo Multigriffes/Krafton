@@ -1,7 +1,7 @@
-from shareLib import *
+from engine.shareLib import *
 from pygame import Clock
-import project
-from physic_object import *
+import engine.project as project
+from engine.physic_object import *
 from game.game import *
 
 

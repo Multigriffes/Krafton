@@ -5,9 +5,6 @@ from write_read_csv import write, clear_file
 
 capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-#lst_img = [cv2.imread('cameras/img/img_0.png'), cv2.imread('cameras/img/img_2.png'), cv2.imread('cameras/img/img_4.png'), cv2.imread('cameras/img/img_6.png'), cv2.imread('cameras/img/img_1.png'), cv2.imread('cameras/img/img_3.png'), cv2.imread('cameras/img/img_5.png'), cv2.imread('cameras/img/img_7.png')]
-#lst1 = [0, 1, 2, 3]
-#lst2 = [4, 5, 6, 7]
 
 nb_photo = 0
 lst_photo1 = []
@@ -15,7 +12,7 @@ lst_photo2 = []
 a=0
 
 while capture1.isOpened() and capture2.isOpened():
-#for i, capture in enumerate(lst_img):
+
 
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
@@ -46,14 +43,6 @@ while capture1.isOpened() and capture2.isOpened():
     if ret1 and ret2:
         cv2.imshow("test1", frame1)
         cv2.imshow("test2", frame2)
-    
-
-    '''capture = cv2.cvtColor(capture, cv2.COLOR_BGR2GRAY)
-    ret, corner = cv2.findChessboardCorners(capture, chessboard_info[0])
-    if i%2 == 0:
-        lst_photo1.append(corner.reshape(-1,2))
-    else:
-        lst_photo2.append(corner.reshape(-1,2))'''
 
 #capture1.release()
 #capture2.release()

@@ -18,6 +18,7 @@ class RENDERER:
         self.sharedKey = ShareableList(name='sharedKey')
         self.somethingChanged = ShareableList(name='somethingChanged')
         self.sharedToBeDrew = ShareableList(name='ToBeDrewList')
+        self.sharedPosLst = ShareableList(name='PosList')
 
         pygame.init()
         pygame.display.set_mode(project.display, pygame.DOUBLEBUF|pygame.OPENGL)
@@ -105,24 +106,27 @@ class RENDERER:
                 self.cameraSharedList[0] + self.cameraSharedList[3], self.cameraSharedList[1] + self.cameraSharedList[4], self.cameraSharedList[2] + self.cameraSharedList[5],
                 self.cameraSharedList[6], self.cameraSharedList[7], self.cameraSharedList[8]
             )
-
             #______Change to_be_drew attribute________
-            print(self.all_objects)
             for i in range(len(self.sharedToBeDrew)):
                 self.all_objects[project.liste_nom_objet[i]].to_be_drew = self.sharedToBeDrew[i]
+            #_________________________________________
+
+            #_______Change object coordinates---------
+            for i in range(len(self.sharedPosLst)):
+                self.all_objects[project.liste_nom_objet[i]].coordinates = self.sharedPosLst[i]
             #_________________________________________
 
             #______________Draw all objects___________
             for object in self.all_objects:
                 if self.all_objects[object].to_be_drew:
                     self.all_objects[object].draw()
-            #__________________________________________
+            #_________________________________________
 
-            #______________Draw all debug___________
+            #______________Draw all debug_____________
             for object in self.all_debug_objects:
                 if object.to_be_drew:
                     object.draw()
-            #__________________________________________
+            #_________________________________________
 
             pygame.display.flip()
             #print(self.clock.get_fps())

@@ -19,11 +19,8 @@ class Block(Objet):
     def __init__(self, color:tuple, pos:list):
         super().__init__(color, pos)
 
-    def get_size(self):
-        return self.size
-
     def auto_move(self):
-        self.pos = (self.pos[0] + self.size, self.pos[1] + self.size, self.pos[2] + self.size) # a modifier apres test
+        self.pos = (self.pos[0], self.pos[1], self.pos[2] -1) # a modifier apres test
 
 
 class Controller(Objet):
@@ -53,6 +50,7 @@ def pos_object_to_lst(pos:str):
 
 def game():
     pos_lst = ShareableList(name='PosList')
+    print([ShareableList[BLOCK_1], ShareableList[BLOCK_1+1], ShareableList[BLOCK_1+2]])
     lst_to_be_drew = ShareableList(name='ToBeDrewList')
     left_controller = Controller(color=(255,0,0), pos=[pos_lst[LEFT_CONTROLLER], pos_lst[LEFT_CONTROLLER+1], pos_lst[LEFT_CONTROLLER+2]])
     right_controller = Controller(color=(0, 0, 255), pos=[pos_lst[RIGHT_CONTROLLER], pos_lst[RIGHT_CONTROLLER+1], pos_lst[RIGHT_CONTROLLER+2]])
@@ -70,3 +68,6 @@ def game():
     for i, object in enumerate(block_lst):
         if right_controller.detect_collision(object):
             lst_to_be_drew[i] = False
+
+    '''for block in block_lst:
+        block.auto_move()'''
