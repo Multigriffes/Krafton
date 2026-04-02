@@ -42,9 +42,6 @@ class PHYSIC:
         for object_to_be_created in project.objects:
             self.all_objects[object_to_be_created] = OBJECT_BASE(coordinates=project.objects[object_to_be_created]['coordinates'])
 
-    def processAnimation(self):
-        pass
-
     def sendCamera(self):
         #print(self.camera)
         self.cameraShared[0] = self.camera.coordinates[0]

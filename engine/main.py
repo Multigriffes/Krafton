@@ -24,6 +24,7 @@ class MAIN:
 
         self.parseAndCreateObjects()
         self.createDebugAxes()
+
         self.main()
 
     def parseAndCreateObjects(self):
@@ -70,9 +71,10 @@ class MAIN:
 
             gluLookAt(
                 self.camera.coordinates[0], self.camera.coordinates[1], self.camera.coordinates[2],
-                self.camera.front_vec[0] + self.camera.coordinates[0], self.camera.front_vec[1] + self.camera.coordinates[1], self.camera.front_vec[2] + self.camera.coordinates[2],
-                self.camera.up_vec[0], self.camera.up_vec[1], self.camera.up_vec[2]
+                self.camera.front_vec.x + self.camera.coordinates[0], self.camera.front_vec.y + self.camera.coordinates[1], self.camera.front_vec.z + self.camera.coordinates[2],
+                self.camera.up_vec.x, self.camera.up_vec.y, self.camera.up_vec.z
             )
+
             #______Change to_be_drew attribute________
             #for i in range(len(self.sharedToBeDrew)):
             #    self.all_objects[project.liste_nom_objet[i]].to_be_drew = self.sharedToBeDrew[i]
