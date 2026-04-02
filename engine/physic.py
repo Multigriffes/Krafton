@@ -34,10 +34,6 @@ class PHYSIC:
             self.sendCamera()
             #self.sendObjects()
 
-            #__________game__________
-            game()
-            #__________game__________
-
     def parseAndCreateObjects(self):
         for object_to_be_created in project.objects:
             self.all_objects[object_to_be_created] = OBJECT_BASE(coordinates=project.objects[object_to_be_created]['coordinates'])

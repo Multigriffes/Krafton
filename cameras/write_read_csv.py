@@ -7,11 +7,11 @@ def write(name, data):
 
     new_line = f"{name}:{data}\n"
 
-    with open('sauvegarde_matrice.csv', 'a') as f:
+    with open('cameras/sauvegarde_matrice.csv', 'a') as f:
         f.write(new_line)
 
 def read(name):
-    with open('sauvegarde_matrice.csv', 'r') as f:
+    with open('cameras/sauvegarde_matrice.csv', 'r') as f:
         for line in f:
             if line.startswith(name + ":"):
                 data_str = line.split(":", 1)[1].strip()
@@ -25,4 +25,4 @@ def read(name):
     return None
 
 def clear_file():
-    open('sauvegarde_matrice.csv', 'w').close()
+    open('cameras/sauvegarde_matrice.csv', 'w').close()

@@ -1,12 +1,12 @@
 import cv2
 import time
 import numpy as np
-from cameras.parameters import kernel, quitter, P1, P2, left_controller, right_controller
-from game.game_parameters import LEFT_CONTROLLER, RIGHT_CONTROLLER
+from cameras.parameters import kernel, quitter, P1, P2, nb_led_left_controller, nb_led_right_controller
 from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 from engine.shareLib import ShareableList
 
-shared_pos_list = ShareableList(name='PosList')
+left_controller = ShareableList(name='left_controller')
+right_controller = ShareableList(name='right_controller')
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -55,13 +55,13 @@ while capture1.isOpened() and capture2.isOpened():
         for pos in pos_groupes:
             pos_manette = calculate_point_pos(pos)
             if len(pos) == left_controller:
-                shared_pos_list[LEFT_CONTROLLER] = pos_manette[0]
-                shared_pos_list[LEFT_CONTROLLER+1] = pos_manette[1]
-                shared_pos_list[LEFT_CONTROLLER+2] = pos_manette[2]
+                left_controller[0] = pos_manette[0]
+                left_controller[1] = pos_manette[1]
+                left_controller[2] = pos_manette[2]
             elif len(pos) == right_controller:
-                shared_pos_list[RIGHT_CONTROLLER] = pos_manette[0]
-                shared_pos_list[LEFT_CONTROLLER+1] = pos_manette[1]
-                shared_pos_list[LEFT_CONTROLLER+2] = pos_manette[2]
+                right_controller[0] = pos_manette[0]
+                right_controller[1] = pos_manette[1]
+                right_controller[2] = pos_manette[2]
 
 
        

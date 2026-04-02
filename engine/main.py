@@ -1,8 +1,10 @@
 from OpenGL.GLU import *
 import pygame
-import project
-from dot_obj_parser import *
-from object import *
+import engine.project as project
+from engine.dot_obj_parser import *
+from engine.object import *
+from game.game import *
+from engine.shareLib import ShareableList
 
 
 class MAIN:
@@ -18,13 +20,27 @@ class MAIN:
         glEnable(GL_DEPTH_TEST)
         glClearColor(0,100/255,0,1)
 
+        left_controller = ShareableList(name='left_controller', sequence=range(3))
+        right_controller = ShareableList(name='right_controller', sequence=range(3))
+
+        left_controller = Controller(color=(255, 0, 0), pos=[0, 0, 10])
+        right_controller = Controller(color=(0, 0, 255), pos=[0, 0, 10])
+
+        block_1 = Block(color=(0, 255, 0), pos=[0,-3,-20])
+        block_2 = Block(color=(0, 255, 0), pos=[0,-3,-20])
+        block_3 = Block(color=(0, 255, 0), pos=[0,-3,-20])
+        block_4 = Block(color=(0, 255, 0), pos=[0,-3,-20])
+
+        self.object_lst = [left_controller, right_controller, block_1, block_2, block_3, block_4]
+
         self.camera = CAMERA()
         self.clock = pygame.time.Clock()
         self.run = True
 
+        self.lst_to_be_drew = [True for i in range(6)]
+
         self.parseAndCreateObjects()
         self.createDebugAxes()
-
         self.main()
 
     def parseAndCreateObjects(self):
@@ -75,14 +91,18 @@ class MAIN:
                 self.camera.up_vec.x, self.camera.up_vec.y, self.camera.up_vec.z
             )
 
+            # __________game__________
+            self.lst_to_be_drew, self.object_lst = game(self.lst_to_be_drew, self.object_lst)
+            # __________game__________
+
             #______Change to_be_drew attribute________
-            #for i in range(len(self.sharedToBeDrew)):
-            #    self.all_objects[project.liste_nom_objet[i]].to_be_drew = self.sharedToBeDrew[i]
+            for i in range(len(self.lst_to_be_drew)):
+                self.all_objects[project.liste_nom_objet[i//3]].to_be_drew = self.lst_to_be_drew[i]
             #_________________________________________
 
             #_______Change object coordinates---------
-            #for i in range(len(self.sharedPosLst)):
-            #    self.all_objects[project.liste_nom_objet[i]].coordinates = self.sharedPosLst[i]
+            for i in range(len(self.object_lst)):
+                self.all_objects[project.liste_nom_objet[i]].coordinates = self.object_lst[i].pos
             #_________________________________________
 
             #______________Draw all objects___________

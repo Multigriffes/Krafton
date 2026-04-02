@@ -9,7 +9,6 @@ capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 nb_photo = 0
 lst_photo1 = []
 lst_photo2 = []
-a=0
 
 while capture1.isOpened() and capture2.isOpened():
 
@@ -20,10 +19,6 @@ while capture1.isOpened() and capture2.isOpened():
     
     key = cv2.waitKey(100)
     if key == ord(take_photo) and nb_photo != nb_photo_max:
-        cv2.imwrite(f'img_{a}.png', frame1)
-        a+=1
-        cv2.imwrite(f'img_{a}.png', frame2)
-        a+=1
         frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
         frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
         corners_ret1, corners1 = cv2.findChessboardCorners(frame1, chessboard_info[0])

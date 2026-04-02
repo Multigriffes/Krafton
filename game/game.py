@@ -1,8 +1,6 @@
 from engine.shareLib import ShareableList
 from game.game_parameters import *
 
-shared_pos_list = ShareableList(name='PosList', sequence=range(18))
-
 class Objet:
     def __init__(self, color:tuple, pos:list):
         self.color = color
@@ -48,26 +46,19 @@ def pos_object_to_str(pos:list):
 def pos_object_to_lst(pos:str):
     return eval(pos)
 
-def game():
-    pos_lst = ShareableList(name='PosList')
-    print([ShareableList[BLOCK_1], ShareableList[BLOCK_1+1], ShareableList[BLOCK_1+2]])
-    lst_to_be_drew = ShareableList(name='ToBeDrewList')
-    left_controller = Controller(color=(255,0,0), pos=[pos_lst[LEFT_CONTROLLER], pos_lst[LEFT_CONTROLLER+1], pos_lst[LEFT_CONTROLLER+2]])
-    right_controller = Controller(color=(0, 0, 255), pos=[pos_lst[RIGHT_CONTROLLER], pos_lst[RIGHT_CONTROLLER+1], pos_lst[RIGHT_CONTROLLER+2]])
-    block_1 = Block(color=(0,255,0), pos=[pos_lst[BLOCK_1], pos_lst[BLOCK_1+1], pos_lst[BLOCK_1+2]])
-    block_2 = Block(color=(0,255,0), pos=[pos_lst[BLOCK_2], pos_lst[BLOCK_2+1], pos_lst[BLOCK_2+2]])
-    block_3 = Block(color=(0, 255, 0), pos=[pos_lst[BLOCK_3], pos_lst[BLOCK_3+1], pos_lst[BLOCK_3+2]])
-    block_4 = Block(color=(0, 255, 0), pos=[pos_lst[BLOCK_4], pos_lst[BLOCK_4+1], pos_lst[BLOCK_4+2]])
+def game(lst_to_be_drew:list, object_list:list):
 
-    block_lst = [block_1, block_2, block_3, block_4]
-
-    for i, object in enumerate(block_lst):
-        if left_controller.detect_collision(object):
+    '''
+    for i, object in enumerate(object_list[2:]):
+        if object_list[LEFT_CONTROLLER].detect_collision(object):
             lst_to_be_drew[i] = False
 
-    for i, object in enumerate(block_lst):
-        if right_controller.detect_collision(object):
+    for i, object in enumerate(object_list[2:]):
+        if object_list[RIGHT_CONTROLLER].detect_collision(object):
             lst_to_be_drew[i] = False
+    '''
 
-    '''for block in block_lst:
-        block.auto_move()'''
+    for block in object_list[2:]:
+        block.auto_move()
+
+    return lst_to_be_drew, object_list

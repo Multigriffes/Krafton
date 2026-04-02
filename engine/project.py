@@ -4,12 +4,12 @@ debug_rotation_axes = True
 objects = {
     #'Backpack' : {'type': 'Faces', 'path': 'Krafton/3d_models/scene/environnement.obj', 'coordinates': [30,10,0], 'color': None, 'to_be_drew': True},
     'Environnement' : {'type': 'Faces', 'path': 'C:/Users/Multi/Documents/GitHub/Krafton/3d_models/scene/environnement.obj', 'coordinates': [0,0,0], 'color': None, 'to_be_drew': True},
-    'Block_1' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0,-3,-20], 'color': None, 'to_be_drew': True},
-    'Block_2' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0,-3,-20], 'color': None, 'to_be_drew': True},
-    'Block_3' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0,-3,-20], 'color': None, 'to_be_drew': True},
-    'Block_4' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0,-3,-20], 'color': None, 'to_be_drew': True},
-    'left_controller' : {'type': 'Faces', 'path': '3d_models/scene/Saber.obj', 'coordinates': [0,0,10], 'color': None, 'to_be_drew': True},
-    'right_controller' : {'type': 'Faces', 'path': '3d_models/scene/Saber.obj', 'coordinates': [0,0,10], 'color': None, 'to_be_drew': True}
+    'Block_1' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0, 0, 0], 'color': None, 'to_be_drew': True},
+    'Block_2' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0, 0, 0], 'color': None, 'to_be_drew': True},
+    'Block_3' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0, 0, 0], 'color': None, 'to_be_drew': True},
+    'Block_4' : {'type': 'Faces', 'path': '3d_models/scene/Block.obj', 'coordinates': [0, 0, 0], 'color': None, 'to_be_drew': True},
+    'left_controller' : {'type': 'Faces', 'path': '3d_models/scene/Saber.obj', 'coordinates': [0, 0, 0], 'color': None, 'to_be_drew': True},
+    'right_controller' : {'type': 'Faces', 'path': '3d_models/scene/Saber.obj', 'coordinates': [0, 0, 0], 'color': None, 'to_be_drew': True}
 }
 
 # Animation
