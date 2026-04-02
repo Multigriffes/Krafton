@@ -8,7 +8,7 @@ class OBJECT_BASE:
         self.normals=normals if normals is not None else []
         self.triangles=triangles if triangles is not None else []
         self.quads=quads if quads is not None else []
-        self.gl_list_id=None
+        self.gl_list_id = None
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
         self.color=color
