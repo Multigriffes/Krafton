@@ -4,3 +4,5 @@ test.*
 *.xml
 __pycache__/
 /program.prof
+*.png
+*.jpg
