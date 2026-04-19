@@ -20,8 +20,14 @@ class MAIN:
         glEnable(GL_DEPTH_TEST)
         glClearColor(0,100/255,0,1)
 
-        left_controller = ShareableList(name='left_controller', sequence=range(3))
-        right_controller = ShareableList(name='right_controller', sequence=range(3))
+        try:
+            left_controller = ShareableList(name="left_controller")
+        except FileNotFoundError:
+            left_controller = ShareableList(name='left_controller', sequence=range(3))
+        try:
+            right_controller = ShareableList(name="right_controller")
+        except FileNotFoundError:
+            right_controller = ShareableList(name='right_controller', sequence=range(3))
 
         left_controller = Controller(color=(255, 0, 0), pos=[0, 0, 10])
         right_controller = Controller(color=(0, 0, 255), pos=[0, 0, 10])
@@ -173,4 +179,5 @@ class MAIN:
         if keyPressed[pygame.K_RETURN]:
             self.camera.reset()
 
-main = MAIN()
+if __name__ == '__main__':
+    main = MAIN()

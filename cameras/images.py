@@ -5,8 +5,14 @@ from cameras.parameters import kernel, quitter, P1, P2, nb_led_left_controller, 
 from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 from engine.shareLib import ShareableList
 
-left_controller = ShareableList(name='left_controller')
-right_controller = ShareableList(name='right_controller')
+try:
+    left_controller = ShareableList(name="left_controller")
+except FileNotFoundError:
+    left_controller = ShareableList(name='left_controller', sequence=range(3))
+try:
+    right_controller = ShareableList(name="right_controller")
+except FileNotFoundError:
+    right_controller = ShareableList(name='right_controller', sequence=range(3))
 
 def image_transform(image, H):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -46,11 +52,15 @@ while capture1.isOpened() and capture2.isOpened():
         groupe_img_2 = groupe_leds(list_point2)
 
         pos_groupes = []
+
+        print(groupe_img_1)
+        print(groupe_img_2)
         if groupe_img_1 != [] and groupe_img_2 != []:
+            print(min(len(groupe_img_1), len(groupe_img_2)))
             for i in range(min(len(groupe_img_1), len(groupe_img_2))):
+                pos_groupes.append([])
                 for k in range(min(len(groupe_img_1[i]), len(groupe_img_2[i]))):
                     pos_groupes[i].append(triangulate_point(P1, P2, groupe_img_1[i][k], groupe_img_2[i][k]))
-                pos_groupes.append([])
 
         for pos in pos_groupes:
             pos_manette = calculate_point_pos(pos)

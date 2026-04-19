@@ -1,4 +1,4 @@
-from mathlib import crossProductNormalized, QUATERNION, radians, normalize4, normalize3
+from engine.mathlib import crossProductNormalized, QUATERNION, radians, normalize4, normalize3
 from math import cos, sin
 from OpenGL.GL import *
 from random import randint

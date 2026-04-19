@@ -1,21 +1,17 @@
 import numpy as np
-from write_read_csv import read
-
-
+from cameras.write_read_csv import read
 
 '''
 pour utilisateur
 '''
-
-'''
-fin pour utilisateur
-'''
-
 # Configuration touche clavier
 quitter = 'q'
 
 # Mode configuration
 take_photo = 'p'
+'''
+fin pour utilisateur
+'''
 
 '''
 images.py
@@ -36,7 +32,7 @@ nb_groupe = 2
 
 # Nombre leds par manette
 nb_led_left_controller = 4
-nb_led_right_controller = 5
+nb_led_right_controller = 3
 
 # Analyse image
 kernel = np.ones((3,3), np.uint8)
@@ -53,7 +49,7 @@ configuration_camera.py
 
 # dimension chessboard (en carres), dimension carre (en mm)
 chessboard_info = [(6, 8), 22]
-nb_photo_max = 4
+nb_photo_max = 15
 cols, rows = chessboard_info[0]
 square = chessboard_info[1]
 

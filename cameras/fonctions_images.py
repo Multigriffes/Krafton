@@ -17,7 +17,7 @@ def cluster_recur(index_point_depart:int, point_depart:tuple, cluster:list, poin
     '''
     Fonction récursive qui forme un groupe de points en partant d'un point de départ
     '''
-    from parameters import distance_max_carre
+    from cameras.parameters import distance_max_carre
 
     point_visite[index_point_depart] = 0
     cluster.append(point_depart)
@@ -32,7 +32,7 @@ def blob_detection_params():
     Creation d'un objet de detection de blob lumineux
     '''
     import cv2
-    from parameters import minThreshold, maxThreshold, filterByColor, blobColor, filterByArea, minArea
+    from cameras.parameters import minThreshold, maxThreshold, filterByColor, blobColor, filterByArea, minArea
 
     params = cv2.SimpleBlobDetector_Params()
     params.minThreshold = minThreshold
