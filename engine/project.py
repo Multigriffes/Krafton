@@ -1,6 +1,6 @@
 # Scene
-debug_axes = True
-debug_rotation_axes = True
+debug_axes = False
+debug_rotation_axes = False
 objects = {
     #'Backpack' : {'type': 'Faces', 'path': 'Krafton/3d_models/scene/environnement.obj', 'coordinates': [30,10,0], 'color': None, 'to_be_drew': True},
     'Environnement' : {'type': 'Faces', 'path': 'C:/Users/Multi/Documents/GitHub/Krafton/3d_models/scene/environnement.obj', 'coordinates': [0,0,0], 'color': None, 'to_be_drew': True},
@@ -31,4 +31,3 @@ lockedAxe = None
 
 # Jeux
 temps_spawn_cube = 1000
-liste_nom_objet = ['left_controller', 'right_controller', 'Block_1', 'Block_2', 'Block_3', 'Block_4']
