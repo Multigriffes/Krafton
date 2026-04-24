@@ -4,7 +4,7 @@ from OpenGL.GL import *
 from random import randint
 
 class OBJECT_BASE:
-    def __init__(self,collide_box: list = None,vertices: list = None,normals: list = None,triangles: list = None,quads: list = None,coordinates: list = None,rotation: list = None,color: list = None,to_be_drew: bool = False) -> None:
+    def __init__(self,collide_box: list = None,vertices: list = None,normals: list = None,triangles: list = None,quads: list = None,coordinates: list = None,rotation: list = None,color: list = None) -> None:
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
         self.vertices=vertices if vertices is not None else []
@@ -13,7 +13,7 @@ class OBJECT_BASE:
         self.quads=quads if quads is not None else []
         self.gl_list_id = None
         self.color=color
-        self.to_be_drew=to_be_drew
+        self.to_be_drew=True
         self.collide_box = collide_box if collide_box is not None else None
 
     def draw(self,coordinates: list = None,rotation: list = None) -> None:

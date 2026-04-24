@@ -33,8 +33,8 @@ class MAIN:
         self.run = True
 
         self.parseAndCreateObjects()
-        self.all_objects["left_controller"].pos = self.left_controller
-        self.all_objects["right_controller"].pos = self.right_controller
+        self.all_objects["left_controller"].coordinates = self.left_controller
+        self.all_objects["right_controller"].coordinates = self.right_controller
         self.createDebugAxes()
         self.main()
 
@@ -51,8 +51,8 @@ class MAIN:
                 self.camera.up_vec.x, self.camera.up_vec.y, self.camera.up_vec.z
             )
 
-            self.checkForColision()
-            self.updateCubePos()
+            #self.checkForColision()
+            #self.updateCubePos()
             #self.updateSaberPos()
 
             #______________Draw all objects___________
@@ -84,9 +84,9 @@ class MAIN:
     def updateCubePos(self):
         for name in ("Block_1", "Block_2", "Block_3", "Block_4"):
             selected_block=self.all_objects[name]
-            if selected_block.coordinates[2]:
+            if selected_block.coordinates[2] > 20:
                 selected_block.coordinates[2] = -30
-            selected_block.moveAlong(5, (0,0,1))
+            selected_block.moveAlong(1, (0,0,1))
 
     def processKey(self):
         keyPressed = pygame.key.get_pressed()
@@ -133,31 +133,35 @@ class MAIN:
         if keyPressed[pygame.K_RETURN]:
             self.camera.reset()
 
+        if keyPressed[pygame.K_g]:
+            self.updateCubePos()
+
     def parseAndCreateObjects(self):
         for object_to_be_created in project.objects:
-            object_file = OBJ_FILE(project.objects[object_to_be_created]['path'])
-            match project.objects[object_to_be_created]['type']:
+            selected_object = project.objects[object_to_be_created]
+            object_file = OBJ_FILE(selected_object['path'])
+            match selected_object['type']:
                 case 'Faces':
-                    my_object=FACES(to_be_drew=object_to_be_created['to_be_drew'],vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=project.objects[object_to_be_created]['coordinates'],color=object_to_be_created['color'],collide_box=object_to_be_created['collide_box'])
+                    my_object=FACES(vertices=object_file.vertices,quads=object_file.quads,triangles=object_file.triangles,normals=object_file.normals,coordinates=selected_object['coordinates'],color=selected_object['color'],collide_box=selected_object['collide_box'])
                     self.all_objects[object_to_be_created] = my_object
                 case 'Vertices':
-                    my_object=VERTICES(to_be_drew=object_to_be_created['to_be_drew'],vertices=object_file.vertices,normals=object_file.normals,coordinates=object_to_be_created['coordinates'])
+                    my_object=VERTICES(vertices=object_file.vertices,normals=object_file.normals,coordinates=selected_object['coordinates'])
                     self.all_objects[object_to_be_created] = my_object
             del object_file # Release some memory
 
     def createDebugAxes(self):
         if project.debug_axes: # Création des axes en créant des lignes à deux points
-            axe_x=AXES(to_be_drew=True,vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
-            axe_y=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
-            axe_z=AXES(to_be_drew=True,vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
+            axe_x=AXES(vertices=[[0, 0, 0], [1, 0, 0]], color=[1, 0, 0])
+            axe_y=AXES(vertices=[[0, 0, 0], [0, 1, 0]], color=[0, 1, 0])
+            axe_z=AXES(vertices=[[0, 0, 0], [0, 0, 1]], color=[0, 0, 1])
             self.all_debug_objects.append(axe_x)
             self.all_debug_objects.append(axe_y)
             self.all_debug_objects.append(axe_z)
 
         if project.debug_rotation_axes: # Création des axes de rotation à partir des sin et cos
-            rotation_axe_x=ROTATION_AXES(to_be_drew=True,vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
-            rotation_axe_y=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
-            rotation_axe_z=ROTATION_AXES(to_be_drew=True,vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
+            rotation_axe_x=ROTATION_AXES(vertices=[(0.0, cos(radians(i)), sin(radians(i))) for i in range(0, 360, 1)], color=[1, 0, 0])
+            rotation_axe_y=ROTATION_AXES(vertices=[(cos(radians(i)), 0.0, sin(radians(i))) for i in range(0, 360, 1)], color=[0, 1, 0])
+            rotation_axe_z=ROTATION_AXES(vertices=[(cos(radians(i)), sin(radians(i)), 0.0) for i in range(0, 360, 1)], color=[0, 0, 1])
             self.all_debug_objects.append(rotation_axe_x)
             self.all_debug_objects.append(rotation_axe_y)
             self.all_debug_objects.append(rotation_axe_z)

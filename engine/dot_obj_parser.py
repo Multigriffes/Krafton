@@ -3,7 +3,6 @@ class OBJ_FILE:
         self.filePath = file_path
         self.file = None
         self.fileName = self.filePath.split('/')[-1].rstrip('.obj')
-        self.cacheFile = None
         self.vertices = []
         self.normals = []
         self.textures = []
@@ -15,9 +14,13 @@ class OBJ_FILE:
         self.trianglesTextures = []
         self.trianglesVertices = []
         self.triangles = [self.trianglesVertices,self.trianglesTextures,self.trianglesNormals]
+        self.parse()
 
     def parse(self) -> None:
-        self.file = open(self.filePath, "r")
+        try:
+            self.file = open(self.filePath, "r")
+        except FileNotFoundError:
+            print("Not found")
         for line in self.file.readlines():
             line = line.split()
             if not line == []:
