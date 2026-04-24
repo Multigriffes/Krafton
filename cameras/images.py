@@ -3,7 +3,8 @@ import time
 import numpy as np
 from cameras.parameters import kernel, quitter, P1, P2, nb_led_left_controller, nb_led_right_controller
 from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
-from engine.shareLib import ShareableList
+from multiprocessing.shared_memory import ShareableList
+
 
 try:
     left_controller = ShareableList(name="left_controller")
@@ -25,8 +26,10 @@ def image_transform(image, H):
 
 
 # Faire fonction traitement image pour capture 1 et 2.
-capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+#capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+#capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+capture1 = cv2.VideoCapture(1)
+capture2 = cv2.VideoCapture(2)
 
 x=0
 timer = 0
@@ -53,10 +56,7 @@ while capture1.isOpened() and capture2.isOpened():
 
         pos_groupes = []
 
-        print(groupe_img_1)
-        print(groupe_img_2)
         if groupe_img_1 != [] and groupe_img_2 != []:
-            print(min(len(groupe_img_1), len(groupe_img_2)))
             for i in range(min(len(groupe_img_1), len(groupe_img_2))):
                 pos_groupes.append([])
                 for k in range(min(len(groupe_img_1[i]), len(groupe_img_2[i]))):
@@ -64,17 +64,16 @@ while capture1.isOpened() and capture2.isOpened():
 
         for pos in pos_groupes:
             pos_manette = calculate_point_pos(pos)
-            if len(pos) == left_controller:
-                left_controller[0] = pos_manette[0]
-                left_controller[1] = pos_manette[1]
-                left_controller[2] = pos_manette[2]
-            elif len(pos) == right_controller:
+            #if len(pos) == left_controller:
+            left_controller[0] = pos_manette[0]
+            left_controller[1] = pos_manette[1]
+            left_controller[2] = pos_manette[2]
+            """elif len(pos) == right_controller:
                 right_controller[0] = pos_manette[0]
                 right_controller[1] = pos_manette[1]
-                right_controller[2] = pos_manette[2]
+                right_controller[2] = pos_manette[2]"""
 
-
-       
+        print(left_controller)
         end_time = time.perf_counter()
         timer += 1/(end_time-start_time)
 

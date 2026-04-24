@@ -20,11 +20,11 @@ class MAIN:
         glClearColor(0,100/255,0,1)
 
         try:
-            self.left_controller = ShareableList(name="left_controller")
+            self.left_controller = ShareableList(name='left_controller')
         except FileNotFoundError:
             self.left_controller = ShareableList(name='left_controller', sequence=range(3))
         try:
-            self.right_controller = ShareableList(name="right_controller")
+            self.right_controller = ShareableList(name='right_controller')
         except FileNotFoundError:
             self.right_controller = ShareableList(name='right_controller', sequence=range(3))
 
@@ -33,8 +33,8 @@ class MAIN:
         self.run = True
 
         self.parseAndCreateObjects()
-        self.all_objects["left_controller"].coordinates = self.left_controller
-        self.all_objects["right_controller"].coordinates = self.right_controller
+        #self.all_objects["left_controller"].coordinates = self.left_controller
+        #self.all_objects["right_controller"].coordinates = self.right_controller
         self.createDebugAxes()
         self.main()
 
@@ -54,7 +54,13 @@ class MAIN:
             #self.checkForColision()
             #self.updateCubePos()
             #self.updateSaberPos()
-
+            print(self.all_objects['left_controller'].coordinates)
+            self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
+            self.all_objects['left_controller'].coordinates[1] = self.left_controller[1] - 600
+            self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
+            self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]
+            self.all_objects['right_controller'].coordinates[1] = self.right_controller[1]
+            self.all_objects['right_controller'].coordinates[2] = self.right_controller[2]
             #______________Draw all objects___________
             for object in self.all_objects:
                 if self.all_objects[object].to_be_drew:
