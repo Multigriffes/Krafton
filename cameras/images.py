@@ -26,10 +26,10 @@ def image_transform(image, H):
 
 
 # Faire fonction traitement image pour capture 1 et 2.
-#capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-#capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-capture1 = cv2.VideoCapture(1)
-capture2 = cv2.VideoCapture(2)
+capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
+#capture1 = cv2.VideoCapture(1)
+#capture2 = cv2.VideoCapture(2)
 
 x=0
 timer = 0

@@ -33,8 +33,6 @@ class MAIN:
         self.run = True
 
         self.parseAndCreateObjects()
-        #self.all_objects["left_controller"].coordinates = self.left_controller
-        #self.all_objects["right_controller"].coordinates = self.right_controller
         self.createDebugAxes()
         self.main()
 
@@ -51,17 +49,19 @@ class MAIN:
                 self.camera.up_vec.x, self.camera.up_vec.y, self.camera.up_vec.z
             )
 
-            #self.checkForColision()
-            #self.updateCubePos()
+            #self.checkForCollision()
+            self.updateCubePos()
             #self.updateSaberPos()
-            print(self.all_objects['left_controller'].coordinates)
             self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
-            self.all_objects['left_controller'].coordinates[1] = self.left_controller[1] - 600
+            self.all_objects['left_controller'].coordinates[1] = self.left_controller[1] + 100
             self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
+            print(f"Gauche : {self.all_objects["left_controller"].coordinates}")
             self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]
             self.all_objects['right_controller'].coordinates[1] = self.right_controller[1]
             self.all_objects['right_controller'].coordinates[2] = self.right_controller[2]
-            #______________Draw all objects___________
+            print(f"Droite : {self.all_objects["right_controller"].coordinates}")
+
+        #______________Draw all objects___________
             for object in self.all_objects:
                 if self.all_objects[object].to_be_drew:
                     self.all_objects[object].draw()
@@ -92,7 +92,14 @@ class MAIN:
             selected_block=self.all_objects[name]
             if selected_block.coordinates[2] > 20:
                 selected_block.coordinates[2] = -30
-            selected_block.moveAlong(1, (0,0,1))
+            selected_block.moveAlong(0.1, (0,0,1))
+
+    def checkForCollision(self):
+        for block in ("Block_1", "Block_2", "Block_3", "Block_4"):
+            selected_block = self.all_objects[block]
+            for controller in ("left_controller", "right_controller"):
+                selected_controller = self.all_objects[controller]
+
 
     def processKey(self):
         keyPressed = pygame.key.get_pressed()
