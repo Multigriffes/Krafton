@@ -14,12 +14,11 @@ try:
 except FileNotFoundError:
     right_controller = ShareableList(name='right_controller', sequence=range(3))
 
-def image_transform(image, H):
+def image_transform(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
     _, image = cv2.threshold(image, 250, 255, cv2.THRESH_BINARY)
     image = cv2.flip(image, 1)
-    image = cv2.warpPerspective(image, H)
 
     return image
 
@@ -41,15 +40,22 @@ while capture1.isOpened() and capture2.isOpened():
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
 
-    # Detection led
-    keypoints1 = detector.detect(frame1)
-    keypoints2 = detector.detect(frame2)
-    if keypoints1 != () and keypoints2 != ():
-        list_point1.append((keypoints1[0].pt[0], keypoints1[0].pt[1]))
-        list_point2.append((keypoints2[0].pt[0], keypoints2[0].pt[1]))
+    if not ret1 or not ret2:
+        continue
 
-        groupe_img_1 = groupe_leds(list_point1)
-        groupe_img_2 = groupe_leds(list_point2)
+    frame1_processed = image_transform(frame1)
+    frame2_processed = image_transform(frame2)
+
+    # Detection led
+    keypoints1 = detector.detect(frame1_processed)
+    keypoints2 = detector.detect(frame2_processed)
+
+    if keypoints1 != () and keypoints2 != ():
+        points1 = [(kp.pt[0], kp.pt[1]) for kp in keypoints1]
+        points2 = [(kp.pt[0], kp.pt[1]) for kp in keypoints2]
+
+        groupe_img_1 = groupe_leds(points1)
+        groupe_img_2 = groupe_leds(points2)
 
         pos_groupes = []
 
@@ -64,11 +70,13 @@ while capture1.isOpened() and capture2.isOpened():
 
         for pos in pos_groupes:
             pos_manette = calculate_point_pos(pos)
-            if len(pos) == left_controller:
+
+            if len(pos) == nb_led_left_controller:
                 left_controller[0] = pos_manette[0]
                 left_controller[1] = pos_manette[1]
                 left_controller[2] = pos_manette[2]
-            elif len(pos) == right_controller:
+
+            elif len(pos) == nb_led_right_controller:
                 right_controller[0] = pos_manette[0]
                 right_controller[1] = pos_manette[1]
                 right_controller[2] = pos_manette[2]

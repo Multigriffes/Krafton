@@ -151,9 +151,9 @@ def compute_intrinsincs(B):
     Cy = (B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2])/(B[0, 0]*B[1, 1] - B[0, 1]**2)
     l = B[2, 2] - (B[0, 2]**2 + Cy*(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
     Fx = sqrt(l/B[0, 0])
-    Fy = sqrt(l*B[0, 0]/B[0, 0]*B[1, 1] - B[0, 1]**2)
+    Fy = sqrt(l*B[0, 0]/(B[0, 0]*B[1, 1] - B[0, 1]**2))
     g = -B[0, 1]*(Fx**2)*Fy/l
-    Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
+    Cx = g*Cy/Fy - B[0, 2]*(Fx**2)/l
 
     K = np.array([[Fx, g, Cx],
                   [0, Fy, Cy],
