@@ -69,23 +69,6 @@ def produit_matriciel(mat_1, mat_2):
 def compute_A(lst_points_realite, lst_points_image):
     '''
     Cree la matrice A a partir des points detectes lors de la calibration de la camera
-    A est de la forme :
-    [[-X1, -Y1, -1, 0, 0, 0, u1*X1, u1*Y1, u1] point 1 [point realite (repere du damier), point observe]
-     [0, 0, 0, -X1, -Y1, -1, v1*X1, v1*Y1, v1] point 1 [point realite (repere du damier), point observe]
-     .
-     .
-     .
-     [-Xn, -Yn, -1, 0, 0, 0, un*Xn, un*Yn, un] point n [point realite (repere du damier), point observe]
-     [0, 0, 0, -Xn, -Yn, -1, vn*Xn, vn*Yn, vn] point n [point realite (repere du damier), point observe]
-    ]
-
-                                 [xi]       [Xi]  
-    A represente les equations : [yi] = H X [Yi]
-                                 [1 ]       [1]
-    qui représentent le passage du point 2D en 3D par la matrice H
-
-    Pour (xi; yi) coordonnées du points observé (camera) et (Xi; Yi) coordonnées du point reel.
-    (Toutes deux coordonnées homogènes)
     '''
     import numpy as np
 
@@ -104,7 +87,6 @@ def compute_A(lst_points_realite, lst_points_image):
 def compute_homography(lst_images, object_points):
     '''
     Calcul des matrices H d'homographie pour chaque images.
-    Cette matrice est calculée par SVD (Singular Value Decomposition) de la matrice A.
     '''
     import numpy as np
 
@@ -133,17 +115,6 @@ def compute_homography(lst_images, object_points):
 def compute_intrinsincs(B):
     '''
     Calcule les paramètres intrinsèques de la camera et renvoie la matrice intrinsèque.
-    Formules :
-    B = [b11 b12 b13]
-        [b21 b22 b23]
-        [b31 b32 b33]
-    
-    Cy = (b12*B13 - b11*b23) / (b11*b22 - b12²)
-    lambda : l = b33 - (b13² + Cy(b12*b13 - b11*b23)) / b11
-    Fx = sqrt(l/b11)
-    Fy = sqrt(l*b11 / (b11*b22 -b12²))
-    gamma : g = -b12*Fx² / l
-    Cx = (l*Cy / Fy) - b13(Fx²/l) 
     '''
     import numpy as np
     from math import sqrt
