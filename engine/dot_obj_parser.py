@@ -3,7 +3,6 @@ class OBJ_FILE:
         self.filePath = file_path
         self.file = None
         self.fileName = self.filePath.split('/')[-1].rstrip('.obj')
-        self.cacheFile = None
         self.vertices = []
         self.normals = []
         self.textures = []
@@ -15,27 +14,13 @@ class OBJ_FILE:
         self.trianglesTextures = []
         self.trianglesVertices = []
         self.triangles = [self.trianglesVertices,self.trianglesTextures,self.trianglesNormals]
+        self.parse()
 
-    def parse(self, force_parse: bool = False) -> None:
-        if force_parse:
-            self.parseFile()
-        else:
-            from engine.models.models_cache import cache
-            self.cache=cache
-            if not (f'{self.fileName}_Vertices' in self.cache.keys()):
-                self.parseFile()
-            else:
-                self.parseCache()
-
-    def parseCache(self) -> None:
-        self.vertices = self.cache[f'{self.fileName}_Vertices']
-        self.normals = self.cache[f'{self.fileName}_Normals']
-        self.textures = self.cache[f'{self.fileName}_Textures']
-        self.triangles = self.cache[f'{self.fileName}_Triangles']
-        self.quads = self.cache[f'{self.fileName}_Quads']
-
-    def parseFile(self) -> None:
-        self.file = open(self.filePath, "r")
+    def parse(self) -> None:
+        try:
+            self.file = open(self.filePath, "r")
+        except FileNotFoundError:
+            print("Not found")
         for line in self.file.readlines():
             line = line.split()
             if not line == []:
@@ -101,16 +86,3 @@ class OBJ_FILE:
                                 self.quadsTextures.append(faceTextures)
                                 self.quadsNormals.append(faceNormals)
         self.file.close()
-        #self.writeToCache()
-
-    def writeToCache(self) -> None:
-        print('WriteToCache')
-        self.cache[f'{self.fileName}_Vertices'] = self.vertices
-        self.cache[f'{self.fileName}_Normals'] = self.normals
-        self.cache[f'{self.fileName}_Textures'] = self.textures
-        self.cache[f'{self.fileName}_Triangles'] = self.triangles
-        self.cache[f'{self.fileName}_Quads'] = self.quads
-
-        self.cacheFile = open('engine/models/models_cache.py', 'w')
-        self.cacheFile.write(f'cache = {self.cache}')
-        self.cacheFile.close()

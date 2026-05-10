@@ -245,31 +245,26 @@ def normalize_points(points):
     return normalized, T
 
 def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
-    '''
-    Calcul de la matrice extrinseques des deux cameras reunies. (Position d'une cameras par rapport a l'autre.)
-    '''
     import numpy as np
 
     R_list = []
     t_list = []
 
     for (R1, t1), (R2, t2) in zip(extrinsics1, extrinsics2):
-        
         R12 = produit_matriciel(R2, R1.T)
         t12 = t2 - produit_matriciel(R12, t1.reshape(3,1)).flatten()
-
         R_list.append(R12)
-        t_list.append(t12)
+        t_list.append(t12.reshape(3,))
 
-    
-    # Moyenne des translation
-    t_list = [t.reshape(3,) for t in t_list]
     t_mean = np.mean(np.array(t_list), axis=0)
 
-    # Moyenne des rotations (avec svd)
     R_stack = np.mean(R_list, axis=0)
     U, _, Vt = np.linalg.svd(R_stack)
     R_mean = produit_matriciel(U, Vt)
+
+
+    if np.linalg.det(R_mean) < 0:
+        R_mean = -R_mean
 
     return R_mean, t_mean
 
@@ -312,6 +307,8 @@ def triangulate_point(P1, P2, pt1, pt2):
 
     # résolution AX = 0 par SVD
     U, S, Vt = np.linalg.svd(A)
+
+    print(f"Condition A : {np.linalg.cond(A):.1f}")  # Si > 1000 : matrice mal conditionnée
 
     X = Vt[-1]
 

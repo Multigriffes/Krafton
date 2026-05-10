@@ -1,7 +1,7 @@
 import cv2
-from parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info
-from fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices
-from write_read_csv import write, clear_file
+from cameras.parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info
+from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices
+from cameras.write_read_csv import write, clear_file
 
 capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
