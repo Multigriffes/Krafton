@@ -69,23 +69,6 @@ def produit_matriciel(mat_1, mat_2):
 def compute_A(lst_points_realite, lst_points_image):
     '''
     Cree la matrice A a partir des points detectes lors de la calibration de la camera
-    A est de la forme :
-    [[-X1, -Y1, -1, 0, 0, 0, u1*X1, u1*Y1, u1] point 1 [point realite (repere du damier), point observe]
-     [0, 0, 0, -X1, -Y1, -1, v1*X1, v1*Y1, v1] point 1 [point realite (repere du damier), point observe]
-     .
-     .
-     .
-     [-Xn, -Yn, -1, 0, 0, 0, un*Xn, un*Yn, un] point n [point realite (repere du damier), point observe]
-     [0, 0, 0, -Xn, -Yn, -1, vn*Xn, vn*Yn, vn] point n [point realite (repere du damier), point observe]
-    ]
-
-                                 [xi]       [Xi]  
-    A represente les equations : [yi] = H X [Yi]
-                                 [1 ]       [1]
-    qui représentent le passage du point 2D en 3D par la matrice H
-
-    Pour (xi; yi) coordonnées du points observé (camera) et (Xi; Yi) coordonnées du point reel.
-    (Toutes deux coordonnées homogènes)
     '''
     import numpy as np
 
@@ -104,7 +87,6 @@ def compute_A(lst_points_realite, lst_points_image):
 def compute_homography(lst_images, object_points):
     '''
     Calcul des matrices H d'homographie pour chaque images.
-    Cette matrice est calculée par SVD (Singular Value Decomposition) de la matrice A.
     '''
     import numpy as np
 
@@ -133,17 +115,6 @@ def compute_homography(lst_images, object_points):
 def compute_intrinsincs(B):
     '''
     Calcule les paramètres intrinsèques de la camera et renvoie la matrice intrinsèque.
-    Formules :
-    B = [b11 b12 b13]
-        [b21 b22 b23]
-        [b31 b32 b33]
-    
-    Cy = (b12*B13 - b11*b23) / (b11*b22 - b12²)
-    lambda : l = b33 - (b13² + Cy(b12*b13 - b11*b23)) / b11
-    Fx = sqrt(l/b11)
-    Fy = sqrt(l*b11 / (b11*b22 -b12²))
-    gamma : g = -b12*Fx² / l
-    Cx = (l*Cy / Fy) - b13(Fx²/l) 
     '''
     import numpy as np
     from math import sqrt
@@ -151,9 +122,9 @@ def compute_intrinsincs(B):
     Cy = (B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2])/(B[0, 0]*B[1, 1] - B[0, 1]**2)
     l = B[2, 2] - (B[0, 2]**2 + Cy*(B[0, 1]*B[0, 2] - B[0, 0]*B[1, 2]))/B[0, 0]
     Fx = sqrt(l/B[0, 0])
-    Fy = sqrt(l*B[0, 0]/B[0, 0]*B[1, 1] - B[0, 1]**2)
+    Fy = sqrt(l*B[0, 0]/(B[0, 0]*B[1, 1] - B[0, 1]**2))
     g = -B[0, 1]*(Fx**2)*Fy/l
-    Cx = l*Cy/Fy - B[0, 2]*(Fx**2)/l
+    Cx = g*Cy/Fy - B[0, 2]*(Fx**2)/l
 
     K = np.array([[Fx, g, Cx],
                   [0, Fy, Cy],
@@ -274,31 +245,26 @@ def normalize_points(points):
     return normalized, T
 
 def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
-    '''
-    Calcul de la matrice extrinseques des deux cameras reunies. (Position d'une cameras par rapport a l'autre.)
-    '''
     import numpy as np
 
     R_list = []
     t_list = []
 
     for (R1, t1), (R2, t2) in zip(extrinsics1, extrinsics2):
-        
         R12 = produit_matriciel(R2, R1.T)
         t12 = t2 - produit_matriciel(R12, t1.reshape(3,1)).flatten()
-
         R_list.append(R12)
-        t_list.append(t12)
+        t_list.append(t12.reshape(3,))
 
-    
-    # Moyenne des translation
-    t_list = [t.reshape(3,) for t in t_list]
     t_mean = np.mean(np.array(t_list), axis=0)
 
-    # Moyenne des rotations (avec svd)
     R_stack = np.mean(R_list, axis=0)
     U, _, Vt = np.linalg.svd(R_stack)
     R_mean = produit_matriciel(U, Vt)
+
+
+    if np.linalg.det(R_mean) < 0:
+        R_mean = -R_mean
 
     return R_mean, t_mean
 
@@ -341,6 +307,8 @@ def triangulate_point(P1, P2, pt1, pt2):
 
     # résolution AX = 0 par SVD
     U, S, Vt = np.linalg.svd(A)
+
+    print(f"Condition A : {np.linalg.cond(A):.1f}")  # Si > 1000 : matrice mal conditionnée
 
     X = Vt[-1]
 

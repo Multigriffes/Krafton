@@ -53,7 +53,7 @@ class MAIN:
             self.updateCubePos()
             #self.updateSaberPos()
             self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
-            self.all_objects['left_controller'].coordinates[1] = self.left_controller[1] + 100
+            self.all_objects['left_controller'].coordinates[1] = self.left_controller[1]
             self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
             print(f"Gauche : {self.all_objects["left_controller"].coordinates}")
             self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]

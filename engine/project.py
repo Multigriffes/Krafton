@@ -18,7 +18,7 @@ animation = {
 }
 
 # Display
-display = [1920, 1080]
+display = [720, 480]
 fpsLimit = 144
 
 # Projection
