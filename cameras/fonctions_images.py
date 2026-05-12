@@ -1,3 +1,5 @@
+import cv2
+
 def groupe_leds(point_list:list)->list:
     '''
     Forme les groupes de leds detectes a partir de leur coordonnees 2D
@@ -326,3 +328,68 @@ def calculate_point_pos(lst_pts):
         z += float(pts[2])
 
     return x/lenght, y/lenght, z/lenght
+
+def centre(groupe):
+    x = sum(p[0] for p in groupe) / len(groupe)
+    y = sum(p[1] for p in groupe) / len(groupe)
+    return (x, y)
+
+def trier_groupe(groupe):
+    return sorted(groupe, key=lambda p: (p[0], p[1]))
+
+def image_transform(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return image
+
+def detect_and_processed_controller_pos(frame1_processed, frame2_processed, detector):
+    from cameras.parameters import P1, P2, nb_led_left_controller, nb_led_right_controller
+
+    keypoints1 = detector.detect(frame1_processed)
+    keypoints2 = detector.detect(frame2_processed)
+
+    if len(keypoints1) > 0 and len(keypoints2) > 0:
+        points1 = [(kp.pt[0], kp.pt[1]) for kp in keypoints1]
+        points2 = [(kp.pt[0], kp.pt[1]) for kp in keypoints2]
+
+        groupe_img_1 = groupe_leds(points1)
+        groupe_img_2 = groupe_leds(points2)
+
+        pos_groupes = []
+
+        if len(groupe_img_1) > 0 and len(groupe_img_2) > 0:
+
+            groupe_img_1 = sorted(groupe_img_1, key=lambda g: centre(g)[1])
+            groupe_img_2 = sorted(groupe_img_2, key=lambda g: centre(g)[1])
+
+            nb_groupes = min(len(groupe_img_1), len(groupe_img_2))
+
+            for i in range(nb_groupes):
+                groupe1_trie = trier_groupe(groupe_img_1[i])
+                groupe2_trie = trier_groupe(groupe_img_2[i])
+
+                nb_points = min(len(groupe1_trie), len(groupe2_trie))
+
+                if nb_points == 0:
+                    continue
+
+                points_3d = []
+                for k in range(nb_points):
+                    pt3d = triangulate_point(P1, P2, groupe1_trie[k], groupe2_trie[k])
+                    points_3d.append(pt3d)
+
+                pos_groupes.append(points_3d)
+        manette = None
+        for pos in pos_groupes:
+            if len(pos) == 0:
+                continue
+
+            pos_manette = calculate_point_pos(pos)
+
+            if len(pos) == nb_led_left_controller:
+                manette = 'left'
+            elif len(pos) == nb_led_right_controller:
+                manette = 'right'
+
+        return {'pos': pos_manette, 'nom': manette}, keypoints1, keypoints2
+
+    return False

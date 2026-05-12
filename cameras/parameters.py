@@ -9,6 +9,7 @@ quitter = 'q'
 
 # Mode configuration
 take_photo = 'p'
+place_point = 'p'
 '''
 fin pour utilisateur
 '''
@@ -69,6 +70,8 @@ t1 = read('t1')
 t2 = read('t2')
 P1 = read('P1')
 P2 = read('P2')
+pos1 = read('pos1')
+pos2 = read('pos2')
 
 '''
 fin configuration_camera.py
