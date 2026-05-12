@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-from cameras.parameters import kernel, quitter
-from cameras.fonctions_images import blob_detection_params, groupe_leds, detect_and_processed_controller_pos, image_transform
+from cameras.parameters import quitter, P1, P2, nb_led_left_controller, nb_led_right_controller
+from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
 from multiprocessing.shared_memory import ShareableList
 import os
 

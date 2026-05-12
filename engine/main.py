@@ -49,17 +49,10 @@ class MAIN:
                 self.camera.up_vec.x, self.camera.up_vec.y, self.camera.up_vec.z
             )
 
-            #self.checkForCollision()
+            self.checkForCollision()
             self.updateCubePos()
-            #self.updateSaberPos()
-            self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
-            self.all_objects['left_controller'].coordinates[1] = self.left_controller[1]
-            self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
-            print(f"Gauche : {self.all_objects["left_controller"].coordinates}")
-            self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]
-            self.all_objects['right_controller'].coordinates[1] = self.right_controller[1]
-            self.all_objects['right_controller'].coordinates[2] = self.right_controller[2]
-            print(f"Droite : {self.all_objects["right_controller"].coordinates}")
+            self.updateSaberPos()
+
 
         #______________Draw all objects___________
             for object in self.all_objects:
@@ -75,7 +68,6 @@ class MAIN:
 
             pygame.display.flip()
             #print(self.clock.get_fps())
-            #self.somethingChanged[0]=False
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -85,7 +77,15 @@ class MAIN:
             self.processKey()
 
     def updateSaberPos(self):
-        pass
+        self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
+        self.all_objects['left_controller'].coordinates[1] = self.left_controller[1]
+        self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
+        print(f"Gauche : {self.all_objects["left_controller"].coordinates}")
+        #print(f"GaucheShared : {self.left_controller[0],self.left_controller[1],self.left_controller[2]}")
+        self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]
+        self.all_objects['right_controller'].coordinates[1] = self.right_controller[1]
+        self.all_objects['right_controller'].coordinates[2] = self.right_controller[2]
+        #print(f"Droite : {self.all_objects["right_controller"].coordinates}")
 
     def updateCubePos(self):
         for name in ("Block_1", "Block_2", "Block_3", "Block_4"):
@@ -99,7 +99,8 @@ class MAIN:
             selected_block = self.all_objects[block]
             for controller in ("left_controller", "right_controller"):
                 selected_controller = self.all_objects[controller]
-
+                if ((selected_controller.collide_box[0][0] <= selected_block.collide_box[1][0] and selected_controller.collide_box[1][0] >= selected_block.collide_box[0][0]) and (selected_controller.collide_box[0][1] <= selected_block.collide_box[1][1] and selected_controller.collide_box[1][1] >= selected_block.collide_box[0][1]) and (selected_controller.collide_box[0][2] <= selected_block.collide_box[1][2] and selected_controller.collide_box[1][2] >= selected_block.collide_box[0][2])):
+                    selected_block.resetCoordinates()
 
     def processKey(self):
         keyPressed = pygame.key.get_pressed()

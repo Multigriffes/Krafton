@@ -6,6 +6,7 @@ from random import randint
 class OBJECT_BASE:
     def __init__(self,collide_box: list = None,vertices: list = None,normals: list = None,triangles: list = None,quads: list = None,coordinates: list = None,rotation: list = None,color: list = None) -> None:
         self.coordinates=coordinates if coordinates is not None else [0,0,0]
+        self.base_coordinates = coordinates.copy() if coordinates is not None else [0,0,0]
         self.rotation=rotation if rotation is not None else [0,0,0]
         self.vertices=vertices if vertices is not None else []
         self.normals=normals if normals is not None else []
@@ -28,6 +29,9 @@ class OBJECT_BASE:
             glRotatef(self.rotation[2],0,0,1) if rotation is None else glRotatef(rotation[2],0,0,1)
             glCallList(self.gl_list_id)
             glPopMatrix()
+
+    def resetCoordinates(self):
+        self.coordinates=self.base_coordinates.copy()
 
     def addCoordinates(self,coordinates: list = None) -> None:
         if coordinates is not None:

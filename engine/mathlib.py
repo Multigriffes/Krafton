@@ -115,4 +115,3 @@ def crossProductNormalized(a: QUATERNION, b: QUATERNION) -> QUATERNION: # https:
     assert isinstance(a, QUATERNION)
     assert isinstance(b, QUATERNION)
     return crossProduct(a, b).normalize()
-
