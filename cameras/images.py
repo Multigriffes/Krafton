@@ -3,7 +3,8 @@ import time
 import numpy as np
 from cameras.parameters import kernel, quitter, P1, P2, nb_led_left_controller, nb_led_right_controller
 from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
-from engine.shareLib import ShareableList
+from multiprocessing.shared_memory import ShareableList
+import os
 
 try:
     left_controller = ShareableList(name="left_controller")
@@ -30,8 +31,14 @@ def trier_groupe(groupe):
     return sorted(groupe, key=lambda p: (p[0], p[1]))
 
 
-capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+if os.name=="nt":
+    capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
+elif os.name=="posix":
+    capture1 = cv2.VideoCapture(1)
+    capture2 = cv2.VideoCapture(2)
+
+assert capture1.isOpened() and capture2.isOpened(), "Les caméras n'ont pas pus être connecter."
 
 timer = 0
 nb_frames = 0

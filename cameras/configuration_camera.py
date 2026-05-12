@@ -2,16 +2,22 @@ import cv2
 from cameras.parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info
 from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices
 from cameras.write_read_csv import write, clear_file
+import os
 
-capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
-#capture1 = cv2.VideoCapture(1)
-#capture2 = cv2.VideoCapture(2)
+if os.name=="nt":
+    capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
+elif os.name=="posix":
+    capture1 = cv2.VideoCapture(1)
+    capture2 = cv2.VideoCapture(2)
+
 assert capture1.isOpened() and capture2.isOpened(), "Les caméras n'ont pas pus être connecter."
 
 nb_photo = 0
 lst_photo1 = []
 lst_photo2 = []
+
+run_3d_box_calibration = False
 
 while capture1.isOpened() and capture2.isOpened():
 
@@ -36,7 +42,10 @@ while capture1.isOpened() and capture2.isOpened():
             print("Chessboard non detecte")
 
     elif (key == ord(quitter)) or nb_photo == nb_photo_max:
-        break
+        run_3d_box_calibration = True
+
+    if run_3d_box_calibration:
+        Pass
     
     if ret1 and ret2:
         cv2.imshow("test1", frame1)
