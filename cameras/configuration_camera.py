@@ -1,13 +1,16 @@
-import cv2
-from cameras.parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info, place_point
-from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices, image_transform, blob_detection_params
-from cameras.write_read_csv import write, clear_file
 import os
 
-if os.name=="nt":
+import cv2
+
+from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, \
+    compute_stereo_extrinsecs, compute_projection_matrices, image_transform, blob_detection_params
+from cameras.parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info, place_point
+from cameras.write_read_csv import write, clear_file
+
+if os.name == "nt":
     capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
-elif os.name=="posix":
+elif os.name == "posix":
     capture1 = cv2.VideoCapture(1)
     capture2 = cv2.VideoCapture(2)
 
@@ -26,7 +29,6 @@ place_pt_bd = False
 
 while capture1.isOpened() and capture2.isOpened():
 
-
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
 
@@ -40,8 +42,8 @@ while capture1.isOpened() and capture2.isOpened():
             corners_ret2, corners2 = cv2.findChessboardCorners(frame2, chessboard_info[0])
 
             if corners_ret1 and corners_ret2:
-                lst_photo1.append(corners1.reshape(-1,2))
-                lst_photo2.append(corners2.reshape(-1,2))
+                lst_photo1.append(corners1.reshape(-1, 2))
+                lst_photo2.append(corners2.reshape(-1, 2))
                 nb_photo += 1
                 print(nb_photo)
             else:
@@ -72,14 +74,12 @@ while capture1.isOpened() and capture2.isOpened():
                 frame2_processed_1 = image_transform(frame2)
                 place_pt_hg = True
                 place_pt_bd_print = True
-            elif  not place_pt_bd:
+            elif not place_pt_bd:
                 frame1_processed_2 = image_transform(frame1)
                 frame2_processed_2 = image_transform(frame2)
                 place_pt_bd = True
             else:
                 break
-
-
 
     if ret1 and ret2:
         cv2.imshow("test1", frame1)
@@ -112,7 +112,6 @@ for H2 in lst2_H:
     R2, t2 = compute_extrinsics(K2, H2)
     extrinsics2.append((R2, t2))
 
-
 R, t = compute_stereo_extrinsecs(extrinsics1, extrinsics2)
 
 P1, P2 = compute_projection_matrices(K1, K2, R, t)
@@ -128,7 +127,8 @@ write('t2', t2)
 write('P1', P1)
 write('P2', P2)
 
-from cameras.fonctions_images import  detect_and_processed_controller_pos
+from cameras.fonctions_images import detect_and_processed_controller_pos
+
 detector = blob_detection_params()
 pos1, _, _ = detect_and_processed_controller_pos(frame1_processed_1, frame2_processed_1, detector)
 pos2, _, _ = detect_and_processed_controller_pos(frame1_processed_2, frame2_processed_2, detector)

@@ -1,4 +1,5 @@
 import numpy as np
+
 from cameras.write_read_csv import read
 
 '''
@@ -28,7 +29,7 @@ minArea = 1
 
 # Groupes de leds
 distance_max = 100
-distance_max_carre = distance_max**2
+distance_max_carre = distance_max ** 2
 nb_groupe = 2
 
 # Nombre leds par manette
@@ -36,13 +37,11 @@ nb_led_left_controller = 4
 nb_led_right_controller = 3
 
 # Analyse image
-kernel = np.ones((3,3), np.uint8)
+kernel = np.ones((3, 3), np.uint8)
 
 '''
 fin images.py
 '''
-
-
 
 '''
 configuration_camera.py
