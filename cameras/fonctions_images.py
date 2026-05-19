@@ -296,6 +296,7 @@ def triangulate_point(P1, P2, pt1, pt2):
     '''
 
     import numpy as np
+    from cameras.parameters import P1, P2
 
     u1, v1 = pt1
     u2, v2 = pt2
@@ -309,8 +310,6 @@ def triangulate_point(P1, P2, pt1, pt2):
 
     # résolution AX = 0 par SVD
     U, S, Vt = np.linalg.svd(A)
-
-    print(f"Condition A : {np.linalg.cond(A):.1f}")  # Si > 1000 : matrice mal conditionnée
 
     X = Vt[-1]
 
@@ -395,10 +394,8 @@ def detect_and_processed_controller_pos(frame1_processed, frame2_processed, dete
     return False
 
 def calculate_coef(real_pt1:tuple, real_pt2:tuple, game_pt1:tuple, game_pt2:tuple)->tuple:
-    from math import abs
-
-    coef_x = abs(game_pt2[0] - game_pt1[0]) / abs(real_pt2[0] - real_pt1[0])
-    coef_y = abs(game_pt2[1] - game_pt1[1]) / abs(real_pt2[1] - real_pt1[1])
-    coef_z = abs(game_pt2[2] - game_pt1[2]) / abs(real_pt2[2] - real_pt1[2])
+    coef_x = abs(game_pt2[0] - game_pt1[0]) / abs(real_pt2['pos'][0] - real_pt1['pos'][0])
+    coef_y = abs(game_pt2[1] - game_pt1[1]) / abs(real_pt2['pos'][1] - real_pt1['pos'][1])
+    coef_z = abs(game_pt2[2] - game_pt1[2]) / abs(real_pt2['pos'][2] - real_pt1['pos'][2])
 
     return coef_x, coef_y, coef_z

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from cameras.parameters import quitter, P1, P2, nb_led_left_controller, nb_led_right_controller, pos1, pos2
-from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos, calculate_coef
+from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos, calculate_coef, image_transform, detect_and_processed_controller_pos, centre, trier_groupe
 from multiprocessing.shared_memory import ShareableList
 from engine.project import pt1, pt2
 import os
@@ -16,18 +16,8 @@ except FileNotFoundError:
     right_controller = ShareableList(name='right_controller', sequence=range(3))
 
 
-def centre(groupe):
-    x = sum(p[0] for p in groupe) / len(groupe)
-    y = sum(p[1] for p in groupe) / len(groupe)
-    return (x, y)
-
-
-def trier_groupe(groupe):
-    return sorted(groupe, key=lambda p: (p[0], p[1]))
-
-
 if os.name=="nt":
-    capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
 elif os.name=="posix":
     capture1 = cv2.VideoCapture(1)
@@ -44,22 +34,28 @@ while capture1.isOpened() and capture2.isOpened():
     ret2, frame2 = capture2.read()
 
     if not ret1 or not ret2:
+        print('Failed to load video frames')
         continue
 
     frame1_processed = image_transform(frame1)
     frame2_processed = image_transform(frame2)
 
+    if detect_and_processed_controller_pos(frame1_processed, frame2_processed, detector) == False:
+        print('No controller detected')
+        cv2.imshow("Camera 1", frame1_processed)
+        cv2.imshow("Camera 2", frame2_processed)
+        continue
     manette, keypoints1, keypoints2 = detect_and_processed_controller_pos(frame1_processed, frame2_processed, detector)
 
     if manette['nom'] == 'left':
-        left_controller[0] = manette['pos'][0]*coef_x
-        left_controller[1] = manette['pos'][1]*coef_y
+        left_controller[0] = -manette['pos'][0]*coef_x
+        left_controller[1] = -manette['pos'][1]*coef_y
         left_controller[2] = manette['pos'][2]*coef_z
 
     elif manette['nom'] == 'right':
-        right_controller[0] = manette['pos'][0]
-        right_controller[1] = manette['pos'][1]
-        right_controller[2] = manette['pos'][2]
+        right_controller[0] = -manette['pos'][0]*coef_x
+        right_controller[1] = -manette['pos'][1]*coef_y
+        right_controller[2] = manette['pos'][2]*coef_z
 
     output1 = cv2.drawKeypoints(frame1, keypoints1, np.array([]), (0, 0, 255),
                                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)

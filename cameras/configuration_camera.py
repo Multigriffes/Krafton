@@ -1,11 +1,11 @@
 import cv2
 from cameras.parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info, place_point
-from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices, detect_and_processed_controller_pos, image_transform
+from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices, image_transform, blob_detection_params
 from cameras.write_read_csv import write, clear_file
 import os
 
 if os.name=="nt":
-    capture1 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
 elif os.name=="posix":
     capture1 = cv2.VideoCapture(1)
@@ -80,7 +80,7 @@ while capture1.isOpened() and capture2.isOpened():
                 break
 
 
-    
+
     if ret1 and ret2:
         cv2.imshow("test1", frame1)
         cv2.imshow("test2", frame2)
@@ -117,9 +117,6 @@ R, t = compute_stereo_extrinsecs(extrinsics1, extrinsics2)
 
 P1, P2 = compute_projection_matrices(K1, K2, R, t)
 
-pos1, _, _ = detect_and_processed_controller_pos(frame1_processed_1, frame2_processed_1, detector)
-pos2, _, _ = detect_and_processed_controller_pos(frame1_processed_2, frame2_processed_2, detector)
-
 write('K1', K1)
 write('K2', K2)
 write('R', R)
@@ -130,5 +127,11 @@ write('t1', t1)
 write('t2', t2)
 write('P1', P1)
 write('P2', P2)
+
+from cameras.fonctions_images import  detect_and_processed_controller_pos
+detector = blob_detection_params()
+pos1, _, _ = detect_and_processed_controller_pos(frame1_processed_1, frame2_processed_1, detector)
+pos2, _, _ = detect_and_processed_controller_pos(frame1_processed_2, frame2_processed_2, detector)
+
 write('pos1', pos1)
 write('pos2', pos2)
