@@ -393,3 +393,12 @@ def detect_and_processed_controller_pos(frame1_processed, frame2_processed, dete
         return {'pos': pos_manette, 'nom': manette}, keypoints1, keypoints2
 
     return False
+
+def calculate_coef(real_pt1:tuple, real_pt2:tuple, game_pt1:tuple, game_pt2:tuple)->tuple:
+    from math import abs
+
+    coef_x = abs(game_pt2[0] - game_pt1[0]) / abs(real_pt2[0] - real_pt1[0])
+    coef_y = abs(game_pt2[1] - game_pt1[1]) / abs(real_pt2[1] - real_pt1[1])
+    coef_z = abs(game_pt2[2] - game_pt1[2]) / abs(real_pt2[2] - real_pt1[2])
+
+    return coef_x, coef_y, coef_z

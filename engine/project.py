@@ -31,3 +31,7 @@ lockedAxe = None
 
 # Jeux
 temps_spawn_cube = 1000
+
+# Cadre de la manette
+pt1 = (10, 10, 10)
+pt2 = (-10, -10, -10)

@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
-from cameras.parameters import quitter, P1, P2, nb_led_left_controller, nb_led_right_controller
-from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos
+from cameras.parameters import quitter, P1, P2, nb_led_left_controller, nb_led_right_controller, pos1, pos2
+from cameras.fonctions_images import blob_detection_params, groupe_leds, triangulate_point, calculate_point_pos, calculate_coef
 from multiprocessing.shared_memory import ShareableList
+from engine.project import pt1, pt2
 import os
 
 try:
@@ -36,6 +37,8 @@ assert capture1.isOpened() and capture2.isOpened(), "Les caméras n'ont pas pus 
 
 detector = blob_detection_params()
 
+coef_x, coef_y, coef_z = calculate_coef(pos1, pos2, pt1, pt2)
+
 while capture1.isOpened() and capture2.isOpened():
     ret1, frame1 = capture1.read()
     ret2, frame2 = capture2.read()
@@ -49,9 +52,9 @@ while capture1.isOpened() and capture2.isOpened():
     manette, keypoints1, keypoints2 = detect_and_processed_controller_pos(frame1_processed, frame2_processed, detector)
 
     if manette['nom'] == 'left':
-        left_controller[0] = manette['pos'][0]
-        left_controller[1] = manette['pos'][1]
-        left_controller[2] = manette['pos'][2]
+        left_controller[0] = manette['pos'][0]*coef_x
+        left_controller[1] = manette['pos'][1]*coef_y
+        left_controller[2] = manette['pos'][2]*coef_z
 
     elif manette['nom'] == 'right':
         right_controller[0] = manette['pos'][0]
