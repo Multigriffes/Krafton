@@ -1,9 +1,12 @@
-import cv2
-
-
 def groupe_leds(point_list: list) -> list:
     '''
-    Forme les groupes de leds detectes a partir de leur coordonnees 2D
+    Forme des groupes de led.
+
+    Args:
+        point_list (list): liste de points de led
+
+    Returns:
+        liste_groupe (list): liste de groupes de led
     '''
     point_visite = [1 for i in range(len(point_list))]  # 1 pour point non visite, 0 sinon
     liste_groupe = []
@@ -11,6 +14,9 @@ def groupe_leds(point_list: list) -> list:
         if point_visite[i]:
             groupe = []
             cluster_recur(i, point, groupe, point_visite, point_list)
+            # La liste groupe est modifié dans la fonction cluster_recur
+            # (ce ne sont pas les données de la liste qui sont données en paramètres mais la liste elle même.)
+            # C'est pourquoi elle est aussi modifiée dans cette fonction.
             liste_groupe.append(groupe)
 
     return liste_groupe
@@ -18,7 +24,14 @@ def groupe_leds(point_list: list) -> list:
 
 def cluster_recur(index_point_depart: int, point_depart: tuple, cluster: list, point_visite: list, point_list: list):
     '''
-    Fonction récursive qui forme un groupe de points en partant d'un point de départ
+    Forme un groupe de points en partant d'un point de départ.
+
+    Args:
+        index_point_depart (int): index du point de départ utilise
+        point_depart (tuple): point de depart utilise
+        cluster (list): groupe de point
+        point_visite (list): liste pour chaque point si il a ete visite
+        point_list (list): liste de points detectes
     '''
     from cameras.parameters import distance_max_carre
 
@@ -33,7 +46,10 @@ def cluster_recur(index_point_depart: int, point_depart: tuple, cluster: list, p
 
 def blob_detection_params():
     '''
-    Creation d'un objet de detection de blob lumineux
+    Cree un objet de detection de blob lumineux.
+
+    Returns:
+        detector (cv2.SimpleBlobDetector): objet de detection de blob lumineux
     '''
     import cv2
     from cameras.parameters import minThreshold, maxThreshold, filterByColor, blobColor, filterByArea, minArea
@@ -50,9 +66,13 @@ def blob_detection_params():
     return detector
 
 
-def produit_matriciel(mat_1, mat_2):
+def produit_matriciel(mat_1:np.array, mat_2:np.array)->np.array:
     '''
-    Fonction qui calcul le produit matriciel entre deux matrices (mat_1 et mat2)
+    Calcule le produit matriciel quand cela est possible.
+
+    Args:
+        mat_1 (np.array): matrice 1
+        mat_2 (np.array): matrice 2
     '''
 
     import numpy as np
@@ -72,9 +92,16 @@ def produit_matriciel(mat_1, mat_2):
     return mat
 
 
-def compute_A(lst_points_realite, lst_points_image):
+def compute_A(lst_points_realite:list, lst_points_image:list)->np.array:
     '''
-    Cree la matrice A a partir des points detectes lors de la calibration de la camera
+    Cree la matrice A a partir des points detectes lors de la calibration de la camera.
+
+    Args:
+        lst_points_realite (list): liste des points du damier (echelle reelle)
+        lst_points_image (list): liste des points detectes sur l'image
+
+    Returns:
+        A (np.array): matrice A
     '''
     import numpy as np
 
@@ -91,9 +118,16 @@ def compute_A(lst_points_realite, lst_points_image):
     return A
 
 
-def compute_homography(lst_images, object_points):
+def compute_homography(lst_images:list, object_points:list)->list:
     '''
-    Calcul des matrices H d'homographie pour chaque images.
+    Calcule les matrices d'homographie H pour chaque images.
+
+    Args:
+        lst_images (list): liste des photos du damier
+        object_points (list): liste des points du damier (echelle reelle)
+
+    Returns:
+        lst_H (list): liste des matrices d'homographie H
     '''
     import numpy as np
 
@@ -119,9 +153,15 @@ def compute_homography(lst_images, object_points):
     return lst_H
 
 
-def compute_intrinsincs(B):
+def compute_intrinsincs(B:np.array)->np.array:
     '''
-    Calcule les paramètres intrinsèques de la camera et renvoie la matrice intrinsèque.
+    Calcule les paramètres intrinsèques de la camera.
+
+    Args:
+        B (np.array): matrice B
+
+    Returns:
+        K (np.array): matrice K
     '''
     import numpy as np
     from math import sqrt
@@ -140,9 +180,16 @@ def compute_intrinsincs(B):
     return K
 
 
-def compute_v(hi, hj):
+def compute_v(hi:np.array, hj:np.array)->np.array:
     '''
-    Calcul de la matrice v qui composeras V
+    Calcule la matrice v qui composeras V.
+
+    Args:
+        hi (np.array): matrice colonne hi
+        hj (np.array): matrice colonne hj
+
+    Returns:
+        _ (np.array): matrice utilisee pour le calcul de la matrice V
     '''
     import numpy as np
 
@@ -154,9 +201,15 @@ def compute_v(hi, hj):
                      hi[2] * hj[2]])
 
 
-def compute_V(lst_H):
+def compute_V(lst_H:list)->np.array:
     '''
-    Calcul de la matrice V formé par des matrices v qui permettras par SVD de calculer B
+    Calcule la matrice V. Permet par SVD de calculer la matrice B.
+
+    Args:
+        lst_H (list): liste des matrices d'homographies H
+
+    Returns:
+        V (np.array): matrice V
     '''
     import numpy as np
 
@@ -175,9 +228,15 @@ def compute_V(lst_H):
     return V
 
 
-def compute_B(V):
+def compute_B(V:np.array)->np.array:
     '''
-    Calcul de B par SVD de V. Cette matrice sert a former les parametres intrinseques de la camera. 
+    Calcule B par SVD de V. B sert a former la parametres intrinseques des cameras.
+
+    Args:
+        V (np.array): matrice V
+
+    Returns:
+        B (np.array): matrice B
     '''
     import numpy as np
 
@@ -194,9 +253,17 @@ def compute_B(V):
     return B
 
 
-def compute_extrinsics(K, H):
+def compute_extrinsics(K:np.array, H:np.array)->(np.array, np.array):
     '''
     Calcul de la matrice extrinseque R d'une camera a partir de sa matrice intrinseque (K) et de H.
+
+    Args:
+        K (np.array): matrice intrinseque K
+        H (np.array): matrice d'homographie H
+
+    Returns:
+        R (np.array): matrice de rotation R
+        t (np.array): matrice de translation t
     '''
     import numpy as np
 
@@ -223,9 +290,16 @@ def compute_extrinsics(K, H):
     return R, t.flatten()
 
 
-def normalize_points(points):
+def normalize_points(points:list)->(np.array, np.array):
     '''
-    Normalisation des points pour obtenir des valeurs plus facile a traiter.
+    Normalise les points.
+
+    Args:
+        points (list): liste des points
+
+    Returns:
+        normalized (np.array): point
+        T (np.array): matrice T
     '''
     import numpy as np
 
@@ -256,7 +330,18 @@ def normalize_points(points):
     return normalized, T
 
 
-def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
+def compute_stereo_extrinsecs(extrinsics1:np.array, extrinsics2:np.array)->(np.array, np.array):
+    '''
+    Calcule les parametres extrinseques d'une camera par rapport a l'autre.
+
+    Args:
+        extrinsics1 (np.array): parametres extrinseques de la premiere camera
+        extrinsics2 (np.array): parametres extrinseques de la deuxieme camera
+
+    Returns:
+        R (np.array): matrice de rotation R
+        t (np.array): matrice de translation t
+    '''
     import numpy as np
 
     R_list = []
@@ -280,10 +365,19 @@ def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
     return R_mean, t_mean
 
 
-def compute_projection_matrices(K1, K2, R, t):
+def compute_projection_matrices(K1:np.array, K2:np.array, R:np.array, t:np.array)->(np.array, np.array):
     '''
-    Formation des matrices de projection des deux cameras pour former des droites qui nous permettent de determiner la position
-    3D d'un point
+    Forme les matrices de projection des deux cameras.
+
+    Args:
+        K1 (np.array): parametres intrinseques de la premiere camera
+        K2 (np.array): parametres intrinseques de la deuxieme camera
+        R (np.array): matrice de rotation R
+        t (np.array): matrice de translation t
+
+    Returns:
+        P1 (np.array): matrice de projection camera 1
+        P2 (np.array): matrice de projection camera 2
     '''
     import numpy as np
 
@@ -293,16 +387,18 @@ def compute_projection_matrices(K1, K2, R, t):
     return P1, P2
 
 
-def triangulate_point(P1, P2, pt1, pt2):
+def triangulate_point(P1:np.array, P2:np.array, pt1:list, pt2:list)->np.array:
     '''
-    Triangulation d'un point 3D à partir de deux observations image.
-    
-    P1 : matrice projection camera 1 (3x4)
-    P2 : matrice projection camera 2 (3x4)
-    pt1 : (u1,v1)
-    pt2 : (u2,v2)
+    Triangule la position d'un point a partir des deux matrice de projection des deux cameras.
 
-    retourne : (X,Y,Z)
+    Args:
+        P1 (np.array): matrice de projection camera 1
+        P2 (np.array): matrice de projection camera 2
+        pt1 (list): liste des points de la camera 1
+        pt2 (list): liste des points de la camera 2
+
+    Returns:
+        X (np.array): position 3D du point
     '''
 
     import numpy as np
@@ -318,18 +414,27 @@ def triangulate_point(P1, P2, pt1, pt2):
         v2 * P2[2] - P2[1]
     ])
 
-    # résolution AX = 0 par SVD
     U, S, Vt = np.linalg.svd(A)
 
     X = Vt[-1]
 
-    # passage homogène -> cartésien
     X = X / X[3]
 
     return X[:3]
 
 
-def calculate_point_pos(lst_pts):
+def calculate_point_pos(lst_pts:list)->(float, float, float):
+    '''
+    Calcule la position d'un point par moyenne des points du groupe.
+
+    Args:
+        lst_pts (list): liste des points du groupe
+
+    Returns:
+        x (float): position x du point
+        y (float): position y du point
+        z (float): position z du point
+    '''
     lenght = len(lst_pts)
     x, y, z = (0, 0, 0)
     for pts in lst_pts:
@@ -340,17 +445,40 @@ def calculate_point_pos(lst_pts):
     return x / lenght, y / lenght, z / lenght
 
 
-def centre(groupe):
+def centre(groupe:list)->(float, float, float):
+    '''
+    Calcule le centre du groupe.
+
+    Args:
+        groupe (list): groupe de point
+
+    Returns:
+        x (float): centre x du groupe
+        y (float): centre y du groupe
+        z (float): centre z du groupe
+    '''
     x = sum(p[0] for p in groupe) / len(groupe)
     y = sum(p[1] for p in groupe) / len(groupe)
-    return (x, y)
+    z = sum(p[2] for p in groupe) / len(groupe)
+    return (x, y, z)
 
 
-def trier_groupe(groupe):
+def trier_groupe(groupe:list)->list:
+    '''
+    Trie un groupe de point.
+
+    Args:
+        groupe (list): groupe de point non trie
+
+    Returns:
+        _ (list): groupe de point trie
+    '''
     return sorted(groupe, key=lambda p: (p[0], p[1]))
 
 
 def image_transform(image):
+    import cv2
+
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return image
 
@@ -410,6 +538,9 @@ def detect_and_processed_controller_pos(frame1_processed, frame2_processed, dete
 
 
 def calculate_coef(real_pt1: tuple, real_pt2: tuple, game_pt1: tuple, game_pt2: tuple) -> tuple:
+    """
+    Calcul des coefficients pour bloquer la manette dans le cadre
+    """
     coef_x = abs(game_pt2[0] - game_pt1[0]) / abs(real_pt2['pos'][0] - real_pt1['pos'][0])
     coef_y = abs(game_pt2[1] - game_pt1[1]) / abs(real_pt2['pos'][1] - real_pt1['pos'][1])
     coef_z = abs(game_pt2[2] - game_pt1[2]) / abs(real_pt2['pos'][2] - real_pt1['pos'][2])

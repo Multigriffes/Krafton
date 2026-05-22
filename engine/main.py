@@ -83,12 +83,9 @@ class MAIN:
         self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
         self.all_objects['left_controller'].coordinates[1] = self.left_controller[1]
         self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
-        print(f"Gauche : {self.all_objects["left_controller"].coordinates}")
-        # print(f"GaucheShared : {self.left_controller[0],self.left_controller[1],self.left_controller[2]}")
         self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]
         self.all_objects['right_controller'].coordinates[1] = self.right_controller[1]
         self.all_objects['right_controller'].coordinates[2] = self.right_controller[2]
-        # print(f"Droite : {self.all_objects["right_controller"].coordinates}")
 
     def updateCubePos(self):
         for name in ("Block_1", "Block_2", "Block_3", "Block_4"):
