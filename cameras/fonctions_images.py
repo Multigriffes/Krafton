@@ -66,7 +66,7 @@ def blob_detection_params():
     return detector
 
 
-def produit_matriciel(mat_1:np.array, mat_2:np.array)->np.array:
+def produit_matriciel(mat_1:np.ndarray, mat_2:np.ndarray)->np.ndarray:
     '''
     Calcule le produit matriciel quand cela est possible.
 
@@ -92,7 +92,7 @@ def produit_matriciel(mat_1:np.array, mat_2:np.array)->np.array:
     return mat
 
 
-def compute_A(lst_points_realite:list, lst_points_image:list)->np.array:
+def compute_A(lst_points_realite:list, lst_points_image:list)->np.ndarray:
     '''
     Cree la matrice A a partir des points detectes lors de la calibration de la camera.
 
@@ -153,7 +153,7 @@ def compute_homography(lst_images:list, object_points:list)->list:
     return lst_H
 
 
-def compute_intrinsincs(B:np.array)->np.array:
+def compute_intrinsincs(B:np.ndarray)->np.ndarray:
     '''
     Calcule les paramètres intrinsèques de la camera.
 
@@ -180,7 +180,7 @@ def compute_intrinsincs(B:np.array)->np.array:
     return K
 
 
-def compute_v(hi:np.array, hj:np.array)->np.array:
+def compute_v(hi:np.ndarray, hj:np.ndarray)->np.ndarray:
     '''
     Calcule la matrice v qui composeras V.
 
@@ -201,7 +201,7 @@ def compute_v(hi:np.array, hj:np.array)->np.array:
                      hi[2] * hj[2]])
 
 
-def compute_V(lst_H:list)->np.array:
+def compute_V(lst_H:list)->np.ndarray:
     '''
     Calcule la matrice V. Permet par SVD de calculer la matrice B.
 
@@ -228,7 +228,7 @@ def compute_V(lst_H:list)->np.array:
     return V
 
 
-def compute_B(V:np.array)->np.array:
+def compute_B(V:np.ndarray)->np.ndarray:
     '''
     Calcule B par SVD de V. B sert a former la parametres intrinseques des cameras.
 
@@ -253,7 +253,7 @@ def compute_B(V:np.array)->np.array:
     return B
 
 
-def compute_extrinsics(K:np.array, H:np.array)->(np.array, np.array):
+def compute_extrinsics(K:np.ndarray, H:np.ndarray)->(np.ndarray, np.ndarray):
     '''
     Calcul de la matrice extrinseque R d'une camera a partir de sa matrice intrinseque (K) et de H.
 
@@ -290,7 +290,7 @@ def compute_extrinsics(K:np.array, H:np.array)->(np.array, np.array):
     return R, t.flatten()
 
 
-def normalize_points(points:list)->(np.array, np.array):
+def normalize_points(points:list)->(np.ndarray, np.ndarray):
     '''
     Normalise les points.
 
@@ -330,7 +330,7 @@ def normalize_points(points:list)->(np.array, np.array):
     return normalized, T
 
 
-def compute_stereo_extrinsecs(extrinsics1:np.array, extrinsics2:np.array)->(np.array, np.array):
+def compute_stereo_extrinsecs(extrinsics1:np.ndarray, extrinsics2:np.ndarray)->(np.ndarray, np.ndarray):
     '''
     Calcule les parametres extrinseques d'une camera par rapport a l'autre.
 
@@ -365,7 +365,7 @@ def compute_stereo_extrinsecs(extrinsics1:np.array, extrinsics2:np.array)->(np.a
     return R_mean, t_mean
 
 
-def compute_projection_matrices(K1:np.array, K2:np.array, R:np.array, t:np.array)->(np.array, np.array):
+def compute_projection_matrices(K1:np.ndarray, K2:np.ndarray, R:np.ndarray, t:np.ndarray)->(np.ndarray, np.ndarray):
     '''
     Forme les matrices de projection des deux cameras.
 
@@ -387,7 +387,7 @@ def compute_projection_matrices(K1:np.array, K2:np.array, R:np.array, t:np.array
     return P1, P2
 
 
-def triangulate_point(P1:np.array, P2:np.array, pt1:list, pt2:list)->np.array:
+def triangulate_point(P1:np.ndarray, P2:np.ndarray, pt1:list, pt2:list)->np.ndarray:
     '''
     Triangule la position d'un point a partir des deux matrice de projection des deux cameras.
 
@@ -477,6 +477,15 @@ def trier_groupe(groupe:list)->list:
 
 
 def image_transform(image):
+    '''
+    Transforme une image RGB en nuance de gris.
+
+    Args:
+        image : image RGB
+
+    Returns:
+        image : image en nuance de gris
+    '''
     import cv2
 
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -484,6 +493,19 @@ def image_transform(image):
 
 
 def detect_and_processed_controller_pos(frame1_processed, frame2_processed, detector):
+    '''
+    Detecte et calcule la position des manettes.
+
+    Args:
+        frame1_processed : image en nuance de gris
+        frame2_processed : image en nuance de gris
+        detector : detecte les points lumineux
+
+    Returns:
+        {'pos': pos_manette, 'nom' : manette} (dict): position de la manette et son nom (left ou right)
+        keypoints1 : liste des points de la manette 1
+        keypoints2 : liste des points de la manette 2
+    '''
     from cameras.parameters import P1, P2, nb_led_left_controller, nb_led_right_controller
 
     keypoints1 = detector.detect(frame1_processed)
@@ -539,7 +561,13 @@ def detect_and_processed_controller_pos(frame1_processed, frame2_processed, dete
 
 def calculate_coef(real_pt1: tuple, real_pt2: tuple, game_pt1: tuple, game_pt2: tuple) -> tuple:
     """
-    Calcul des coefficients pour bloquer la manette dans le cadre
+    Calcule les coefficients image/realite pour bloquer la manette dans un cadre
+
+    Args:
+        real_pt1 : point reel 1
+        real_pt2 : point reel 2
+        game_pt1 : point dans le systeme de coordonnees du jeux, 1
+        game_pt2 : point dans le systeme de coordonnees du jeux,
     """
     coef_x = abs(game_pt2[0] - game_pt1[0]) / abs(real_pt2['pos'][0] - real_pt1['pos'][0])
     coef_y = abs(game_pt2[1] - game_pt1[1]) / abs(real_pt2['pos'][1] - real_pt1['pos'][1])

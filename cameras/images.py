@@ -9,6 +9,7 @@ from cameras.fonctions_images import blob_detection_params, calculate_coef, imag
 from cameras.parameters import quitter, pos1, pos2
 from engine.project import pt1, pt2
 
+# creer la liste partagee si elle n'existe pas. Sinon, stocke les donnees dans les variables attribuees.
 try:
     left_controller = ShareableList(name="left_controller")
 except FileNotFoundError:
@@ -18,10 +19,11 @@ try:
 except FileNotFoundError:
     right_controller = ShareableList(name='right_controller', sequence=range(3))
 
-if os.name == "nt":
+# verifie le systeme d'exploitation de l'utilisateur
+if os.name == "nt": # Windows
     capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
-elif os.name == "posix":
+elif os.name == "posix": # Linux
     capture1 = cv2.VideoCapture(1)
     capture2 = cv2.VideoCapture(2)
 
