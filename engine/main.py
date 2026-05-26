@@ -158,9 +158,6 @@ class MAIN:
         if keyPressed[pygame.K_RETURN]:
             self.camera.reset()
 
-        if keyPressed[pygame.K_g]:
-            self.updateCubePos()
-
     def parseAndCreateObjects(self):
         for object_to_be_created in project.objects:
             selected_object = project.objects[object_to_be_created]
@@ -176,7 +173,7 @@ class MAIN:
                     my_object = VERTICES(vertices=object_file.vertices, normals=object_file.normals,
                                          coordinates=selected_object['coordinates'])
                     self.all_objects[object_to_be_created] = my_object
-            del object_file  # Release some memory
+            del object_file  # On relâche de la mémoire
 
     def createDebugAxes(self):
         if project.debug_axes:  # Création des axes en créant des lignes à deux points
