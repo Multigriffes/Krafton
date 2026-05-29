@@ -150,9 +150,9 @@ write('P2', P2)
 from cameras.fonctions_images import detect_and_processed_controller_pos
 
 detector = blob_detection_params()
-pos1, _, _ = detect_and_processed_controller_pos(frame1_processed_1, frame2_processed_1, detector)
-pos2, _, _ = detect_and_processed_controller_pos(frame1_processed_2, frame2_processed_2, detector)
+manette1, _, _ = detect_and_processed_controller_pos(frame1_processed_1, frame2_processed_1, detector)
+manette2, _, _ = detect_and_processed_controller_pos(frame1_processed_2, frame2_processed_2, detector)
 
 # sauvegarde des position de l'aire du terrain de jeu
-write('pos1', pos1)
-write('pos2', pos2)
+write('pos1', manette1['pos'])
+write('pos2', manette2['pos'])
