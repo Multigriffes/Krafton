@@ -66,7 +66,7 @@ def blob_detection_params():
     return detector
 
 
-def produit_matriciel(mat_1:np.ndarray, mat_2:np.ndarray)->np.ndarray:
+def produit_matriciel(mat_1, mat_2):
     '''
     Calcule le produit matriciel quand cela est possible.
 
@@ -91,8 +91,7 @@ def produit_matriciel(mat_1:np.ndarray, mat_2:np.ndarray)->np.ndarray:
 
     return mat
 
-
-def compute_A(lst_points_realite:list, lst_points_image:list)->np.ndarray:
+def compute_A(lst_points_realite, lst_points_image):
     '''
     Cree la matrice A a partir des points detectes lors de la calibration de la camera.
 
@@ -152,8 +151,7 @@ def compute_homography(lst_images:list, object_points:list)->list:
 
     return lst_H
 
-
-def compute_intrinsincs(B:np.ndarray)->np.ndarray:
+def compute_intrinsincs(B):
     '''
     Calcule les paramètres intrinsèques de la camera.
 
@@ -179,8 +177,7 @@ def compute_intrinsincs(B:np.ndarray)->np.ndarray:
 
     return K
 
-
-def compute_v(hi:np.ndarray, hj:np.ndarray)->np.ndarray:
+def compute_v(hi, hj):
     '''
     Calcule la matrice v qui composeras V.
 
@@ -200,8 +197,7 @@ def compute_v(hi:np.ndarray, hj:np.ndarray)->np.ndarray:
                      hi[2] * hj[1] + hi[1] * hj[2],
                      hi[2] * hj[2]])
 
-
-def compute_V(lst_H:list)->np.ndarray:
+def compute_V(lst_H):
     '''
     Calcule la matrice V. Permet par SVD de calculer la matrice B.
 
@@ -227,8 +223,7 @@ def compute_V(lst_H:list)->np.ndarray:
 
     return V
 
-
-def compute_B(V:np.ndarray)->np.ndarray:
+def compute_B(V):
     '''
     Calcule B par SVD de V. B sert a former la parametres intrinseques des cameras.
 
@@ -252,8 +247,7 @@ def compute_B(V:np.ndarray)->np.ndarray:
 
     return B
 
-
-def compute_extrinsics(K:np.ndarray, H:np.ndarray)->(np.ndarray, np.ndarray):
+def compute_extrinsics(K, H):
     '''
     Calcul de la matrice extrinseque R d'une camera a partir de sa matrice intrinseque (K) et de H.
 
@@ -289,8 +283,7 @@ def compute_extrinsics(K:np.ndarray, H:np.ndarray)->(np.ndarray, np.ndarray):
 
     return R, t.flatten()
 
-
-def normalize_points(points:list)->(np.ndarray, np.ndarray):
+def normalize_points(points):
     '''
     Normalise les points.
 
@@ -330,7 +323,7 @@ def normalize_points(points:list)->(np.ndarray, np.ndarray):
     return normalized, T
 
 
-def compute_stereo_extrinsecs(extrinsics1:np.ndarray, extrinsics2:np.ndarray)->(np.ndarray, np.ndarray):
+def compute_stereo_extrinsecs(extrinsics1, extrinsics2):
     '''
     Calcule les parametres extrinseques d'une camera par rapport a l'autre.
 
@@ -365,7 +358,7 @@ def compute_stereo_extrinsecs(extrinsics1:np.ndarray, extrinsics2:np.ndarray)->(
     return R_mean, t_mean
 
 
-def compute_projection_matrices(K1:np.ndarray, K2:np.ndarray, R:np.ndarray, t:np.ndarray)->(np.ndarray, np.ndarray):
+def compute_projection_matrices(K1, K2, R, t):
     '''
     Forme les matrices de projection des deux cameras.
 
@@ -386,8 +379,7 @@ def compute_projection_matrices(K1:np.ndarray, K2:np.ndarray, R:np.ndarray, t:np
 
     return P1, P2
 
-
-def triangulate_point(P1:np.ndarray, P2:np.ndarray, pt1:list, pt2:list)->np.ndarray:
+def triangulate_point(P1, P2, pt1, pt2):
     '''
     Triangule la position d'un point a partir des deux matrice de projection des deux cameras.
 
@@ -423,7 +415,7 @@ def triangulate_point(P1:np.ndarray, P2:np.ndarray, pt1:list, pt2:list)->np.ndar
     return X[:3]
 
 
-def calculate_point_pos(lst_pts:list)->(float, float, float):
+def calculate_point_pos(lst_pts:list):
     '''
     Calcule la position d'un point par moyenne des points du groupe.
 
@@ -445,7 +437,7 @@ def calculate_point_pos(lst_pts:list)->(float, float, float):
     return x / lenght, y / lenght, z / lenght
 
 
-def centre(groupe:list)->(float, float, float):
+def centre(groupe:list):
     '''
     Calcule le centre du groupe.
 
@@ -455,13 +447,10 @@ def centre(groupe:list)->(float, float, float):
     Returns:
         x (float): centre x du groupe
         y (float): centre y du groupe
-        z (float): centre z du groupe
     '''
     x = sum(p[0] for p in groupe) / len(groupe)
     y = sum(p[1] for p in groupe) / len(groupe)
-    z = sum(p[2] for p in groupe) / len(groupe)
-    return (x, y, z)
-
+    return (x, y)
 
 def trier_groupe(groupe:list)->list:
     '''

@@ -1,11 +1,8 @@
-import os
-
 import cv2
-
-from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, \
-    compute_stereo_extrinsecs, compute_projection_matrices, image_transform, blob_detection_params
 from cameras.parameters import object_points_list, take_photo, nb_photo_max, quitter, chessboard_info, place_point
+from cameras.fonctions_images import compute_homography, compute_V, compute_B, compute_intrinsincs, compute_extrinsics, compute_stereo_extrinsecs, compute_projection_matrices, image_transform, blob_detection_params
 from cameras.write_read_csv import write, clear_file
+import os
 
 # Verification du systeme d'exploitation de l'utilisateur
 if os.name == "nt": # Windows
