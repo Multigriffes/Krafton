@@ -83,12 +83,9 @@ class MAIN:
         self.all_objects['left_controller'].coordinates[0] = self.left_controller[0]
         self.all_objects['left_controller'].coordinates[1] = self.left_controller[1]
         self.all_objects['left_controller'].coordinates[2] = self.left_controller[2]
-        print(f"Gauche : {self.all_objects["left_controller"].coordinates}")
-        # print(f"GaucheShared : {self.left_controller[0],self.left_controller[1],self.left_controller[2]}")
         self.all_objects['right_controller'].coordinates[0] = self.right_controller[0]
         self.all_objects['right_controller'].coordinates[1] = self.right_controller[1]
         self.all_objects['right_controller'].coordinates[2] = self.right_controller[2]
-        # print(f"Droite : {self.all_objects["right_controller"].coordinates}")
 
     def updateCubePos(self):
         for name in ("Block_1", "Block_2", "Block_3", "Block_4"):
@@ -161,9 +158,6 @@ class MAIN:
         if keyPressed[pygame.K_RETURN]:
             self.camera.reset()
 
-        if keyPressed[pygame.K_g]:
-            self.updateCubePos()
-
     def parseAndCreateObjects(self):
         for object_to_be_created in project.objects:
             selected_object = project.objects[object_to_be_created]
@@ -179,7 +173,7 @@ class MAIN:
                     my_object = VERTICES(vertices=object_file.vertices, normals=object_file.normals,
                                          coordinates=selected_object['coordinates'])
                     self.all_objects[object_to_be_created] = my_object
-            del object_file  # Release some memory
+            del object_file  # On relâche de la mémoire
 
     def createDebugAxes(self):
         if project.debug_axes:  # Création des axes en créant des lignes à deux points

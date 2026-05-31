@@ -16,10 +16,10 @@ except FileNotFoundError:
     right_controller = ShareableList(name='right_controller', sequence=range(3))
 
 
-if os.name=="nt":
+if os.name=="nt": # Windows
     capture1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-    capture2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
-elif os.name=="posix":
+    capture2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+elif os.name=="posix": # Linux
     capture1 = cv2.VideoCapture(1)
     capture2 = cv2.VideoCapture(2)
 
@@ -41,7 +41,6 @@ while capture1.isOpened() and capture2.isOpened():
     frame2_processed = image_transform(frame2)
 
     if detect_and_processed_controller_pos(frame1_processed, frame2_processed, detector) == False:
-        print('No controller detected')
         cv2.imshow("Camera 1", frame1_processed)
         cv2.imshow("Camera 2", frame2_processed)
         continue

@@ -17,7 +17,6 @@ def read(name):
                 data_str = line.split(":", 1)[1].strip()
                 data = ast.literal_eval(data_str)
 
-                # Si matrice → reconvertir en numpy
                 if isinstance(data, list) and all(isinstance(row, list) for row in data):
                     return np.array(data)
 

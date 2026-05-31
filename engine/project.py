@@ -10,11 +10,6 @@ objects = {
     'right_controller' : {'type': 'Faces', 'path': '3d_models/scene/Saber.obj', 'coordinates': [10, 0, 0], 'color': None, "collide_box": [[0,0,0],[0.5,2,0.5]]}
 }
 
-# Animation
-animation = {
-    'ToZero': {'goto': [0,0,0], 'time': 300}
-}
-
 # Display
 display = [1920, 1080]
 fpsLimit = 144
@@ -26,9 +21,6 @@ far_plane = 500
 
 # Déplacements
 lockedAxe = None
-
-# Jeux
-temps_spawn_cube = 1000
 
 # Cadre de la manette
 pt1 = (10, 10, 10)
